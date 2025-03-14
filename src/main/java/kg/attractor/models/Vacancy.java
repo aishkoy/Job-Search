@@ -3,7 +3,7 @@ package kg.attractor.models;
 import lombok.Builder;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -17,8 +17,8 @@ public class Vacancy {
     private int expTo;
     private boolean isActive;
     private int authorId;
-    private Timestamp createdDate;
-    private Timestamp updateTime;
+    private LocalDateTime createdDate;
+    private LocalDateTime updateTime;
 
     @Override
     public String toString() {

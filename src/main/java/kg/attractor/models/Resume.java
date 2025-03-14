@@ -3,7 +3,7 @@ package kg.attractor.models;
 import lombok.Builder;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,8 +14,8 @@ public class Resume {
     private int categoryId;
     private Float salary;
     private boolean isActive;
-    private Timestamp createdData;
-    private Timestamp updateTime;
+    private LocalDateTime createdData;
+    private LocalDateTime updateTime;
 
     @Override
     public String toString() {
