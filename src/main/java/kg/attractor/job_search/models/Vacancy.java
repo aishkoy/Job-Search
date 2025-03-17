@@ -18,7 +18,7 @@ public class Vacancy {
     private Integer expFrom;
     private Integer expTo;
     private Boolean isActive;
-    private Integer authorId;
+    private Long authorId;
     private LocalDateTime createdDate;
     private LocalDateTime updateTime;
 }
