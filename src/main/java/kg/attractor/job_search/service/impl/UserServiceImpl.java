@@ -1,10 +1,13 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.exceptions.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.models.User;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -102,6 +105,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MultipartFile uploadAvatar(Long userId, MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+            throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
+        }
+
         // TODO загрузка аватара пользователя
         UserDto userDto = getUserById(userId);
         userDto.setAvatar(saveImage(file));
@@ -109,9 +117,29 @@ public class UserServiceImpl implements UserService {
         return file;
     }
 
+    @Override
+    //TODO получение автара пользователя (доработать)
+    public ResponseEntity<?> getUserAvatar(Long userId) {
+        UserDto userDto = getUserById(userId);
+        if(userDto == null){
+            throw  new UserNotFoundException();
+        }
+
+        if (userDto.getAvatar() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        FileUtil fu  = new FileUtil();
+        String filename = userDto.getAvatar();
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        MediaType mediaType = extension.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+
+        return fu.getOutputFile(filename, "images/", mediaType);
+    }
+
     public String saveImage(MultipartFile file) {
         // TODO сохранение картинки
         FileUtil fu = new FileUtil();
-        return fu.saveUploadFile(file, "data/images/");
+        return fu.saveUploadFile(file, "images/");
     }
 }
