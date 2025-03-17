@@ -102,6 +102,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MultipartFile uploadAvatar(Long userId, MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+            throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
+        }
+
         // TODO загрузка аватара пользователя
         UserDto userDto = getUserById(userId);
         userDto.setAvatar(saveImage(file));
@@ -112,6 +117,6 @@ public class UserServiceImpl implements UserService {
     public String saveImage(MultipartFile file) {
         // TODO сохранение картинки
         FileUtil fu = new FileUtil();
-        return fu.saveUploadFile(file, "data/images/");
+        return fu.saveUploadFile(file, "images/");
     }
 }
