@@ -1,4 +1,4 @@
-package kg.attractor.models;
+package kg.attractor.job_search.models;
 
 import lombok.Builder;
 import lombok.Data;
