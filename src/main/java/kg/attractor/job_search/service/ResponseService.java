@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 public interface ResponseService {
-    List<UserDto> getApplicationsByVacancyId(String vacancyId, String employerId);
+    List<UserDto> getApplicationsByVacancyId(Long vacancyId, Long employerId);
 
-    HttpStatus applyVacancy(String vacancyId, String applicantId);
+    HttpStatus applyVacancy(Long vacancyId, Long applicantId);
 }

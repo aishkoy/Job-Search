@@ -12,13 +12,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseServiceImpl implements ResponseService {
     @Override
-    public List<UserDto> getApplicationsByVacancyId(String vacancyId, String employerId) {
+    public List<UserDto> getApplicationsByVacancyId(Long vacancyId, Long employerId) {
         //TODO получение соискателей на вакансию по id вакансии, проверка на работодателя по id
         return List.of();
     }
 
     @Override
-    public HttpStatus applyVacancy(String vacancyId, String applicantId) {
+    public HttpStatus applyVacancy(Long vacancyId, Long applicantId) {
         //TODO отклик на вакансию по id соискателю, проверка на соикателя по id
         return HttpStatus.OK;
     }

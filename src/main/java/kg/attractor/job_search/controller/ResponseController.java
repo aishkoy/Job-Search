@@ -16,13 +16,13 @@ public class ResponseController {
     private final ResponseService responseService;
 
     @PostMapping("{vacancyId}") // /vacancies/1?applicantId=9
-    public HttpStatus applyVacancy(@PathVariable("vacancyId") String vacancyId, @RequestParam("applicantId") String applicantId) {
+    public HttpStatus applyVacancy(@PathVariable("vacancyId") Long vacancyId, @RequestParam("applicantId") Long applicantId) {
         // TODO откликнуться на вакансию
-        return responseService.applyVacancy(applicantId, vacancyId);
+        return responseService.applyVacancy(vacancyId, applicantId);
     }
 
     @GetMapping("{vacancyId}")
-    public ResponseEntity<List<UserDto>> getApplications(@PathVariable("vacancyId") String vacancyId, @RequestParam("employerId") String employerId) {
+    public ResponseEntity<List<UserDto>> getApplications(@PathVariable("vacancyId") Long vacancyId, @RequestParam("employerId") Long employerId) {
         // TODO получение всех пользователей откликнувшихся на вакансию
         return ResponseEntity.ofNullable(responseService.getApplicationsByVacancyId(vacancyId, employerId));
     }
