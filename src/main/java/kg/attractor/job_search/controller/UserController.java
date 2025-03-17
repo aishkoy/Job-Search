@@ -40,6 +40,12 @@ public class UserController {
         return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file));
     }
 
+    @GetMapping("{id}/avatar")
+    // TODO просто коммитов не хватает
+    public ResponseEntity<?> getAvatar(@PathVariable("id") Long userId) {
+        return userService.getUserAvatar(userId);
+    }
+
     @GetMapping("employers")
     public ResponseEntity<List<UserDto>> getEmployers() {
         // TODO получить всех работодателей для соискателя

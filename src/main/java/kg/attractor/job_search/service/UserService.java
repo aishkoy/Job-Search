@@ -1,6 +1,7 @@
 package kg.attractor.job_search.service;
 
 import kg.attractor.job_search.dto.UserDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface UserService {
     UserDto getApplicantById(Long id);
 
     MultipartFile uploadAvatar(Long userId, MultipartFile file);
+
+    ResponseEntity<?> getUserAvatar(Long userId);
 }
