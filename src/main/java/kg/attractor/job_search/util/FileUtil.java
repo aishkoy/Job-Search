@@ -1,9 +1,5 @@
 package kg.attractor.job_search.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import kg.attractor.job_search.models.User;
 import lombok.SneakyThrows;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -14,42 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Reader;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class FileUtil {
 
-    private final Gson gson;
-
     private static final String UPLOAD_DIR = "data/";
-
-    public FileUtil() {
-        gson = new GsonBuilder().setPrettyPrinting().create();
-    }
-
-    public List<User> getUsers(String path) {
-        Type listType = new TypeToken<Map<String, List<User>>>() {
-        }.getType();
-        try (Reader reader = new FileReader(UPLOAD_DIR + path)) {
-            Map<String, List<User>> users = gson.fromJson(reader, listType);
-            return users.get("users");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return List.of();
-        }
-    }
 
     @SneakyThrows
     public String saveUploadFile(MultipartFile file, String subDir) {
