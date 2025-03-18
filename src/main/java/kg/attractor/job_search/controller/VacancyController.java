@@ -18,15 +18,15 @@ public class VacancyController {
     private final VacancyService vacancyService;
 
     @GetMapping
-    public List<VacancyDto> getVacancies(@RequestParam Long applicantId) {
+    public ResponseEntity<List<VacancyDto>> getVacancies(@RequestParam Long applicantId) {
         // TODO получение всех активных вакансий
-        return vacancyService.getActiveVacancies(applicantId);
+        return ResponseEntity.ofNullable(vacancyService.getActiveVacancies(applicantId));
     }
 
-    @GetMapping("categories/{categoryId}")
-    public List<VacancyDto> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId, @RequestParam Long applicantId) {
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId, @RequestParam Long applicantId) {
         // TODO получение вакансий по категории
-        return vacancyService.getVacanciesByCategoryId(categoryId, applicantId);
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId, applicantId));
     }
 
     @PostMapping

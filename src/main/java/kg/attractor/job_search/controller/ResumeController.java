@@ -22,7 +22,7 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.getResumes(employerId));
     }
 
-    @GetMapping("categories/{categoryId}")
+    @GetMapping("category/{categoryId}")
     public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId, @RequestParam("employerId") Long employerId) {
         //TODO получение всех резюме по категории для работодателя
         return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId, employerId));
