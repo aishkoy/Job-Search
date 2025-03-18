@@ -1,9 +1,11 @@
 package kg.attractor.job_search.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class UserDto {
     private Long id;
