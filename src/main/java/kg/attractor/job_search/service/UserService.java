@@ -22,5 +22,7 @@ public interface UserService {
 
     MultipartFile uploadAvatar(Long userId, MultipartFile file);
 
+    List<UserDto> getApplicationsByVacancyId(Long vacancyId);
+
     ResponseEntity<?> getUserAvatar(Long userId);
 }

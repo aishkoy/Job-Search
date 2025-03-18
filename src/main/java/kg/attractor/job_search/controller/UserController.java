@@ -69,4 +69,10 @@ public class UserController {
         //TODO получить конкретного соискателя
         return ResponseEntity.of(Optional.ofNullable(userService.getApplicantById(id)));
     }
+
+    @GetMapping("responded/{vacancyId}")
+    public ResponseEntity<List<UserDto>> getApplications(@PathVariable("vacancyId") Long vacancyId) {
+        // TODO получение всех пользователей откликнувшихся на вакансию
+        return ResponseEntity.ofNullable(userService.getApplicationsByVacancyId(vacancyId));
+    }
 }

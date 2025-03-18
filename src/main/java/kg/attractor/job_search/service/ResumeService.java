@@ -6,13 +6,13 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 public interface ResumeService {
-    List<ResumeDto> getResumes(Long employerId);
+    List<ResumeDto> getResumes();
 
-    Long createResume(ResumeDto resumeDto, Long applicantId);
+    Long createResume(ResumeDto resumeDto);
 
-    Long updateResume(Long resumeId, ResumeDto resumeDto, Long applicantId);
+    Long updateResume(Long resumeId, ResumeDto resumeDto);
 
-    HttpStatus deleteResume(Long resumeId, Long applicantId);
+    HttpStatus deleteResume(Long resumeId);
 
-    List<ResumeDto> getResumesByCategoryId(Long categoryId, Long employerId);
+    List<ResumeDto> getResumesByCategoryId(Long categoryId);
 }

@@ -11,31 +11,31 @@ import java.util.List;
 public class ResumeServiceImpl implements ResumeService {
 
     @Override
-    public List<ResumeDto> getResumes(Long employerId) {
+    public List<ResumeDto> getResumes() {
         //TODO получение всех резюме для работодателя
         return List.of();
     }
 
     @Override
-    public Long createResume(ResumeDto resumeDto, Long applicantId) {
+    public Long createResume(ResumeDto resumeDto) {
         //TODO создание резюме для соискателя
         return null;
     }
 
     @Override
-    public Long updateResume(Long resumeId, ResumeDto resumeDto, Long applicantId) {
+    public Long updateResume(Long resumeId, ResumeDto resumeDto) {
         //TODO обновление резюме для соискателя
         return null;
     }
 
     @Override
-    public HttpStatus deleteResume(Long resumeId, Long applicantId) {
+    public HttpStatus deleteResume(Long resumeId) {
         //TODO удаление резюме для соискателя
         return HttpStatus.OK;
     }
 
     @Override
-    public List<ResumeDto> getResumesByCategoryId(Long categoryId, Long employerId) {
+    public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
         //TODO получение всех резюме по категории для работодателя
         return List.of();
     }
