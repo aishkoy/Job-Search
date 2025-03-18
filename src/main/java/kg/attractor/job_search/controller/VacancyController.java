@@ -18,32 +18,32 @@ public class VacancyController {
     private final VacancyService vacancyService;
 
     @GetMapping
-    public ResponseEntity<List<VacancyDto>> getVacancies(@RequestParam Long applicantId) {
+    public ResponseEntity<List<VacancyDto>> getVacancies() {
         // TODO получение всех активных вакансий
-        return ResponseEntity.ofNullable(vacancyService.getActiveVacancies(applicantId));
+        return ResponseEntity.ofNullable(vacancyService.getActiveVacancies());
     }
 
-    @GetMapping("categoriy/{categoryId}")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId, @RequestParam Long applicantId) {
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId) {
         // TODO получение вакансий по категории
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId, applicantId));
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId));
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVacancy(@RequestBody VacancyDto vacancyDto, @RequestParam Long employerId) {
+    public ResponseEntity<Long> createVacancy(@RequestBody VacancyDto vacancyDto) {
         // TODO создание вакансии
-        return ResponseEntity.of(Optional.ofNullable(vacancyService.createVacancy(vacancyDto, employerId)));
+        return ResponseEntity.of(Optional.ofNullable(vacancyService.createVacancy(vacancyDto)));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto, @RequestParam Long employerId) {
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto) {
         // TODO обновление вакансии
-        return ResponseEntity.of(Optional.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto, employerId)));
+        return ResponseEntity.of(Optional.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto)));
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId, @RequestParam Long employerId) {
+    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
         // TODO удаление вакансии
-        return vacancyService.deleteVacancy(vacancyId, employerId);
+        return vacancyService.deleteVacancy(vacancyId);
     }
 }

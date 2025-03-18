@@ -11,16 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final List<User> users;
-
-    public UserServiceImpl(FileUtil fileUtil) {
-        this.users = fileUtil.getUsers("users.json");
-    }
+    private final List<User> users = new ArrayList<>();
 
     @Override
     public List<UserDto> getUsers() {
@@ -115,6 +112,12 @@ public class UserServiceImpl implements UserService {
         userDto.setAvatar(saveImage(file));
         updateUser(userId, userDto);
         return file;
+    }
+
+    @Override
+    public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
+        //TODO получение соискателей на вакансию по id вакансии, проверка на работодателя по id
+        return List.of();
     }
 
     @Override

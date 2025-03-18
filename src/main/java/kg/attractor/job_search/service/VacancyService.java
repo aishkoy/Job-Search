@@ -7,13 +7,13 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 public interface VacancyService {
-    Long createVacancy(VacancyDto vacancyDto, Long employerId);
+    Long createVacancy(VacancyDto vacancyDto);
 
-    List<VacancyDto> getActiveVacancies(Long applicantId);
-    Long updateVacancy(Long vacancyId, VacancyDto vacancyDto, Long employerId);
+    List<VacancyDto> getActiveVacancies();
+    Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
 
-    HttpStatus deleteVacancy(Long vacancyId, Long employerId);
+    HttpStatus deleteVacancy(Long vacancyId);
 
     @SneakyThrows
-    List<VacancyDto> getVacanciesByCategoryId(Long categoryId, Long applicantId);
+    List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 }
