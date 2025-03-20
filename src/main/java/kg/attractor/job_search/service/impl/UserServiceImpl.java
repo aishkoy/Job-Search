@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long registerUser(UserDto userDto,boolean isEmployer) {
         // TODO создание юзера (работодатель/соискатель)
-        userDto.setAccountType(isEmployer ? "Employer" : "Applicant");
+        userDto.setAccountType(isEmployer ? "employer" : "applicant");
         users.add(UserMapper.toUser(userDto));
         return userDto.getId();
     }
