@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class User {
