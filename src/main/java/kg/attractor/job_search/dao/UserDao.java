@@ -4,9 +4,6 @@ import kg.attractor.job_search.mapper.dao.UserDaoMapper;
 import kg.attractor.job_search.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,9 +13,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDao {
     private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
-
     public List<User> getUsers(){
         String sql = "select * from users";
         return jdbcTemplate.query(sql, new UserDaoMapper());
@@ -41,13 +35,13 @@ public class UserDao {
         return Optional.ofNullable(user);
     }
 
-    public Optional<User> getUserByPhone(String phone){
-        String sql = "select * from users where phone = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), phone);
+    public Optional<User> getUserByPhone(String phoneNumber){
+        String sql = "select * from users where PHONE_NUMBER = ?";
+        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), phoneNumber);
         return Optional.ofNullable(user);
     }
-    public Boolean existsUserByEmail(String username){
+    public Boolean existsUserByEmail(String email){
         String sql = "select count(*) from users where email = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, username)  > 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, email)  > 0;
     }
 }
