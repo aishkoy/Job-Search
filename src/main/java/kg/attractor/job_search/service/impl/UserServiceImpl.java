@@ -132,17 +132,15 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.notFound().build();
         }
 
-        FileUtil fu  = new FileUtil();
         String filename = userDto.getAvatar();
         String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
         MediaType mediaType = extension.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
-        return fu.getOutputFile(filename, "images/", mediaType);
+        return FileUtil.getOutputFile(filename, "images/", mediaType);
     }
 
     public String saveImage(MultipartFile file) {
         // TODO сохранение картинки
-        FileUtil fu = new FileUtil();
-        return fu.saveUploadFile(file, "images/");
+        return FileUtil.saveUploadFile(file, "images/");
     }
 }
