@@ -16,6 +16,6 @@ public class Resume {
     private Long categoryId;
     private Float salary;
     private Boolean isActive;
-    private LocalDateTime createdData;
+    private LocalDateTime createdDate;
     private LocalDateTime updateTime;
 }
