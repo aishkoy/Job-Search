@@ -46,4 +46,8 @@ public class UserDao {
         User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), phone);
         return Optional.ofNullable(user);
     }
+    public Boolean existsUserByEmail(String username){
+        String sql = "select count(*) from users where email = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, username)  > 0;
+    }
 }
