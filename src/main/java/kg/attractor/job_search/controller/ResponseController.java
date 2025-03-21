@@ -17,6 +17,4 @@ public class ResponseController {
         // TODO откликнуться на вакансию
         return responseService.applyVacancy(vacancyId);
     }
-
-
 }
