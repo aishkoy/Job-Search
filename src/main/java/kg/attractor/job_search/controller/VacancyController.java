@@ -8,42 +8,60 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("vacancies")
 public class VacancyController {
-
     private final VacancyService vacancyService;
 
     @GetMapping
     public ResponseEntity<List<VacancyDto>> getVacancies() {
-        // TODO получение всех активных вакансий
+        return ResponseEntity.ofNullable(vacancyService.getVacancies());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
+        return ResponseEntity.of(vacancyService.getVacancyById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<Long> createVacancy(@RequestBody VacancyDto vacancyDto) {
+        return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto) {
+        return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
+    }
+
+    @DeleteMapping("{id}")
+    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
+        return vacancyService.deleteVacancy(vacancyId);
+    }
+
+    @GetMapping("active")
+    public ResponseEntity<List<VacancyDto>> getActiveVacancies() {
         return ResponseEntity.ofNullable(vacancyService.getActiveVacancies());
     }
 
     @GetMapping("category/{categoryId}")
     public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId) {
-        // TODO получение вакансий по категории
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> createVacancy(@RequestBody VacancyDto vacancyDto) {
-        // TODO создание вакансии
-        return ResponseEntity.of(Optional.ofNullable(vacancyService.createVacancy(vacancyDto)));
+    @GetMapping("category/by-name")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByCategoryByName(@RequestParam("name") String name) {
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryName(name));
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto) {
-        // TODO обновление вакансии
-        return ResponseEntity.of(Optional.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto)));
+    @GetMapping("applied/{userId}")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByApplicantId(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesAppliedByUserId(userId));
     }
 
-    @DeleteMapping("{id}")
-    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
-        // TODO удаление вакансии
-        return vacancyService.deleteVacancy(vacancyId);
+    @GetMapping("employer/{id}")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long id) {
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(id));
     }
 }
