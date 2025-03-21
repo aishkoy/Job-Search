@@ -14,7 +14,7 @@ public class ResumeMapper {
                 .categoryId(resume.getCategoryId())
                 .salary(resume.getSalary())
                 .isActive(resume.getIsActive())
-                .createdData(resume.getCreatedData())
+                .createdDate(resume.getCreatedDate())
                 .updateTime(resume.getUpdateTime())
                 .build();
     }
@@ -27,7 +27,7 @@ public class ResumeMapper {
                 .categoryId(resumeDto.getCategoryId())
                 .salary(resumeDto.getSalary())
                 .isActive(resumeDto.getIsActive())
-                .createdData(resumeDto.getCreatedData())
+                .createdDate(resumeDto.getCreatedDate())
                 .updateTime(resumeDto.getUpdateTime())
                 .build();
     }

@@ -12,12 +12,12 @@ public class ResumeDaoMapper implements RowMapper<Resume> {
         Resume resume = new Resume();
         resume.setId(rs.getLong("id"));
         resume.setName(rs.getString("name"));
-        resume.setApplicantId(rs.getLong("applicantId"));
-        resume.setCategoryId(rs.getLong("categoryId"));
+        resume.setApplicantId(rs.getLong("applicant_id"));
+        resume.setCategoryId(rs.getLong("category_id"));
         resume.setSalary(rs.getFloat("salary"));
-        resume.setIsActive(rs.getBoolean("isActive"));
-        resume.setCreatedDate(rs.getTimestamp("createdDate"));
-        resume.setUpdateTime(rs.getTimestamp("updateTime"));
+        resume.setIsActive(rs.getBoolean("is_active"));
+        resume.setCreatedDate(rs.getTimestamp("created_date"));
+        resume.setUpdateTime(rs.getTimestamp("update_time"));
         return resume;
     }
 }

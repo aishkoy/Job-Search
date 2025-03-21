@@ -16,9 +16,9 @@ public class UserDaoMapper implements RowMapper<User> {
         user.setAge(rs.getInt("age"));
         user.setEmail(rs.getString("email"));
         user.setPassword(rs.getString("password"));
-        user.setPhoneNumber(rs.getString("phoneNumber"));
+        user.setPhoneNumber(rs.getString("phone_number"));
         user.setAvatar(rs.getString("avatar"));
-        user.setAccountType(rs.getString("accountType"));
+        user.setAccountType(rs.getString("account_type"));
         return user;
     }
 }
