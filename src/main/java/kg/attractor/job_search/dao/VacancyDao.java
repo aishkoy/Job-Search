@@ -4,15 +4,20 @@ import kg.attractor.job_search.mapper.dao.VacancyDaoMapper;
 import kg.attractor.job_search.models.Vacancy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class VacancyDao {
     private final JdbcTemplate jdbcTemplate;
+    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<Vacancy> getVacanciesAppliedByUserId(Long userId) {
         String sql = """
@@ -35,16 +40,23 @@ public class VacancyDao {
     }
 
     public List<Vacancy> getVacanciesByCategoryId(Long categoryId) {
-        String sql = "select * from vacancies where category_id = ?";
-        return jdbcTemplate.query(sql, new VacancyDaoMapper(), categoryId);
+        String sql = """
+                select * from vacancies where category_id in
+                                              (select id from CATEGORIES where id = ? or parent_id = ?)""";
+        return jdbcTemplate.query(sql, new VacancyDaoMapper(), categoryId, categoryId);
     }
 
     public List<Vacancy> getVacanciesByCategoryName(String categoryName) {
         String sql = """
                 select * from vacancies v
                 inner join categories c on v.category_id = c.id
-                where c.NAME like ?""";
-        return jdbcTemplate.query(sql, new VacancyDaoMapper(), categoryName + "%");
+                WHERE c.id IN (
+                            SELECT id FROM categories
+                            WHERE name LIKE ? OR
+                                  parent_id IN
+                                  (SELECT id FROM categories WHERE name LIKE ?)
+                            )""";
+        return jdbcTemplate.query(sql, new VacancyDaoMapper(), categoryName + "%", categoryName + "%");
     }
 
     public Optional<Vacancy> getVacancyById(Long vacancyId) {
@@ -56,5 +68,58 @@ public class VacancyDao {
     public List<Vacancy> getVacanciesByEmployerId(Long employerId) {
         String sql = "select * from vacancies where AUTHOR_ID = ?";
         return jdbcTemplate.query(sql, new VacancyDaoMapper(), employerId);
+    }
+
+    public Long createVacancy(Vacancy vacancy) {
+        String sql = """
+            INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())""";
+
+        return executeVacancyUpdate(sql, vacancy, false);
+    }
+
+    public Long updateVacancy(Vacancy vacancy) {
+        String sql = """
+            UPDATE vacancies
+            SET
+                name = ?,
+                description = ?,
+                category_id = ?,
+                salary = ?,
+                exp_from = ?,
+                exp_to = ?,
+                is_active = ?,
+                update_time = NOW()
+            WHERE id = ?""";
+
+        return executeVacancyUpdate(sql, vacancy, true);
+    }
+
+    private Long executeVacancyUpdate(String sql, Vacancy vacancy, boolean isUpdate) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, vacancy.getName());
+            ps.setString(2, vacancy.getDescription());
+            ps.setLong(3, vacancy.getCategoryId());
+            ps.setFloat(4, vacancy.getSalary());
+            ps.setInt(5, vacancy.getExpFrom());
+            ps.setInt(6, vacancy.getExpTo());
+            ps.setBoolean(7, vacancy.getIsActive());
+
+            if (isUpdate) {
+                ps.setLong(8, vacancy.getId());
+            } else {
+                ps.setLong(8, vacancy.getAuthorId());
+            }
+
+            return ps;
+        }, keyHolder);
+
+        return isUpdate ? vacancy.getId() : Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public void deleteVacancy(Long vacancyId){
+        String sql = "delete from vacancies where id = ?";
+        jdbcTemplate.update(sql, vacancyId);
     }
 }
