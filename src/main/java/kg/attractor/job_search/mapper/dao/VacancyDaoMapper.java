@@ -13,14 +13,14 @@ public class VacancyDaoMapper implements RowMapper<Vacancy> {
         vacancy.setId(rs.getLong("id"));
         vacancy.setName(rs.getString("name"));
         vacancy.setDescription(rs.getString("description"));
-        vacancy.setCategoryId(rs.getLong("categoryId"));
+        vacancy.setCategoryId(rs.getLong("category_id"));
         vacancy.setSalary(rs.getFloat("salary"));
-        vacancy.setExpFrom(rs.getInt("expFrom"));
-        vacancy.setExpTo(rs.getInt("expTo"));
-        vacancy.setIsActive(rs.getBoolean("isActive"));
-        vacancy.setAuthorId(rs.getLong("authorId"));
-        vacancy.setCreatedDate(rs.getTimestamp("createdDate"));
-        vacancy.setUpdateTime(rs.getTimestamp("updateTime"));
+        vacancy.setExpFrom(rs.getInt("exp_from"));
+        vacancy.setExpTo(rs.getInt("exp_to"));
+        vacancy.setIsActive(rs.getBoolean("is_active"));
+        vacancy.setAuthorId(rs.getLong("author_id"));
+        vacancy.setCreatedDate(rs.getTimestamp("created_date"));
+        vacancy.setUpdateTime(rs.getTimestamp("update_time"));
         return vacancy;
     }
 }
