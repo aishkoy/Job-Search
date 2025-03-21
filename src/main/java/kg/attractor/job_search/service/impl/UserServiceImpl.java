@@ -1,103 +1,139 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dao.UserDao;
 import kg.attractor.job_search.dto.UserDto;
-import kg.attractor.job_search.exceptions.UserNotFoundException;
+import kg.attractor.job_search.exceptions.IncorrectUserEmailException;
+import kg.attractor.job_search.exceptions.id.IncorrectUserIdException;
+import kg.attractor.job_search.exceptions.notFound.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.models.User;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final List<User> users = new ArrayList<>();
+    private final UserDao userDao;
 
     @Override
     public List<UserDto> getUsers() {
-        // TODO получение всех юзеров (компании и соискатели)
-        return users.stream()
+        return userDao.getUsers()
+                .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
     }
 
     @Override
-    public UserDto getUserById(Long userId) {
-        // TODO получение юзера по id
-        return users.stream()
-                .filter(user -> user.getId().equals(userId))
+    public Optional<UserDto> getUserById(Long userId) {
+        return userDao.getUserById(userId)
+                .map(UserMapper::toUserDto);
+    }
+
+    @Override
+    public Optional<UserDto> getUserByPhone(String phoneNumber){
+        String phone = phoneNumber.trim().toLowerCase();
+        return userDao.getUserByPhone(phone)
+                .map(UserMapper::toUserDto);
+    }
+
+    @Override
+    public Optional<UserDto> getUserByEmail(String email){
+        String userEmail = email.trim().toLowerCase();
+        return userDao.getUserByEmail(userEmail)
+                .map(UserMapper::toUserDto);
+    }
+
+    @Override
+    public List<UserDto> getUsersByName(String userName){
+        String name = userName.trim().toLowerCase();
+        name = StringUtils.capitalize(name);
+        return userDao.getUsersByName(name)
+                .stream()
                 .map(UserMapper::toUserDto)
-                .findFirst()
-                .orElseThrow();
+                .toList();
     }
 
     @Override
     public Long registerUser(UserDto userDto,boolean isEmployer) {
-        // TODO создание юзера (работодатель/соискатель)
+        if (userDto.getEmail().isBlank() || userDto.getName().isBlank()) {
+            throw new IllegalArgumentException("Email и имя обязательны");
+        }
+
+        if(Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
+        }
+
+        String userName = userDto.getName().trim().toLowerCase();
+        userName = StringUtils.capitalize(userName);
+
+        userDto.setName(userName);
+        userDto.setEmail(userDto.getEmail().trim().toLowerCase());
+        userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
         userDto.setAccountType(isEmployer ? "employer" : "applicant");
-        users.add(UserMapper.toUser(userDto));
-        return userDto.getId();
+
+        return userDao.registerUser(UserMapper.toUser(userDto));
     }
 
     @Override
     public Long updateUser(Long userId, UserDto userDto) {
-        // TODO обновление информации юзера
-        int userIndex = IntStream.range(0, users.size())
-                .filter(index -> users.get(index).getId().equals(userId))
-                .findFirst()
-                .orElse(-1);
-
-        if (!userDto.getId().equals(userId)) {
-            return null;
+        Optional<UserDto> user = getUserById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("Вы не можете обновить информацию о несуществующем пользователе");
         }
 
-        users.set(userIndex, UserMapper.toUser(userDto));
-        return userDto.getId();
+        if (!userDto.getId().equals(userId)) {
+            throw new IncorrectUserIdException("Неправильный id в теле запроса");
+        }
+
+        user.ifPresent(u -> {
+            if(Boolean.TRUE.equals(userDao.existsUserByEmail(u.getEmail()))) {
+                throw new IncorrectUserEmailException("Вы не можете изменить email на email уже существующего пользователя!");
+            }
+        });
+
+        String name = userDto.getName().trim().toLowerCase();
+        name = StringUtils.capitalize(name);
+        userDto.setName(name);
+        userDto.setEmail(userDto.getEmail().trim().toLowerCase());
+        userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
+
+        return userDao.updateUser(UserMapper.toUser(userDto));
     }
 
     @Override
     public List<UserDto> getEmployers() {
-        // TODO получить всех работодателей для соискателя
-        return users.stream()
-                .filter(user -> user.getAccountType().equalsIgnoreCase("Employer"))
+        return userDao.getEmployers()
+                .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
     }
 
 
     @Override
-    public UserDto getEmployerById(Long userId) {
-        //TODO получить конкретного работодателя
-        return users.stream()
-                .filter(user -> user.getAccountType().equalsIgnoreCase("Employer") && user.getId().equals(userId))
-                .map(UserMapper::toUserDto)
-                .findFirst()
-                .orElseThrow();
+    public Optional<UserDto> getEmployerById(Long userId) {
+        return userDao.getEmployerById(userId).map(UserMapper::toUserDto);
     }
 
     @Override
     public List<UserDto> getApplicants() {
-        // TODO получить всех соискателей для работодателя
-        return users.stream()
-                .filter(user -> user.getAccountType().equalsIgnoreCase("Applicant"))
+        return userDao.getApplicants()
+                .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
     }
 
     @Override
-    public UserDto getApplicantById(Long userId) {
-        //TODO получить конкретного соискателя
-        return users.stream()
-                .filter(user -> user.getAccountType().equalsIgnoreCase("Applicant") && user.getId().equals(userId))
-                .map(UserMapper::toUserDto)
-                .findFirst()
-                .orElseThrow();
+    public Optional<UserDto> getApplicantById(Long userId) {
+        return userDao.getApplicantById(userId).map(UserMapper::toUserDto);
     }
 
     @Override
@@ -107,25 +143,35 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
         }
 
-        // TODO загрузка аватара пользователя
-        UserDto userDto = getUserById(userId);
-        userDto.setAvatar(saveImage(file));
-        updateUser(userId, userDto);
+        User user = userDao.getUserById(userId).orElse(null);
+        if(user == null){
+            throw new UserNotFoundException();
+        }
+        user.setAvatar(saveImage(file));
+        userDao.updateUser(user);
         return file;
     }
 
     @Override
     public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
-        //TODO получение соискателей на вакансию по id вакансии, проверка на работодателя по id
-        return List.of();
+        return userDao.getApplicantsByVacancyId(vacancyId)
+                .stream()
+                .map(UserMapper::toUserDto)
+                .toList();
     }
 
     @Override
-    //TODO получение автара пользователя (доработать)
+    public Boolean existsUser(String email){
+        String userEmail = email.trim().toLowerCase();
+        return userDao.existsUserByEmail(userEmail);
+    }
+
+    @Override
     public ResponseEntity<?> getUserAvatar(Long userId) {
-        UserDto userDto = getUserById(userId);
+        UserDto userDto = userDao.getUserById(userId).map(UserMapper::toUserDto).orElse(null);
+
         if(userDto == null){
-            throw  new UserNotFoundException();
+            throw new UserNotFoundException();
         }
 
         if (userDto.getAvatar() == null) {
@@ -140,7 +186,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public String saveImage(MultipartFile file) {
-        // TODO сохранение картинки
         return FileUtil.saveUploadFile(file, "images/");
     }
 }
