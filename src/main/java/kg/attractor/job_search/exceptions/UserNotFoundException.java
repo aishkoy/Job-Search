@@ -1,4 +1,4 @@
-package kg.attractor.job_search.exceptions.notFound;
+package kg.attractor.job_search.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(){}

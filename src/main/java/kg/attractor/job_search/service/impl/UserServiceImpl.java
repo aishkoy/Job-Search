@@ -3,8 +3,7 @@ package kg.attractor.job_search.service.impl;
 import kg.attractor.job_search.dao.UserDao;
 import kg.attractor.job_search.dto.UserDto;
 import kg.attractor.job_search.exceptions.IncorrectUserEmailException;
-import kg.attractor.job_search.exceptions.id.IncorrectUserIdException;
-import kg.attractor.job_search.exceptions.notFound.UserNotFoundException;
+import kg.attractor.job_search.exceptions.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.models.User;
 import kg.attractor.job_search.service.UserService;
@@ -91,7 +90,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!userDto.getId().equals(userId)) {
-            throw new IncorrectUserIdException("Неправильный id в теле запроса");
+            throw new UserNotFoundException("Неправильный id в теле запроса");
         }
 
         user.ifPresent(u -> {

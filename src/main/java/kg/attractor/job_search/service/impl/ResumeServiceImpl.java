@@ -3,11 +3,8 @@ package kg.attractor.job_search.service.impl;
 import kg.attractor.job_search.dao.ResumeDao;
 import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.exceptions.*;
-import kg.attractor.job_search.exceptions.id.IncorrectCategoryIdException;
-import kg.attractor.job_search.exceptions.id.IncorrectResumeIdException;
-import kg.attractor.job_search.exceptions.id.IncorrectUserIdException;
-import kg.attractor.job_search.exceptions.notFound.ApplicantNotFoundException;
-import kg.attractor.job_search.exceptions.notFound.UserNotFoundException;
+import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
+import kg.attractor.job_search.exceptions.UserNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.ResumeService;
@@ -80,7 +77,7 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         if(categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId()).isEmpty()){
-            throw new IncorrectCategoryIdException("Не существует такой категории!");
+            throw new CategoryNotFoundException("Не существует такой категории!");
         }
 
         return resumeDao.createResume(ResumeMapper.toResume(resumeDto));
@@ -96,16 +93,16 @@ public class ResumeServiceImpl implements ResumeService {
     public Long updateResume(Long resumeId, ResumeDto resumeDto) {
         Optional<ResumeDto> resume = getResumeById(resumeId);
         if(resume.isEmpty()) {
-            throw new IncorrectResumeIdException("Не существует резюме с таким id!");
+            throw new ResumeNotFoundException("Не существует резюме с таким id!");
         }
 
         if(!resumeDto.getId().equals(resumeId)){
-            throw new IncorrectResumeIdException("Неправильный id резюме в теле запроса!");
+            throw new ResumeNotFoundException("Неправильный id резюме в теле запроса!");
         }
 
         resume.ifPresent(r ->{
             if(!r.getApplicantId().equals(resumeDto.getApplicantId())){
-                throw new IncorrectUserIdException("Вы не можете изменить автора резюме!");
+                throw new EmployerNotFoundException("Вы не можете изменить автора резюме!");
             }
 
             if(!r.getCreatedDate().equals(resumeDto.getCreatedDate())){
@@ -123,7 +120,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         Optional<Long> categoryId = categoryService.getCategoryIdIfPresent((resumeDto.getCategoryId()));
         if(categoryId.isEmpty()){
-            throw new IncorrectCategoryIdException("Не существует категории с таким id!");
+            throw new CategoryNotFoundException("Не существует категории с таким id!");
         }
 
         return resumeDao.updateResume(ResumeMapper.toResume(resumeDto));
@@ -135,13 +132,13 @@ public class ResumeServiceImpl implements ResumeService {
             resumeDao.deleteResume(resumeId);
             return HttpStatus.OK;
         }
-        throw new IncorrectResumeIdException();
+        throw new ResumeNotFoundException();
     }
 
     @Override
     public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
         if(categoryService.getCategoryIdIfPresent(categoryId).isEmpty()){
-            throw new IncorrectCategoryIdException();
+            throw new CategoryNotFoundException();
         }
 
         return resumeDao.getResumesByCategoryId(categoryId)

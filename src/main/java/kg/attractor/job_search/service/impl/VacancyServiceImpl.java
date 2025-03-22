@@ -3,10 +3,7 @@ package kg.attractor.job_search.service.impl;
 import kg.attractor.job_search.dao.VacancyDao;
 import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.exceptions.*;
-import kg.attractor.job_search.exceptions.id.IncorrectCategoryIdException;
-import kg.attractor.job_search.exceptions.id.IncorrectUserIdException;
-import kg.attractor.job_search.exceptions.id.IncorrectVacancyIdException;
-import kg.attractor.job_search.exceptions.notFound.EmployerNotFoundException;
+import kg.attractor.job_search.exceptions.EmployerNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
@@ -61,16 +58,16 @@ public class VacancyServiceImpl implements VacancyService {
     public Long updateVacancy(Long vacancyId, VacancyDto vacancyDto) {
         Optional<VacancyDto> vacancy = getVacancyById(vacancyId);
         if(vacancy.isEmpty()) {
-            throw new IncorrectVacancyIdException("Не существует вакансии с таким id!");
+            throw new VacancyNotFoundException("Не существует вакансии с таким id!");
         }
 
         if(!vacancyDto.getId().equals(vacancyId)){
-            throw new IncorrectVacancyIdException("Неправильный id вакансии в теле запроса!");
+            throw new VacancyNotFoundException("Неправильный id вакансии в теле запроса!");
         }
 
         vacancy.ifPresent(v ->{
             if(!v.getAuthorId().equals(vacancyDto.getAuthorId())){
-                throw new IncorrectUserIdException("Вы не можете изменить автора вакансии!");
+                throw new EmployerNotFoundException("Вы не можете изменить автора вакансии!");
             }
 
             if(!v.getCreatedDate().equals(vacancyDto.getCreatedDate())){
@@ -88,7 +85,7 @@ public class VacancyServiceImpl implements VacancyService {
 
         Optional<Long> categoryId = categoryService.getCategoryIdIfPresent((vacancyDto.getCategoryId()));
         if(categoryId.isEmpty()){
-            throw new IncorrectCategoryIdException("Не существует категории с таким id!");
+            throw new CategoryNotFoundException("Не существует категории с таким id!");
         }
 
         return vacancyDao.updateVacancy(VacancyMapper.toVacancy(vacancyDto));
