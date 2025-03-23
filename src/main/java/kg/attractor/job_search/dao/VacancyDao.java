@@ -3,6 +3,7 @@ package kg.attractor.job_search.dao;
 import kg.attractor.job_search.mapper.dao.VacancyDaoMapper;
 import kg.attractor.job_search.models.Vacancy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -61,7 +62,7 @@ public class VacancyDao {
 
     public Optional<Vacancy> getVacancyById(Long vacancyId) {
         String sql = "select * from vacancies where id = ?";
-        Vacancy vacancy = jdbcTemplate.queryForObject(sql, new VacancyDaoMapper(), vacancyId);
+        Vacancy vacancy = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new VacancyDaoMapper(), vacancyId));
         return Optional.ofNullable(vacancy);
     }
 

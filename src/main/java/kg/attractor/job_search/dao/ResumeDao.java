@@ -3,6 +3,7 @@ package kg.attractor.job_search.dao;
 import kg.attractor.job_search.mapper.dao.ResumeDaoMapper;
 import kg.attractor.job_search.models.Resume;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -51,7 +52,9 @@ public class ResumeDao {
 
     public Optional<Resume> getResumeById(Long id) {
         String sql = "select * from resumes where id = ?";
-        Resume resume = jdbcTemplate.queryForObject(sql, new ResumeDaoMapper(), id);
+        Resume resume = DataAccessUtils.singleResult(
+                jdbcTemplate.query(sql, new ResumeDaoMapper(), id)
+        );
         return Optional.ofNullable(resume);
     }
 
