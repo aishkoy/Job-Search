@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002_create-categories-and-contact-types-tables
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - and:
+              - tableExists:
+                  tableName: contact_types
+              - tableExists:
+                  tableName: categories
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(55)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: parent_id
+                  type: long
+
+        - addForeignKeyConstraint:
+            baseTableName: categories
+            baseColumnNames: parent_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: parent_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+
+        - createTable:
+            tableName: contact_types
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: varchar(55)
+                  constraints:
+                    nullable: false

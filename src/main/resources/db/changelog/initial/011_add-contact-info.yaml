@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011_insert-contacts-info
+      author: Aisha
+      changes:
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'email' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "ivan@example.com"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'телефон' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "+79001234567"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'telegram' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "@ivan_petrov"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'email' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "ivan@example.com"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'телефон' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "+79001234567"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'telegram' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "@ivan_petrov"

@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001_create-users-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+              tableName: users
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+      changes:
+        - createTable:
+            tableName: users
+
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: surname
+                  type: varchar(50)
+
+              - column:
+                  name: age
+                  type: int
+
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: phone_number
+                  type: varchar(55)
+
+              - column:
+                  name: avatar
+                  type: text
+
+              - column:
+                  name: account_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
