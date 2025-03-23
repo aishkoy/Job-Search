@@ -1,16 +1,17 @@
 package kg.attractor.job_search.models;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Timestamp;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-
 public class Message {
-    private int id;
+    private Long id;
     private String content;
     private Timestamp timestamp;
-    private int respondedApplicantId;
+    private Long respondedApplicantId;
 }

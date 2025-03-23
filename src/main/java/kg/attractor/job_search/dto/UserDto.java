@@ -1,4 +1,4 @@
-package kg.attractor.job_search.models;
+package kg.attractor.job_search.dto;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class User {
+public class UserDto {
     private Long id;
     private String name;
     private String surname;

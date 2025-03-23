@@ -1,13 +1,14 @@
 package kg.attractor.job_search.models;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-
 public class Category {
-    private int id;
-    private int parentId;
+    private Long id;
+    private Long parentId;
     private String name;
 }
