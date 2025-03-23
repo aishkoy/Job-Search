@@ -21,29 +21,14 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.getResumes());
     }
 
-    @GetMapping("active")
-    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
-        return ResponseEntity.ofNullable(resumeService.getActiveResumes());
-    }
-
-    @GetMapping("category/{categoryId}")
-    public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId) {
-        return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
-    }
-
     @PostMapping
     public ResponseEntity<Long> createResume(@RequestBody ResumeDto resumeDto) {
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
     }
 
-    @GetMapping("applicant/{id}")
-    public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
-        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
-    }
-
-    @GetMapping("applicant/by-name")
-    public ResponseEntity<List<ResumeDto>> getResumesByApplicantName(@RequestParam String applicantName) {
-        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantName(applicantName));
+    @GetMapping("{id}")
+    public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
+        return ResponseEntity.ofNullable(resumeService.getResumeById(id));
     }
 
     @PutMapping("{id}")
@@ -54,5 +39,25 @@ public class ResumeController {
     @DeleteMapping("{id}")
     public HttpStatus deleteResume(@PathVariable("id") Long resumeId) {
         return resumeService.deleteResume(resumeId);
+    }
+
+    @GetMapping("active")
+    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
+        return ResponseEntity.ofNullable(resumeService.getActiveResumes());
+    }
+
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
+    }
+
+    @GetMapping("applicant/{id}")
+    public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
+    }
+
+    @GetMapping("applicant/by-name")
+    public ResponseEntity<List<ResumeDto>> getResumesByApplicantName(@RequestParam String applicantName) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantName(applicantName));
     }
 }

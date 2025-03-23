@@ -2,6 +2,8 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.UserDao;
 import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
+import kg.attractor.job_search.exceptions.EmployerNotFoundException;
 import kg.attractor.job_search.exceptions.IncorrectUserEmailException;
 import kg.attractor.job_search.exceptions.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
@@ -9,6 +11,7 @@ import kg.attractor.job_search.models.User;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,7 +19,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,27 +34,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> getUserById(Long userId) {
-        return userDao.getUserById(userId)
-                .map(UserMapper::toUserDto);
+    public UserDto getUserById(Long userId) {
+        User user = userDao.getUserById(userId).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким id!"));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public Optional<UserDto> getUserByPhone(String phoneNumber){
+    public UserDto getUserByPhone(String phoneNumber) {
         String phone = phoneNumber.trim().toLowerCase();
-        return userDao.getUserByPhone(phone)
-                .map(UserMapper::toUserDto);
+        User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким номером телефона!"));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public Optional<UserDto> getUserByEmail(String email){
+    public UserDto getUserByEmail(String email) {
         String userEmail = email.trim().toLowerCase();
-        return userDao.getUserByEmail(userEmail)
-                .map(UserMapper::toUserDto);
+        User user = userDao.getUserByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким email!"));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
-    public List<UserDto> getUsersByName(String userName){
+    public List<UserDto> getUsersByName(String userName) {
         String name = userName.trim().toLowerCase();
         name = StringUtils.capitalize(name);
         return userDao.getUsersByName(name)
@@ -62,12 +64,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long registerUser(UserDto userDto,boolean isEmployer) {
+    public Long registerUser(UserDto userDto, boolean isEmployer) {
         if (userDto.getEmail().isBlank() || userDto.getName().isBlank()) {
             throw new IllegalArgumentException("Email и имя обязательны");
         }
 
-        if(Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
+        if (Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
@@ -84,20 +86,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long updateUser(Long userId, UserDto userDto) {
-        Optional<UserDto> user = getUserById(userId);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("Вы не можете обновить информацию о несуществующем пользователе");
-        }
+        UserDto user = getUserById(userId);
 
         if (!userDto.getId().equals(userId)) {
             throw new UserNotFoundException("Неправильный id в теле запроса");
         }
 
-        user.ifPresent(u -> {
-            if(Boolean.TRUE.equals(userDao.existsUserByEmail(u.getEmail()))) {
-                throw new IncorrectUserEmailException("Вы не можете изменить email на email уже существующего пользователя!");
-            }
-        });
+        if (Boolean.TRUE.equals(userDao.existsUserByEmail(user.getEmail()))) {
+            throw new IncorrectUserEmailException("Вы не можете изменить email на email уже существующего пользователя!");
+        }
 
         String name = userDto.getName().trim().toLowerCase();
         name = StringUtils.capitalize(name);
@@ -106,6 +103,13 @@ public class UserServiceImpl implements UserService {
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
 
         return userDao.updateUser(UserMapper.toUser(userDto));
+    }
+
+    @Override
+    public HttpStatus deleteUser(Long userId){
+        getUserById(userId);
+        userDao.deleteUser(userId);
+        return HttpStatus.OK;
     }
 
     @Override
@@ -118,8 +122,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<UserDto> getEmployerById(Long userId) {
-        return userDao.getEmployerById(userId).map(UserMapper::toUserDto);
+    public UserDto getEmployerById(Long userId) {
+        User user = userDao.getEmployerById(userId).orElseThrow(() -> new EmployerNotFoundException("Не существует работодателя с таким id!"));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
@@ -131,8 +136,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> getApplicantById(Long userId) {
-        return userDao.getApplicantById(userId).map(UserMapper::toUserDto);
+    public UserDto getApplicantById(Long userId) {
+        User user = userDao.getApplicantById(userId).orElseThrow(() -> new ApplicantNotFoundException("Не существует соискателя с таким id!"));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
@@ -143,7 +149,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userDao.getUserById(userId).orElse(null);
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException();
         }
         user.setAvatar(saveImage(file));
@@ -160,7 +166,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean existsUser(String email){
+    public Boolean existsUser(String email) {
         String userEmail = email.trim().toLowerCase();
         return userDao.existsUserByEmail(userEmail);
     }
@@ -169,7 +175,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getUserAvatar(Long userId) {
         UserDto userDto = userDao.getUserById(userId).map(UserMapper::toUserDto).orElse(null);
 
-        if(userDto == null){
+        if (userDto == null) {
             throw new UserNotFoundException();
         }
 

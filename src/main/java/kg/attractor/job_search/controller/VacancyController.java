@@ -22,7 +22,7 @@ public class VacancyController {
 
     @GetMapping("{id}")
     public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
-        return ResponseEntity.of(vacancyService.getVacancyById(id));
+        return ResponseEntity.ofNullable(vacancyService.getVacancyById(id));
     }
 
     @PostMapping

@@ -3,6 +3,7 @@ package kg.attractor.job_search.controller;
 import kg.attractor.job_search.dto.UserDto;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,9 +21,19 @@ public class UserController {
         return ResponseEntity.ofNullable(userService.getUsers());
     }
 
-    @GetMapping("{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
-        return  ResponseEntity.of(userService.getUserById(userId));
+    @GetMapping("{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId) {
+        return  ResponseEntity.ofNullable(userService.getUserById(userId));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody UserDto userDto) {
+        return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
+    }
+
+    @DeleteMapping("{id}")
+    public HttpStatus deleteUser(@PathVariable("id") Long userId) {
+        return userService.deleteUser(userId);
     }
 
     @GetMapping("by-name")
@@ -32,22 +43,17 @@ public class UserController {
 
     @GetMapping("by-phone")
     public ResponseEntity<UserDto> getUserByPhone(@RequestParam String phoneNumber) {
-        return  ResponseEntity.of(userService.getUserByPhone(phoneNumber));
+        return  ResponseEntity.ofNullable(userService.getUserByPhone(phoneNumber));
     }
 
     @GetMapping("by-email")
     public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
-        return  ResponseEntity.of(userService.getUserByEmail(email));
+        return  ResponseEntity.ofNullable(userService.getUserByEmail(email));
     }
 
     @GetMapping("exists")
     public ResponseEntity<Boolean> getUserExists(@RequestParam String email) {
         return ResponseEntity.ofNullable(userService.existsUser(email));
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody UserDto userDto) {
-        return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
 
     @PostMapping("{id}/avatar")
@@ -67,7 +73,7 @@ public class UserController {
 
     @GetMapping("employers/{id}")
     public ResponseEntity<UserDto> getEmployerById(@PathVariable("id") Long id) {
-        return  ResponseEntity.of(userService.getEmployerById(id));
+        return  ResponseEntity.ofNullable(userService.getEmployerById(id));
     }
 
     @GetMapping("applicants")
@@ -77,7 +83,7 @@ public class UserController {
 
     @GetMapping("applicants/{id}")
     public ResponseEntity<UserDto> getApplicantById(@PathVariable("id") Long id) {
-        return ResponseEntity.of(userService.getApplicantById(id));
+        return ResponseEntity.ofNullable(userService.getApplicantById(id));
     }
 
     @GetMapping("responded/{vacancyId}")

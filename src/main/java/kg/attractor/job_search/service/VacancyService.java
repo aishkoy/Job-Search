@@ -4,7 +4,6 @@ import kg.attractor.job_search.dto.VacancyDto;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface VacancyService {
     Long createVacancy(VacancyDto vacancyDto);
@@ -18,7 +17,7 @@ public interface VacancyService {
 
     List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 
-    Optional<VacancyDto> getVacancyById(Long vacancyId);
+    VacancyDto getVacancyById(Long vacancyId);
 
     List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId);
 

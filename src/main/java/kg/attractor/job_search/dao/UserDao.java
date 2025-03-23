@@ -106,6 +106,11 @@ public class UserDao {
         return saveUser(user, sql);
     }
 
+    public void deleteUser(Long userId){
+        String sql = "delete from users where id = ?";
+        jdbcTemplate.update(sql, userId);
+    }
+
     private Long saveUser(User user, String sql) {
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
