@@ -15,7 +15,6 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<Long> register(@RequestBody UserDto userDto,  @RequestParam boolean isEmployer) {
-        // TODO создание юзера (работодатель/соискатель)
         return ResponseEntity.ofNullable(userService.registerUser(userDto, isEmployer));
     }
 }

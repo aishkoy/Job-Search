@@ -18,31 +18,41 @@ public class ResumeController {
 
     @GetMapping
     public ResponseEntity<List<ResumeDto>> getResumes() {
-        //TODO получение всех резюме для работодателя
         return ResponseEntity.ofNullable(resumeService.getResumes());
+    }
+
+    @GetMapping("active")
+    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
+        return ResponseEntity.ofNullable(resumeService.getActiveResumes());
     }
 
     @GetMapping("category/{categoryId}")
     public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId) {
-        //TODO получение всех резюме по категории для работодателя
         return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
     }
 
     @PostMapping
     public ResponseEntity<Long> createResume(@RequestBody ResumeDto resumeDto) {
-        //TODO создание резюме для соискателя
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
+    }
+
+    @GetMapping("applicant/{id}")
+    public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
+    }
+
+    @GetMapping("applicant/by-name")
+    public ResponseEntity<List<ResumeDto>> getResumesByApplicantName(@RequestParam String applicantName) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantName(applicantName));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody ResumeDto resumeDto) {
-        //TODO обновление резюме для соискателя
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
     }
 
     @DeleteMapping("{id}")
     public HttpStatus deleteResume(@PathVariable("id") Long resumeId) {
-        //TODO удаление резюме для соискателя
         return resumeService.deleteResume(resumeId);
     }
 }

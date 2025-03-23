@@ -1,0 +1,103 @@
+package kg.attractor.job_search.dao;
+
+import kg.attractor.job_search.mapper.dao.ResumeDaoMapper;
+import kg.attractor.job_search.models.Resume;
+import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
+
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class ResumeDao {
+    private final JdbcTemplate jdbcTemplate;
+    private final KeyHolder keyHolder = new GeneratedKeyHolder();
+
+    public List<Resume> getResumes(){
+        String sql = "select * from resumes";
+        return jdbcTemplate.query(sql, new ResumeDaoMapper());
+    }
+
+    public List<Resume> getActiveResumes(){
+        String sql = "select * from RESUMES where IS_ACTIVE = true";
+        return jdbcTemplate.query(sql, new ResumeDaoMapper());
+    }
+
+    public List<Resume> getResumesByCategoryId(Long categoryId) {
+        String sql = """
+                select * from resumes where category_id in
+                                            (select id from CATEGORIES where id = ? or parent_id = ?)""";
+        return jdbcTemplate.query(sql, new ResumeDaoMapper(), categoryId, categoryId);
+    }
+
+    public List<Resume> getResumesByApplicantId(Long userId) {
+        String sql = "select * from resumes where applicant_id = ?";
+        return jdbcTemplate.query(sql, new ResumeDaoMapper(), userId);
+    }
+
+    public List<Resume> getResumesByApplicantName(String applicantName) {
+        String sql = """
+                select * from resumes r
+                inner join users u on r.applicant_id = u.id
+                where u.name like ?""";
+        return jdbcTemplate.query(sql, new ResumeDaoMapper(), applicantName + "%");
+    }
+
+    public Optional<Resume> getResumeById(Long id) {
+        String sql = "select * from resumes where id = ?";
+        Resume resume = jdbcTemplate.queryForObject(sql, new ResumeDaoMapper(), id);
+        return Optional.ofNullable(resume);
+    }
+
+    public Long createResume(Resume resume) {
+        String sql = """
+        INSERT INTO resumes (applicant_id, name, category_id, salary, is_active, created_date, update_time)
+        VALUES (?, ?, ?, ?, ?, NOW(), NOW())""";
+
+        return saveResume(sql, resume, false);
+    }
+
+    public Long updateResume(Resume resume) {
+        String sql = """
+        UPDATE resumes
+        SET
+            applicant_id = ?,
+            name = ?,
+            category_id = ?,
+            salary = ?,
+            is_active = ?,
+            update_time = NOW()
+        WHERE id = ?""";
+
+        return saveResume(sql, resume, true);
+    }
+
+    private Long saveResume(String sql, Resume resume, boolean isUpdate) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setLong(1, resume.getApplicantId());
+            ps.setString(2, resume.getName());
+            ps.setLong(3, resume.getCategoryId());
+            ps.setFloat(4, resume.getSalary());
+            ps.setBoolean(5, resume.getIsActive());
+
+            if (isUpdate) {
+                ps.setLong(6, resume.getId());
+            }
+
+            return ps;
+        }, keyHolder);
+
+        return isUpdate ? resume.getId() : Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+    public void deleteResume(Long resumeId){
+        String sql = "delete from resumes where id = ?";
+        jdbcTemplate.update(sql, resumeId);
+    }
+}
