@@ -16,19 +16,4 @@ public class Resume {
     private boolean isActive;
     private Timestamp createdData;
     private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Resume{");
-        sb.append("id=").append(id);
-        sb.append(", applicantId=").append(applicantId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", categoryId=").append(categoryId);
-        sb.append(", salary=").append(salary);
-        sb.append(", isActive=").append(isActive);
-        sb.append(", createdData=").append(createdData);
-        sb.append(", updateTime=").append(updateTime);
-        sb.append('}');
-        return sb.toString();
-    }
 }
