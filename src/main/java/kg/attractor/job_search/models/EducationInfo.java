@@ -1,19 +1,21 @@
 package kg.attractor.job_search.models;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class EducationInfo {
-    private int id;
-    private int resumeId;
+    private Long id;
+    private Long resumeId;
     private String institution;
     private String program;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String degree;
 }

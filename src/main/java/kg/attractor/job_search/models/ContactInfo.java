@@ -1,13 +1,15 @@
 package kg.attractor.job_search.models;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class ContactInfo {
-    private int id;
-    private int typeId;
-    private int resumeId;
+    private Long id;
+    private Long typeId;
+    private Long resumeId;
     private String value;
 }

@@ -1,4 +1,4 @@
-package kg.attractor.job_search.models;
+package kg.attractor.job_search.dto;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class Vacancy {
+public class VacancyDto {
     private Long id;
     private String name;
     private String description;
