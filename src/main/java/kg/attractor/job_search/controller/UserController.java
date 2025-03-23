@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,61 +17,71 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
-        // TODO получение всех юзеров (компании и соискатели)
         return ResponseEntity.ofNullable(userService.getUsers());
     }
 
     @GetMapping("{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("userId") Long userId) {
-        // TODO получение юзера по id (компании и соискатели)
-        return  ResponseEntity.ofNullable(userService.getUserById(userId));
+        return  ResponseEntity.of(userService.getUserById(userId));
+    }
+
+    @GetMapping("by-name")
+    public ResponseEntity<List<UserDto>> getUsersByName(@RequestParam String name) {
+        return ResponseEntity.ofNullable(userService.getUsersByName(name));
+    }
+
+    @GetMapping("by-phone")
+    public ResponseEntity<UserDto> getUserByPhone(@RequestParam String phoneNumber) {
+        return  ResponseEntity.of(userService.getUserByPhone(phoneNumber));
+    }
+
+    @GetMapping("by-email")
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
+        return  ResponseEntity.of(userService.getUserByEmail(email));
+    }
+
+    @GetMapping("exists")
+    public ResponseEntity<Boolean> getUserExists(@RequestParam String email) {
+        return ResponseEntity.ofNullable(userService.existsUser(email));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody UserDto userDto) {
-        // TODO обновление информации юзера
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
 
     @PostMapping("{id}/avatar")
-    // TODO загрузка аватара пользователя
     public ResponseEntity<MultipartFile> uploadAvatar(@PathVariable("id") Long userId, @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file));
     }
 
     @GetMapping("{id}/avatar")
-    // TODO просто коммитов не хватает
     public ResponseEntity<?> getAvatar(@PathVariable("id") Long userId) {
         return userService.getUserAvatar(userId);
     }
 
     @GetMapping("employers")
     public ResponseEntity<List<UserDto>> getEmployers() {
-        // TODO получить всех работодателей для соискателя
         return ResponseEntity.ofNullable(userService.getEmployers());
     }
 
     @GetMapping("employers/{id}")
     public ResponseEntity<UserDto> getEmployerById(@PathVariable("id") Long id) {
-        //TODO получить конкретного работодателя
-        return ResponseEntity.ofNullable(userService.getEmployerById(id));
+        return  ResponseEntity.of(userService.getEmployerById(id));
     }
 
     @GetMapping("applicants")
     public ResponseEntity<List<UserDto>> getApplicants() {
-        // TODO получить всех соискателей для работодателя
-        return ResponseEntity.of(Optional.ofNullable(userService.getApplicants()));
+        return ResponseEntity.ofNullable(userService.getApplicants());
     }
 
     @GetMapping("applicants/{id}")
     public ResponseEntity<UserDto> getApplicantById(@PathVariable("id") Long id) {
-        //TODO получить конкретного соискателя
-        return ResponseEntity.of(Optional.ofNullable(userService.getApplicantById(id)));
+        return ResponseEntity.of(userService.getApplicantById(id));
     }
 
     @GetMapping("responded/{vacancyId}")
     public ResponseEntity<List<UserDto>> getApplications(@PathVariable("vacancyId") Long vacancyId) {
-        // TODO получение всех пользователей откликнувшихся на вакансию
         return ResponseEntity.ofNullable(userService.getApplicationsByVacancyId(vacancyId));
     }
 }

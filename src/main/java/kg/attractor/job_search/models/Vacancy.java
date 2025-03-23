@@ -2,11 +2,11 @@ package kg.attractor.job_search.models;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Vacancy {
@@ -19,6 +19,6 @@ public class Vacancy {
     private Integer expTo;
     private Boolean isActive;
     private Long authorId;
-    private LocalDateTime createdDate;
-    private LocalDateTime updateTime;
+    private Timestamp createdDate;
+    private Timestamp updateTime;
 }

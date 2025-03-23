@@ -2,11 +2,11 @@ package kg.attractor.job_search.models;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Resume {
@@ -16,6 +16,6 @@ public class Resume {
     private Long categoryId;
     private Float salary;
     private Boolean isActive;
-    private LocalDateTime createdData;
-    private LocalDateTime updateTime;
+    private Timestamp createdDate;
+    private Timestamp updateTime;
 }

@@ -2,7 +2,7 @@ package kg.attractor.job_search.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -19,6 +19,6 @@ public class VacancyDto {
     private Integer expTo;
     private Boolean isActive;
     private Long authorId;
-    private LocalDateTime createdDate;
-    private LocalDateTime updateTime;
+    private Timestamp createdDate;
+    private Timestamp updateTime;
 }
