@@ -1,6 +1,6 @@
 package kg.attractor.job_search.mapper;
 
-import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.models.User;
 import lombok.experimental.UtilityClass;
 

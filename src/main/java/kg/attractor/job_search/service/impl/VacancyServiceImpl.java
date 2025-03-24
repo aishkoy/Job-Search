@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.VacancyDao;
-import kg.attractor.job_search.dto.VacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.exceptions.*;
 import kg.attractor.job_search.exceptions.EmployerNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;

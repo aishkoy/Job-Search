@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.UserDao;
-import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
 import kg.attractor.job_search.exceptions.EmployerNotFoundException;
 import kg.attractor.job_search.exceptions.IncorrectUserEmailException;

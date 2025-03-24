@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.ResumeDao;
-import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.exceptions.*;
 import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;

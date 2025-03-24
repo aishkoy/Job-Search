@@ -1,6 +1,6 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;

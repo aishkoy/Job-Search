@@ -1,6 +1,6 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.dto.VacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

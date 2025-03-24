@@ -1,6 +1,6 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.VacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
