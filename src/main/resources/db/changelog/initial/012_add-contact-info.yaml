@@ -47,6 +47,32 @@ databaseChangeLog:
             columns:
               - column:
                   name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'facebook' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "https://facebook.com/ivan.petrov"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'linkedin' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "https://linkedin.com/in/ivanpetrov"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
                   valueComputed: "(SELECT id FROM contact_types WHERE type = 'email' LIMIT 1)"
               - column:
                   name: resume_id
@@ -80,3 +106,29 @@ databaseChangeLog:
               - column:
                   name: value
                   value: "@ivan_petrov"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'facebook' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "https://facebook.com/ivan.petrov"
+
+        - insert:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: type_id
+                  valueComputed: "(SELECT id FROM contact_types WHERE type = 'linkedin' LIMIT 1)"
+              - column:
+                  name: resume_id
+                  valueComputed: "(SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1)"
+              - column:
+                  name: value
+                  value: "https://linkedin.com/in/ivanpetrov"

@@ -5,11 +5,8 @@ databaseChangeLog:
       preConditions:
         - onFail: MARK_RAN
         - not:
-            - and:
-              - tableExists:
-                  tableName: contact_types
-              - tableExists:
-                  tableName: categories
+            - tableExists:
+                tableName: categories
       comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
 
       changes:
@@ -42,21 +39,3 @@ databaseChangeLog:
             constraintName: parent_id_fk
             onDelete: CASCADE
             onUpdate: CASCADE
-
-
-        - createTable:
-            tableName: contact_types
-            columns:
-              - column:
-                  name: id
-                  type: long
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-
-              - column:
-                  name: type
-                  type: varchar(55)
-                  constraints:
-                    nullable: false

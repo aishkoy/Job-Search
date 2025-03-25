@@ -16,7 +16,9 @@ VALUES ('разработка', (SELECT id FROM categories WHERE name = 'IT' LIM
 INSERT INTO contact_types (type)
 VALUES ('email'),
        ('телефон'),
-       ('telegram');
+       ('telegram'),
+       ('facebook'),
+       ('linkedin');
 
 --data-resumes
 INSERT INTO resumes (applicant_id, name, category_id, salary, is_active, created_date, update_time)

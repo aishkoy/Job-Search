@@ -18,3 +18,18 @@ spring:
   h2:
     console:
       enabled: true
+
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+      root: info
+
+  file:
+      name: logs/spring.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
