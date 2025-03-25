@@ -41,11 +41,8 @@ public class UserMapper {
                 .name(userDto.getName())
                 .surname(userDto.getSurname())
                 .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .password(userDto.getPassword())
                 .phoneNumber(userDto.getPhoneNumber())
                 .avatar(userDto.getAvatar())
-                .accountType(userDto.getAccountType())
                 .build();
     }
 }

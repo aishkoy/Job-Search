@@ -1,5 +1,8 @@
-package kg.attractor.job_search.dto;
+package kg.attractor.job_search.dto.resume;
 
+import kg.attractor.job_search.dto.ContactInfoDto;
+import kg.attractor.job_search.dto.EducationInfoDto;
+import kg.attractor.job_search.dto.WorkExperienceInfoDto;
 import lombok.*;
 
 import java.sql.Timestamp;
