@@ -1,0 +1,94 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005_create-vacancies-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: vacancies
+
+      changes:
+        - createTable:
+            tableName: vacancies
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: text
+
+              - column:
+                  name: category_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: salary
+                  type: real
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: exp_from
+                  type: int
+
+              - column:
+                  name: exp_to
+                  type: int
+
+              - column:
+                  name: is_active
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: author_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: update_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: vacancies
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: vac_category_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+
+        - addForeignKeyConstraint:
+            baseTableName: vacancies
+            baseColumnNames: author_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: vac_author_id_fk
+            onUpdate: CASCADE
+            onDelete: CASCADE

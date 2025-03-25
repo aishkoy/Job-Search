@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009_create-work-experience-info-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: work_experience_info
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+      changes:
+        - createTable:
+            tableName: work_experience_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: years
+                  type: int
+
+              - column:
+                  name: company_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: position
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: responsibilities
+                  type: text
+
+        - addForeignKeyConstraint:
+            baseTableName: work_experience_info
+            baseColumnNames: resume_id
+            referencedTableName: resumes
+            referencedColumnNames: id
+            constraintName: work_exp_resume_id_fk
+            onUpdate: CASCADE
+            onDelete: CASCADE

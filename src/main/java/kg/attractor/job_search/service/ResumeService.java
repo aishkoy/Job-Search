@@ -1,10 +1,10 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.resume.EditResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ResumeService {
     List<ResumeDto> getResumes();
@@ -17,9 +17,9 @@ public interface ResumeService {
 
     Long createResume(ResumeDto resumeDto);
 
-    Optional<ResumeDto> getResumeById(Long resumeId);
+    ResumeDto getResumeById(Long resumeId);
 
-    Long updateResume(Long resumeId, ResumeDto resumeDto);
+    Long updateResume(Long resumeId, EditResumeDto resumeDto);
 
     HttpStatus deleteResume(Long resumeId);
 

@@ -1,4 +1,4 @@
-package kg.attractor.job_search.dto;
+package kg.attractor.job_search.dto.user;
 
 import lombok.*;
 

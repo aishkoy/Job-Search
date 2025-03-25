@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006_create-responded-applicants-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: responded_applicants
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+
+      changes:
+        - createTable:
+            tableName: responded_applicants
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: vacancy_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: confirmation
+                  type: boolean
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: responded_applicants
+            baseColumnNames: resume_id
+            referencedTableName: resumes
+            referencedColumnNames: id
+            constraintName: responded_resume_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: responded_applicants
+            baseColumnNames: vacancy_id
+            referencedTableName: vacancies
+            referencedColumnNames: id
+            constraintName: responded_vacancy_id_fk
+            onUpdate: CASCADE
+            onDelete: CASCADE

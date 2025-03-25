@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003_create-contact-types-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: contact_types
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+      changes:
+        - createTable:
+            tableName: contact_types
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: varchar(55)
+                  constraints:
+                    nullable: false

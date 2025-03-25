@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008_create-education-info-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: education_info
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+      changes:
+        - createTable:
+            tableName: education_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: institution
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: program
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: start_date
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: end_date
+                  type: date
+
+              - column:
+                  name: degree
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: education_info
+            baseColumnNames: resume_id
+            referencedTableName: resumes
+            referencedColumnNames: id
+            constraintName: edu_resume_id_fk
+            onUpdate: CASCADE
+            onDelete: CASCADE

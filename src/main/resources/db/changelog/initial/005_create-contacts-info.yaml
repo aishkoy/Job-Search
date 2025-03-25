@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004_create-contact-info-table
+      author: Aisha
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: contacts_info
+      comment: Comments should go after the precondition. Otherwise, Liquibase returns an err
+
+
+      changes:
+        - createTable:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: type_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: contact_value
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: contacts_info
+            baseColumnNames: type_id
+            referencedTableName: contact_types
+            referencedColumnNames: id
+            constraintName: contacts_type_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: contacts_info
+            baseColumnNames: resume_id
+            referencedTableName: resumes
+            referencedColumnNames: id
+            constraintName: contacts_resume_id_fk
+            onDelete: CASCADE
+            onUpdate: CASCADE
