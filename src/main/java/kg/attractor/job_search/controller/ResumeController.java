@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller;
 
+import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class ResumeController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody ResumeDto resumeDto) {
+    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody EditResumeDto resumeDto) {
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
     }
 
