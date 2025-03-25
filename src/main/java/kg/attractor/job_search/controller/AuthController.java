@@ -1,6 +1,6 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

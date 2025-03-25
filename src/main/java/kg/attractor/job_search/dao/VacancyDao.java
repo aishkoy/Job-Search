@@ -3,6 +3,7 @@ package kg.attractor.job_search.dao;
 import kg.attractor.job_search.mapper.dao.VacancyDaoMapper;
 import kg.attractor.job_search.models.Vacancy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,14 +18,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VacancyDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<Vacancy> getVacanciesAppliedByUserId(Long userId) {
         String sql = """
                 select * from vacancies v
                 inner join responded_applicants ra on ra.vacancy_id = v.id
                 inner join resumes r on ra.resume_id = r.id
-                where r.applicant_id = ?
+                where v.is_active = true and r.applicant_id = ?
                 """;
         return jdbcTemplate.query(sql, new VacancyDaoMapper(), userId);
     }
@@ -41,7 +41,7 @@ public class VacancyDao {
 
     public List<Vacancy> getVacanciesByCategoryId(Long categoryId) {
         String sql = """
-                select * from vacancies where category_id in
+                select * from vacancies where is_active = true and category_id in
                                               (select id from CATEGORIES where id = ? or parent_id = ?)""";
         return jdbcTemplate.query(sql, new VacancyDaoMapper(), categoryId, categoryId);
     }
@@ -50,7 +50,7 @@ public class VacancyDao {
         String sql = """
                 select * from vacancies v
                 inner join categories c on v.category_id = c.id
-                WHERE c.id IN (
+                WHERE v.is_active = true AND c.id IN (
                             SELECT id FROM categories
                             WHERE name LIKE ? OR
                                   parent_id IN
@@ -61,12 +61,12 @@ public class VacancyDao {
 
     public Optional<Vacancy> getVacancyById(Long vacancyId) {
         String sql = "select * from vacancies where id = ?";
-        Vacancy vacancy = jdbcTemplate.queryForObject(sql, new VacancyDaoMapper(), vacancyId);
+        Vacancy vacancy = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new VacancyDaoMapper(), vacancyId));
         return Optional.ofNullable(vacancy);
     }
 
     public List<Vacancy> getVacanciesByEmployerId(Long employerId) {
-        String sql = "select * from vacancies where AUTHOR_ID = ?";
+        String sql = "select * from vacancies where is_active = true and AUTHOR_ID = ?";
         return jdbcTemplate.query(sql, new VacancyDaoMapper(), employerId);
     }
 
@@ -96,6 +96,7 @@ public class VacancyDao {
     }
 
     private Long executeVacancyUpdate(String sql, Vacancy vacancy, boolean isUpdate) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, vacancy.getName());

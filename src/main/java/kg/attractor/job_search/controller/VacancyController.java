@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.dto.VacancyDto;
+import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class VacancyController {
 
     @GetMapping("{id}")
     public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
-        return ResponseEntity.of(vacancyService.getVacancyById(id));
+        return ResponseEntity.ofNullable(vacancyService.getVacancyById(id));
     }
 
     @PostMapping
@@ -31,7 +32,7 @@ public class VacancyController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto) {
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody EditVacancyDto vacancyDto) {
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
     }
 

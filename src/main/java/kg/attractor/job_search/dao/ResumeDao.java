@@ -3,6 +3,7 @@ package kg.attractor.job_search.dao;
 import kg.attractor.job_search.mapper.dao.ResumeDaoMapper;
 import kg.attractor.job_search.models.Resume;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ResumeDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<Resume> getResumes(){
         String sql = "select * from resumes";
@@ -31,13 +31,13 @@ public class ResumeDao {
 
     public List<Resume> getResumesByCategoryId(Long categoryId) {
         String sql = """
-                select * from resumes where category_id in
+                select * from resumes where is_active = true and category_id in
                                             (select id from CATEGORIES where id = ? or parent_id = ?)""";
         return jdbcTemplate.query(sql, new ResumeDaoMapper(), categoryId, categoryId);
     }
 
     public List<Resume> getResumesByApplicantId(Long userId) {
-        String sql = "select * from resumes where applicant_id = ?";
+        String sql = "select * from resumes where is_active = true and applicant_id = ?";
         return jdbcTemplate.query(sql, new ResumeDaoMapper(), userId);
     }
 
@@ -45,19 +45,21 @@ public class ResumeDao {
         String sql = """
                 select * from resumes r
                 inner join users u on r.applicant_id = u.id
-                where u.name like ?""";
+                where r.is_active = true and u.name like ?""";
         return jdbcTemplate.query(sql, new ResumeDaoMapper(), applicantName + "%");
     }
 
     public Optional<Resume> getResumeById(Long id) {
         String sql = "select * from resumes where id = ?";
-        Resume resume = jdbcTemplate.queryForObject(sql, new ResumeDaoMapper(), id);
+        Resume resume = DataAccessUtils.singleResult(
+                jdbcTemplate.query(sql, new ResumeDaoMapper(), id)
+        );
         return Optional.ofNullable(resume);
     }
 
     public Long createResume(Resume resume) {
         String sql = """
-        INSERT INTO resumes (applicant_id, name, category_id, salary, is_active, created_date, update_time)
+        INSERT INTO resumes (name, category_id, salary, is_active, applicant_id, created_date, update_time)
         VALUES (?, ?, ?, ?, ?, NOW(), NOW())""";
 
         return saveResume(sql, resume, false);
@@ -67,7 +69,6 @@ public class ResumeDao {
         String sql = """
         UPDATE resumes
         SET
-            applicant_id = ?,
             name = ?,
             category_id = ?,
             salary = ?,
@@ -79,16 +80,18 @@ public class ResumeDao {
     }
 
     private Long saveResume(String sql, Resume resume, boolean isUpdate) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, resume.getApplicantId());
-            ps.setString(2, resume.getName());
-            ps.setLong(3, resume.getCategoryId());
-            ps.setFloat(4, resume.getSalary());
-            ps.setBoolean(5, resume.getIsActive());
+            ps.setString(1, resume.getName());
+            ps.setLong(2, resume.getCategoryId());
+            ps.setFloat(3, resume.getSalary());
+            ps.setBoolean(4, resume.getIsActive());
 
             if (isUpdate) {
-                ps.setLong(6, resume.getId());
+                ps.setLong(5, resume.getId());
+            } else{
+                ps.setLong(5, resume.getApplicantId());
             }
 
             return ps;

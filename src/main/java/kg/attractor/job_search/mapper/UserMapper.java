@@ -1,6 +1,7 @@
 package kg.attractor.job_search.mapper;
 
-import kg.attractor.job_search.dto.UserDto;
+import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.models.User;
 import lombok.experimental.UtilityClass;
 
@@ -32,6 +33,16 @@ public class UserMapper {
                 .phoneNumber(userDto.getPhoneNumber())
                 .avatar(userDto.getAvatar())
                 .accountType(userDto.getAccountType())
+                .build();
+    }
+
+    public User toUser(EditUserDto userDto){
+        return User.builder()
+                .name(userDto.getName())
+                .surname(userDto.getSurname())
+                .age(userDto.getAge())
+                .phoneNumber(userDto.getPhoneNumber())
+                .avatar(userDto.getAvatar())
                 .build();
     }
 }

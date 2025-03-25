@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
-import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.resume.EditResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,26 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.getResumes());
     }
 
+    @PostMapping
+    public ResponseEntity<Long> createResume(@RequestBody ResumeDto resumeDto) {
+        return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
+        return ResponseEntity.ofNullable(resumeService.getResumeById(id));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody EditResumeDto resumeDto) {
+        return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
+    }
+
+    @DeleteMapping("{id}")
+    public HttpStatus deleteResume(@PathVariable("id") Long resumeId) {
+        return resumeService.deleteResume(resumeId);
+    }
+
     @GetMapping("active")
     public ResponseEntity<List<ResumeDto>> getActiveResumes() {
         return ResponseEntity.ofNullable(resumeService.getActiveResumes());
@@ -31,11 +52,6 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> createResume(@RequestBody ResumeDto resumeDto) {
-        return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
-    }
-
     @GetMapping("applicant/{id}")
     public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
         return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
@@ -44,15 +60,5 @@ public class ResumeController {
     @GetMapping("applicant/by-name")
     public ResponseEntity<List<ResumeDto>> getResumesByApplicantName(@RequestParam String applicantName) {
         return ResponseEntity.ofNullable(resumeService.getResumesByApplicantName(applicantName));
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody ResumeDto resumeDto) {
-        return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
-    }
-
-    @DeleteMapping("{id}")
-    public HttpStatus deleteResume(@PathVariable("id") Long resumeId) {
-        return resumeService.deleteResume(resumeId);
     }
 }

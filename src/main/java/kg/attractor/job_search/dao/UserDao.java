@@ -3,6 +3,7 @@ package kg.attractor.job_search.dao;
 import kg.attractor.job_search.mapper.dao.UserDaoMapper;
 import kg.attractor.job_search.models.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<User> getUsers() {
         String sql = "select * from users";
@@ -26,7 +26,7 @@ public class UserDao {
 
     public Optional<User> getUserById(Long id) {
         String sql = "select * from users where id = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), id);
+        User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), id));
         return Optional.ofNullable(user);
     }
     public List<User> getUsersByName(String name) {
@@ -36,13 +36,13 @@ public class UserDao {
 
     public Optional<User> getUserByEmail(String email) {
         String sql = "select * from users where email = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), email);
+        User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), email));
         return Optional.ofNullable(user);
     }
 
     public Optional<User> getUserByPhone(String phoneNumber) {
         String sql = "select * from users where PHONE_NUMBER = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), phoneNumber);
+        User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), phoneNumber));
         return Optional.ofNullable(user);
     }
 
@@ -61,13 +61,13 @@ public class UserDao {
 
     public Optional<User> getEmployerById(Long id) {
         String sql = "select * from users where ACCOUNT_TYPE = 'employer' AND id = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), id);
+        User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), id));
         return Optional.ofNullable(user);
     }
 
     public Optional<User> getApplicantById(Long id) {
         String sql = "select * from users where ACCOUNT_TYPE = 'applicant' AND id = ?";
-        User user = jdbcTemplate.queryForObject(sql, new UserDaoMapper(), id);
+        User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), id));
         return Optional.ofNullable(user);
     }
 
@@ -82,7 +82,7 @@ public class UserDao {
 
     public Long registerUser(User user) {
         String sql = """
-                INSERT INTO users (name, surname, age, email, password, phone_number, avatar, account_type)
+                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, account_type)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""";
 
         return saveUser(user, sql);
@@ -94,11 +94,8 @@ public class UserDao {
                 SET name = ?,
                     surname = ?,
                     age = ?,
-                    email = ?,
-                    password = ?,
                     phone_number = ?,
-                    avatar = ?,
-                    account_type = ?
+                    avatar = ?
                 WHERE id = ?""";
 
 
@@ -106,24 +103,31 @@ public class UserDao {
     }
 
     private Long saveUser(User user, String sql) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
             ps.setInt(3, user.getAge());
-            ps.setString(4, user.getEmail());
-            ps.setString(5, user.getPassword());
-            ps.setString(6, user.getPhoneNumber());
-            ps.setString(7, user.getAvatar());
-            ps.setString(8, user.getAccountType());
+            ps.setString(4, user.getPhoneNumber());
+            ps.setString(5, user.getAvatar());
 
             if (sql.toUpperCase().contains("UPDATE")) {
-                ps.setLong(9, user.getId());
+                ps.setLong(6, user.getId());
+            } else{
+                ps.setString(6, user.getEmail());
+                ps.setString(7, user.getPassword());
+                ps.setString(8, user.getAccountType());
             }
 
             return ps;}, keyHolder
         );
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public void deleteUser(Long userId){
+        String sql = "delete from users where id = ?";
+        jdbcTemplate.update(sql, userId);
     }
 }

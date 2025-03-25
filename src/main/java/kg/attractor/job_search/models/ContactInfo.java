@@ -4,12 +4,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class ContactInfo {
     private Long id;
     private Long typeId;
     private Long resumeId;
-    private String value;
+    private String contactValue;
 }

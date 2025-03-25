@@ -1,10 +1,10 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.VacancyDto;
+import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface VacancyService {
     Long createVacancy(VacancyDto vacancyDto);
@@ -12,13 +12,13 @@ public interface VacancyService {
     List<VacancyDto> getVacancies();
 
     List<VacancyDto> getActiveVacancies();
-    Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
+    Long updateVacancy(Long vacancyId, EditVacancyDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId);
 
     List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 
-    Optional<VacancyDto> getVacancyById(Long vacancyId);
+    VacancyDto getVacancyById(Long vacancyId);
 
     List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId);
 
