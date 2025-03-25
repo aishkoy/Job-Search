@@ -1,8 +1,9 @@
 package kg.attractor.job_search.mapper;
 
-import kg.attractor.job_search.dto.resume.ResumeDto;
+import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.models.Resume;
 import lombok.experimental.UtilityClass;
+
 
 @UtilityClass
 public class ResumeMapper {
