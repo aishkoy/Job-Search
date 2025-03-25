@@ -62,6 +62,58 @@ VALUES ((SELECT id
         2, 'ООО "КвалитиЛаб"', 'QA инженер',
         'Ручное и автоматизированное тестирование, составление тест-кейсов, регрессионное тестирование');
 
+-- для резюме "Java разработчик"
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'email' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'ivan@example.com');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'телефон' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        '+79001234567');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'telegram' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        '@ivan_petrov');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'facebook' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'https://facebook.com/ivan.petrov');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'linkedin' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'Java разработчик' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'https://linkedin.com/in/ivanpetrov');
+
+-- для резюме "QA инженер"
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'email' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'ivan@example.com');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'телефон' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        '+79001234567');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'telegram' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        '@ivan_petrov');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'facebook' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'https://facebook.com/ivan.petrov');
+
+INSERT INTO contacts_info (type_id, resume_id, contact_value)
+VALUES ((SELECT id FROM contact_types WHERE type = 'linkedin' LIMIT 1),
+        (SELECT id FROM resumes WHERE name = 'QA инженер' AND applicant_id = (SELECT id FROM users WHERE email = 'ivan@example.com' LIMIT 1) LIMIT 1),
+        'https://linkedin.com/in/ivanpetrov');
+
 --data-vacancies
 INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
 VALUES ('Senior Java Developer',

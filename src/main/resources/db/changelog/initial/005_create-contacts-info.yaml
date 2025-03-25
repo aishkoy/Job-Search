@@ -35,7 +35,7 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: value
+                  name: contact_value
                   type: varchar(255)
                   constraints:
                     nullable: false
