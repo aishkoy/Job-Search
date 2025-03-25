@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller;
 
+import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class VacancyController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody VacancyDto vacancyDto) {
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody EditVacancyDto vacancyDto) {
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
     }
 
