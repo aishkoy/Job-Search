@@ -11,7 +11,7 @@ public class ContactInfoMapper {
                 .id(contactInfo.getId())
                 .resumeId(contactInfo.getResumeId())
                 .typeId(contactInfo.getTypeId())
-                .value(contactInfo.getValue())
+                .contactValue(contactInfo.getContactValue())
                 .build();
     }
 
@@ -20,7 +20,7 @@ public class ContactInfoMapper {
                 .id(contactInfoDto.getId())
                 .resumeId(contactInfoDto.getResumeId())
                 .typeId(contactInfoDto.getTypeId())
-                .value(contactInfoDto.getValue())
+                .contactValue(contactInfoDto.getContactValue())
                 .build();
     }
 }

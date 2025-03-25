@@ -13,7 +13,7 @@ public class ContactInfoDaoMapper implements RowMapper<ContactInfo> {
         contactInfo.setId(rs.getLong("id"));
         contactInfo.setResumeId(rs.getLong("resume_id"));
         contactInfo.setTypeId(rs.getLong("type_id"));
-        contactInfo.setValue(rs.getString("value"));
+        contactInfo.setContactValue(rs.getString("contact_value"));
         return contactInfo;
     }
 }
