@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VacancyDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<Vacancy> getVacanciesAppliedByUserId(Long userId) {
         String sql = """
@@ -97,6 +96,7 @@ public class VacancyDao {
     }
 
     private Long executeVacancyUpdate(String sql, Vacancy vacancy, boolean isUpdate) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, vacancy.getName());

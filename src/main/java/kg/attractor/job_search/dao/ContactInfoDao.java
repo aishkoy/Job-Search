@@ -18,7 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ContactInfoDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
+
     public List<ContactInfo> getContactInfoByResumeId(Long resumeId) {
         String sql = "select * from CONTACTS_INFO where resume_id = ?";
         return jdbcTemplate.query(sql, new ContactInfoDaoMapper(), resumeId);
@@ -31,15 +31,14 @@ public class ContactInfoDao {
     }
 
     public Long createContactInfo(ContactInfo contactInfo) {
-        String sql = """
-                insert into CONTACTS_INFO(TYPE_ID, RESUME_ID, VALUE)
-                values(?, ?, ?)""";
+        String sql = "insert into CONTACTS_INFO(TYPE_ID, RESUME_ID, CONTACT_VALUE) values(?, ?, ?)";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, contactInfo.getTypeId());
             ps.setLong(2, contactInfo.getResumeId());
-            ps.setString(3, contactInfo.getValue());
+            ps.setString(3, contactInfo.getContactValue());
 
             return ps;
         }, keyHolder);
@@ -53,15 +52,15 @@ public class ContactInfoDao {
             SET
                 TYPE_ID = ?,
                 RESUME_ID = ?,
-                VALUE = ?
+                CONTACT_VALUE = ?
             WHERE id = ?""";
 
-
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, contactInfo.getTypeId());
             ps.setLong(2, contactInfo.getResumeId());
-            ps.setString(3, contactInfo.getValue());
+            ps.setString(3, contactInfo.getContactValue());
             ps.setLong(4, contactInfo.getId());
 
             return ps;

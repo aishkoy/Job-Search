@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WorkExperienceDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public Optional<WorkExperienceInfo> getWorkExperienceInfoById(Long id) {
         String sql = "select * from WORK_EXPERIENCE_INFO where id = ?";
@@ -31,6 +30,7 @@ public class WorkExperienceDao {
                 insert into WORK_EXPERIENCE_INFO(RESUME_ID, YEARS, COMPANY_NAME, POSITION, RESPONSIBILITIES)
                 values(?, ?, ?, ?, ?)""";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, workExperience.getResumeId());
@@ -55,7 +55,7 @@ public class WorkExperienceDao {
                     RESPONSIBILITIES = ?
                 where id = ?
                 """;
-
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setInt(1, workExperience.getYears());

@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EducationInfoDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public Optional<EducationInfo> getEducationInfoById(Long id) {
         String sql = "select * from EDUCATION_INFO where id = ?";
@@ -30,6 +29,7 @@ public class EducationInfoDao {
                 insert into EDUCATION_INFO(RESUME_ID, INSTITUTION, PROGRAM, START_DATE, END_DATE, DEGREE)
                 values(?, ?, ?, ?, ?, ?)""";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setLong(1, educationInfo.getResumeId());
@@ -57,6 +57,7 @@ public class EducationInfoDao {
                 where id = ?
                 """;
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, educationInfo.getInstitution());

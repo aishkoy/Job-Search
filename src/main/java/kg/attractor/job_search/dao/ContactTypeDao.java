@@ -6,10 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CategoryDao {
+public class ContactTypeDao {
     private final JdbcTemplate jdbcTemplate;
-    public Long getCategoryById(Long id) {
-        String sql = "select id from categories where id = ?";
+
+    public Long getContactTypeById(Long id) {
+        String sql = "select id from CONTACT_TYPES where id = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, id);
     }
 }

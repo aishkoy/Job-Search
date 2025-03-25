@@ -18,7 +18,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ResumeDao {
     private final JdbcTemplate jdbcTemplate;
-    private final KeyHolder keyHolder = new GeneratedKeyHolder();
 
     public List<Resume> getResumes(){
         String sql = "select * from resumes";
@@ -60,7 +59,7 @@ public class ResumeDao {
 
     public Long createResume(Resume resume) {
         String sql = """
-        INSERT INTO resumes (applicant_id, name, category_id, salary, is_active, created_date, update_time)
+        INSERT INTO resumes (name, category_id, salary, is_active, applicant_id, created_date, update_time)
         VALUES (?, ?, ?, ?, ?, NOW(), NOW())""";
 
         return saveResume(sql, resume, false);
@@ -70,7 +69,6 @@ public class ResumeDao {
         String sql = """
         UPDATE resumes
         SET
-            applicant_id = ?,
             name = ?,
             category_id = ?,
             salary = ?,
@@ -82,16 +80,18 @@ public class ResumeDao {
     }
 
     private Long saveResume(String sql, Resume resume, boolean isUpdate) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
-            ps.setLong(1, resume.getApplicantId());
-            ps.setString(2, resume.getName());
-            ps.setLong(3, resume.getCategoryId());
-            ps.setFloat(4, resume.getSalary());
-            ps.setBoolean(5, resume.getIsActive());
+            ps.setString(1, resume.getName());
+            ps.setLong(2, resume.getCategoryId());
+            ps.setFloat(3, resume.getSalary());
+            ps.setBoolean(4, resume.getIsActive());
 
             if (isUpdate) {
-                ps.setLong(6, resume.getId());
+                ps.setLong(5, resume.getId());
+            } else{
+                ps.setLong(5, resume.getApplicantId());
             }
 
             return ps;
