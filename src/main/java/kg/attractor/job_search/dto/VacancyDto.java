@@ -1,13 +1,16 @@
-package kg.attractor.job_search.dto.vacancy;
+package kg.attractor.job_search.dto;
 
 import lombok.*;
+
+import java.sql.Timestamp;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class EditVacancyDto {
+public class VacancyDto {
+    private Long id;
     private String name;
     private String description;
     private Long categoryId;
@@ -15,4 +18,7 @@ public class EditVacancyDto {
     private Integer expFrom;
     private Integer expTo;
     private Boolean isActive;
+    private Long authorId;
+    private Timestamp createdDate;
+    private Timestamp updateTime;
 }
