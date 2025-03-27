@@ -1,4 +1,4 @@
-package kg.attractor.job_search.exceptions;
+package kg.attractor.job_search.exception;
 
 public class ApplicantNotFoundException extends RuntimeException {
     public ApplicantNotFoundException() {}

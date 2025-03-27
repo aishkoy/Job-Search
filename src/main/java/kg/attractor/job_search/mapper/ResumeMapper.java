@@ -2,7 +2,7 @@ package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.models.Resume;
+import kg.attractor.job_search.model.Resume;
 import lombok.experimental.UtilityClass;
 
 

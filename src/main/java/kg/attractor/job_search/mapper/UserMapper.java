@@ -2,7 +2,7 @@ package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.models.User;
+import kg.attractor.job_search.model.User;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

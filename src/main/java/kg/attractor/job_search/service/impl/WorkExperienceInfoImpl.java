@@ -2,9 +2,9 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.WorkExperienceDao;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
-import kg.attractor.job_search.exceptions.WorkExperienceNotFoundException;
+import kg.attractor.job_search.exception.WorkExperienceNotFoundException;
 import kg.attractor.job_search.mapper.WorkExperienceMapper;
-import kg.attractor.job_search.models.WorkExperienceInfo;
+import kg.attractor.job_search.model.WorkExperienceInfo;
 import kg.attractor.job_search.service.WorkExperienceInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

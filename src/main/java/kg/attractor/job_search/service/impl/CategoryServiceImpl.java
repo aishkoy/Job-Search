@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.CategoryDao;
-import kg.attractor.job_search.exceptions.CategoryNotFoundException;
+import kg.attractor.job_search.exception.CategoryNotFoundException;
 import kg.attractor.job_search.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;

@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dao;
 
 import kg.attractor.job_search.mapper.dao.ContactInfoDaoMapper;
-import kg.attractor.job_search.models.ContactInfo;
+import kg.attractor.job_search.model.ContactInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;

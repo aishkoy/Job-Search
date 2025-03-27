@@ -2,9 +2,9 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.ContactInfoDao;
 import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.exceptions.ContactInfoNotFoundException;
+import kg.attractor.job_search.exception.ContactInfoNotFoundException;
 import kg.attractor.job_search.mapper.ContactInfoMapper;
-import kg.attractor.job_search.models.ContactInfo;
+import kg.attractor.job_search.model.ContactInfo;
 import kg.attractor.job_search.service.ContactInfoService;
 import kg.attractor.job_search.service.ContactTypeService;
 import lombok.RequiredArgsConstructor;
