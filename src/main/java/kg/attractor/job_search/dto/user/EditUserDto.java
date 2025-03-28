@@ -1,5 +1,8 @@
 package kg.attractor.job_search.dto.user;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
@@ -8,9 +11,17 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class EditUserDto {
+    @NotBlank
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
+            message = "Имя может содержать только буквы и дефисы")
     private String name;
+    @NotBlank
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
+            message = "Фамилия может содержать только буквы и дефисы")
     private String surname;
+    @Min(18)
     private Integer age;
+    @NotBlank @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     private String phoneNumber;
     private String avatar;
 }

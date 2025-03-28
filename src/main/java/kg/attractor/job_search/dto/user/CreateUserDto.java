@@ -10,8 +10,12 @@ import lombok.*;
 @Builder
 public class CreateUserDto {
     @NotBlank
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
+            message = "Имя может содержать только буквы и дефисы")
     private String name;
     @NotBlank
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
+            message = "Фамилия может содержать только буквы и дефисы")
     private String surname;
     @Min(18)
     private Integer age;

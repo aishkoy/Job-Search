@@ -1,11 +1,11 @@
 package kg.attractor.job_search.util;
 
+import kg.attractor.job_search.exception.FileNotFoundException;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -47,16 +46,18 @@ public class FileUtil {
 
     @SneakyThrows
     public ResponseEntity<?> getOutputFile(String filename, String subDir, MediaType mediaType) {
-        try {
-            byte[] image = Files.readAllBytes(Paths.get(UPLOAD_DIR + subDir + filename));
-            Resource resource = new ByteArrayResource(image);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + filename + "\"")
-                    .contentLength(resource.contentLength())
-                    .contentType(mediaType)
-                    .body(resource);
-        } catch (NoSuchFileException e) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Image not found");
+        Path filePath = Paths.get(UPLOAD_DIR + subDir + filename);
+
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("Файл не найден: " + filename);
         }
+
+        byte[] image = Files.readAllBytes(filePath);
+        Resource resource = new ByteArrayResource(image);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + filename + "\"")
+                .contentLength(resource.contentLength())
+                .contentType(mediaType)
+                .body(resource);
     }
 }

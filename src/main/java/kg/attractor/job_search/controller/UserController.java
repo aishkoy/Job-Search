@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody EditUserDto userDto) {
+    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid EditUserDto userDto) {
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
 

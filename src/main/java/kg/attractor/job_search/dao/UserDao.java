@@ -41,7 +41,7 @@ public class UserDao {
     }
 
     public Optional<User> getUserByPhone(String phoneNumber) {
-        String sql = "select * from users where PHONE_NUMBER = ?";
+        String sql = "select * from users where PHONE_NUMBER like ?";
         User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), phoneNumber));
         return Optional.ofNullable(user);
     }

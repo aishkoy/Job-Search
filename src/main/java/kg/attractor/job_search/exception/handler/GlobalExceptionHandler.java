@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponseBody> handleNSEE(NoSuchElementException e) {
+    public ErrorResponseBody handleNSEE(NoSuchElementException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.NO_CONTENT);
+        return errorService.makeResponse(e);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
