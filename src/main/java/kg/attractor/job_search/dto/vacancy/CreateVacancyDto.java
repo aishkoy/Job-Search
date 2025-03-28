@@ -1,9 +1,6 @@
 package kg.attractor.job_search.dto.vacancy;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Getter
@@ -11,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class EditVacancyDto {
+public class CreateVacancyDto {
     @NotBlank
     private String name;
     private String description;
@@ -21,8 +18,8 @@ public class EditVacancyDto {
     private Float salary;
     @NotNull @Positive
     private Integer expFrom;
-    @NotNull @PositiveOrZero
+    @NotNull @Positive
     private Integer expTo;
     @NotNull
-    private Boolean isActive;
+    private Long authorId;
 }

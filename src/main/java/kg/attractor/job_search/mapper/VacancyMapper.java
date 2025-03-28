@@ -1,5 +1,6 @@
 package kg.attractor.job_search.mapper;
 
+import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
 import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.model.Vacancy;
@@ -32,6 +33,18 @@ public class VacancyMapper {
                 .authorId(vacancy.getAuthorId())
                 .createdDate(vacancy.getCreatedDate())
                 .updateTime(vacancy.getUpdateTime())
+                .build();
+    }
+
+    public Vacancy toVacancy(CreateVacancyDto dto) {
+        return Vacancy.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .categoryId(dto.getCategoryId())
+                .salary(dto.getSalary())
+                .expFrom(dto.getExpFrom())
+                .expTo(dto.getExpTo())
+                .authorId(dto.getAuthorId())
                 .build();
     }
 

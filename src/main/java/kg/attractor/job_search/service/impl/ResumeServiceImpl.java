@@ -43,7 +43,6 @@ public class ResumeServiceImpl implements ResumeService {
         List<ResumeDto> resumes = resumeDao.getResumes().stream().map(ResumeMapper::toResumeDto).toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме не найдены");
-        log.info("Получено резюме: {}", resumes.size());
         return resumes;
     }
 
@@ -55,7 +54,6 @@ public class ResumeServiceImpl implements ResumeService {
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Активные резюме не найдены");
-        log.info("Получено активных резюме: {}", resumes.size());
         return resumes;
     }
 
@@ -190,7 +188,6 @@ public class ResumeServiceImpl implements ResumeService {
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
-        log.info("Получено резюме по категории: {}", resumes.size());
         return resumes;
     }
 
@@ -253,6 +250,6 @@ public class ResumeServiceImpl implements ResumeService {
             log.warn(errorMessage);
             throw new ResumeNotFoundException(errorMessage);
         }
-        log.info("Retrieved {} users", resumes.size());
+        log.info("Retrieved {} resumes", resumes.size());
     }
 }
