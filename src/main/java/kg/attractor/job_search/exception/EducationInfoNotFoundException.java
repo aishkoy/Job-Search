@@ -1,6 +1,8 @@
 package kg.attractor.job_search.exception;
 
-public class EducationInfoNotFoundException extends RuntimeException {
+import java.util.NoSuchElementException;
+
+public class EducationInfoNotFoundException extends NoSuchElementException {
     public EducationInfoNotFoundException() {}
     public EducationInfoNotFoundException(String message) {
         super(message);
