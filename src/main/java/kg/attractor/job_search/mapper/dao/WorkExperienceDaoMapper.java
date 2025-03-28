@@ -1,6 +1,6 @@
 package kg.attractor.job_search.mapper.dao;
 
-import kg.attractor.job_search.models.WorkExperienceInfo;
+import kg.attractor.job_search.model.WorkExperienceInfo;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

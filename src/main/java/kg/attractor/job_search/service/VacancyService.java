@@ -1,5 +1,6 @@
 package kg.attractor.job_search.service;
 
+import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
 import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import org.springframework.http.HttpStatus;
@@ -7,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 public interface VacancyService {
-    Long createVacancy(VacancyDto vacancyDto);
+    Long createVacancy(CreateVacancyDto vacancyDto);
 
     List<VacancyDto> getVacancies();
 

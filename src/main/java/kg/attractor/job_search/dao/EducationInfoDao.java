@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dao;
 
 import kg.attractor.job_search.mapper.dao.EducationInfoDaoMapper;
-import kg.attractor.job_search.models.EducationInfo;
+import kg.attractor.job_search.model.EducationInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -2,9 +2,9 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.EducationInfoDao;
 import kg.attractor.job_search.dto.EducationInfoDto;
-import kg.attractor.job_search.exceptions.EducationInfoNotFoundException;
+import kg.attractor.job_search.exception.EducationInfoNotFoundException;
 import kg.attractor.job_search.mapper.EducationInfoMapper;
-import kg.attractor.job_search.models.EducationInfo;
+import kg.attractor.job_search.model.EducationInfo;
 import kg.attractor.job_search.service.EducationInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

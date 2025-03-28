@@ -1,7 +1,7 @@
 package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.models.ContactInfo;
+import kg.attractor.job_search.model.ContactInfo;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

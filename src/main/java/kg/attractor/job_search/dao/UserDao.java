@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dao;
 
 import kg.attractor.job_search.mapper.dao.UserDaoMapper;
-import kg.attractor.job_search.models.User;
+import kg.attractor.job_search.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,7 +41,7 @@ public class UserDao {
     }
 
     public Optional<User> getUserByPhone(String phoneNumber) {
-        String sql = "select * from users where PHONE_NUMBER = ?";
+        String sql = "select * from users where PHONE_NUMBER like ?";
         User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), phoneNumber));
         return Optional.ofNullable(user);
     }

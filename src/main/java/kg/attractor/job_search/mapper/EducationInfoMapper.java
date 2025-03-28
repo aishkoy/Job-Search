@@ -1,7 +1,7 @@
 package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.EducationInfoDto;
-import kg.attractor.job_search.models.EducationInfo;
+import kg.attractor.job_search.model.EducationInfo;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

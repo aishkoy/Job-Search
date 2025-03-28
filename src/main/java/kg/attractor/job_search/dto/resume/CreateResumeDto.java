@@ -16,15 +16,15 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class EditResumeDto {
+public class CreateResumeDto {
+    @NotNull
+    private Long applicantId;
     @NotBlank
     private String name;
     @NotNull
     private Long categoryId;
     @NotNull @PositiveOrZero
     private Float salary;
-    @NotNull
-    private Boolean isActive;
 
     @Valid
     private List<WorkExperienceInfoDto> workExperiences;
@@ -35,4 +35,3 @@ public class EditResumeDto {
     @Valid
     private List<ContactInfoDto> contacts;
 }
-

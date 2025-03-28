@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.ContactTypeDao;
-import kg.attractor.job_search.exceptions.ContactTypeNotFoundException;
+import kg.attractor.job_search.exception.ContactTypeNotFoundException;
 import kg.attractor.job_search.service.ContactTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
