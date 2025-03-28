@@ -1,4 +1,4 @@
-package kg.attractor.job_search.models;
+package kg.attractor.job_search.model;
 
 import lombok.*;
 
@@ -7,9 +7,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class RespondedApplicant {
+public class ContactType {
     private Long id;
-    private Long resumeId;
-    private Long vacancyId;
-    private Boolean confirmation;
+    private String type;
 }

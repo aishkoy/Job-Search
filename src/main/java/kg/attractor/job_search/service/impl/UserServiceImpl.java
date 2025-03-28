@@ -1,14 +1,14 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.UserDao;
+import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
-import kg.attractor.job_search.exceptions.EmployerNotFoundException;
-import kg.attractor.job_search.exceptions.IncorrectUserEmailException;
-import kg.attractor.job_search.exceptions.UserNotFoundException;
+import kg.attractor.job_search.exception.ApplicantNotFoundException;
+import kg.attractor.job_search.exception.EmployerNotFoundException;
+import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
-import kg.attractor.job_search.models.User;
+import kg.attractor.job_search.model.User;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +30,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers() {
-        return userDao.getUsers()
+        List<UserDto> users = userDao.getUsers()
                 .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
+
+        validateUsersList(users, "Пока никто не зарегистрирован");
+        return users;
     }
 
     @Override
@@ -63,24 +66,19 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsersByName(String userName) {
         String name = userName.trim().toLowerCase();
         name = StringUtils.capitalize(name);
-        List<UserDto> users =  userDao.getUsersByName(name)
+        List<UserDto> users = userDao.getUsersByName(name)
                 .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
-        if(users.isEmpty()) {
-            throw new UserNotFoundException("Не существует пользователей с таким именем!");
-        }
+
+        validateUsersList(users, "Не существует пользователей с таким именем!");
         return users;
     }
 
     @Override
-    public Long registerUser(UserDto userDto, boolean isEmployer) {
-        if (userDto.getEmail().isBlank() || userDto.getName().isBlank()) {
-            throw new IncorrectUserEmailException("Email и имя обязательны");
-        }
-
+    public Long registerUser(CreateUserDto userDto) {
         if (Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
-            throw new IncorrectUserEmailException("Пользователь с таким email уже существует");
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
         String userName = userDto.getName().trim().toLowerCase();
@@ -89,7 +87,7 @@ public class UserServiceImpl implements UserService {
         userDto.setName(userName);
         userDto.setEmail(userDto.getEmail().trim().toLowerCase());
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
-        userDto.setAccountType(isEmployer ? "employer" : "applicant");
+        userDto.setAccountType(userDto.getAccountType().trim().toLowerCase());
 
         Long id = userDao.registerUser(UserMapper.toUser(userDto)) ;
         log.info("Register user: {}", id);
@@ -108,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
         User user = UserMapper.toUser(userDto);
         user.setId(userId);
-        Long id =  userDao.updateUser(user);
+        Long id = userDao.updateUser(user);
 
         log.info("Updated user: {}", id);
 
@@ -116,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HttpStatus deleteUser(Long userId){
+    public HttpStatus deleteUser(Long userId) {
         getUserById(userId);
         userDao.deleteUser(userId);
         log.info("Deleted user: {}", userId);
@@ -125,12 +123,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getEmployers() {
-        return userDao.getEmployers()
+        List<UserDto> employers = userDao.getEmployers()
                 .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
-    }
 
+        validateUsersList(employers, "Работодатели не найдены");
+        return employers;
+    }
 
     @Override
     public UserDto getEmployerById(Long userId) {
@@ -140,10 +140,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getApplicants() {
-        return userDao.getApplicants()
+        List<UserDto> applicants = userDao.getApplicants()
                 .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
+
+        validateUsersList(applicants, "Соискатели не найдены");
+        return applicants;
     }
 
     @Override
@@ -167,10 +170,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
-        return userDao.getApplicantsByVacancyId(vacancyId)
+        List<UserDto> applications = userDao.getApplicantsByVacancyId(vacancyId)
                 .stream()
                 .map(UserMapper::toUserDto)
                 .toList();
+
+        validateUsersList(applications, "Нет соискателей, откликнувшихся на данную вакансию");
+        return applications;
     }
 
     @Override
@@ -196,5 +202,12 @@ public class UserServiceImpl implements UserService {
 
     public String saveImage(MultipartFile file) {
         return FileUtil.saveUploadFile(file, "images/");
+    }
+    private void validateUsersList(List<UserDto> users, String errorMessage) {
+        if (users.isEmpty()) {
+            log.warn(errorMessage);
+            throw new UserNotFoundException(errorMessage);
+        }
+        log.info("Retrieved {} users", users.size());
     }
 }

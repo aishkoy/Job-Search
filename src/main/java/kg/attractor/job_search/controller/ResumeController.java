@@ -1,5 +1,7 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.resume.CreateResumeDto;
 import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
@@ -23,7 +25,7 @@ public class ResumeController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createResume(@RequestBody ResumeDto resumeDto) {
+    public ResponseEntity<Long> createResume(@RequestBody @Valid CreateResumeDto resumeDto) {
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
     }
 
@@ -33,7 +35,7 @@ public class ResumeController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody EditResumeDto resumeDto) {
+    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody @Valid EditResumeDto resumeDto) {
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
     }
 
@@ -47,17 +49,17 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.getActiveResumes());
     }
 
-    @GetMapping("category/{categoryId}")
+    @GetMapping("categories/{categoryId}")
     public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId) {
         return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
     }
 
-    @GetMapping("applicant/{id}")
+    @GetMapping("applicants/{id}")
     public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
         return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
     }
 
-    @GetMapping("applicant/by-name")
+    @GetMapping("applicants/by-name")
     public ResponseEntity<List<ResumeDto>> getResumesByApplicantName(@RequestParam String applicantName) {
         return ResponseEntity.ofNullable(resumeService.getResumesByApplicantName(applicantName));
     }

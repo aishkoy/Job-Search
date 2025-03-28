@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dao;
 
 import kg.attractor.job_search.mapper.dao.ResumeDaoMapper;
-import kg.attractor.job_search.models.Resume;
+import kg.attractor.job_search.model.Resume;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -60,7 +60,7 @@ public class ResumeDao {
     public Long createResume(Resume resume) {
         String sql = """
         INSERT INTO resumes (name, category_id, salary, is_active, applicant_id, created_date, update_time)
-        VALUES (?, ?, ?, ?, ?, NOW(), NOW())""";
+        VALUES (?, ?, ?, true, ?, NOW(), NOW())""";
 
         return saveResume(sql, resume, false);
     }
@@ -86,12 +86,12 @@ public class ResumeDao {
             ps.setString(1, resume.getName());
             ps.setLong(2, resume.getCategoryId());
             ps.setFloat(3, resume.getSalary());
-            ps.setBoolean(4, resume.getIsActive());
 
             if (isUpdate) {
+                ps.setBoolean(4, resume.getIsActive());
                 ps.setLong(5, resume.getId());
             } else{
-                ps.setLong(5, resume.getApplicantId());
+                ps.setLong(4, resume.getApplicantId());
             }
 
             return ps;

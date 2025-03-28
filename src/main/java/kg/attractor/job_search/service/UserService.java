@@ -1,5 +1,6 @@
 package kg.attractor.job_search.service;
 
+import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public interface UserService {
 
     List<UserDto> getUsersByName(String name);
 
-    Long registerUser(UserDto userDto, boolean isEmployer);
+    Long registerUser(CreateUserDto userDto);
     Long updateUser(Long userId, EditUserDto userDto);
 
     HttpStatus deleteUser(Long userId);

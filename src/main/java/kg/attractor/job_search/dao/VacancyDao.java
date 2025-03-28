@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dao;
 
 import kg.attractor.job_search.mapper.dao.VacancyDaoMapper;
-import kg.attractor.job_search.models.Vacancy;
+import kg.attractor.job_search.model.Vacancy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -73,7 +73,7 @@ public class VacancyDao {
     public Long createVacancy(Vacancy vacancy) {
         String sql = """
             INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())""";
+            VALUES (?, ?, ?, ?, ?, ?, true, ?, NOW(), NOW())""";
 
         return executeVacancyUpdate(sql, vacancy, false);
     }
@@ -105,12 +105,12 @@ public class VacancyDao {
             ps.setFloat(4, vacancy.getSalary());
             ps.setInt(5, vacancy.getExpFrom());
             ps.setInt(6, vacancy.getExpTo());
-            ps.setBoolean(7, vacancy.getIsActive());
 
             if (isUpdate) {
+                ps.setBoolean(7, vacancy.getIsActive());
                 ps.setLong(8, vacancy.getId());
             } else {
-                ps.setLong(8, vacancy.getAuthorId());
+                ps.setLong(7, vacancy.getAuthorId());
             }
 
             return ps;

@@ -1,13 +1,14 @@
 package kg.attractor.job_search.mapper;
 
+import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.models.User;
+import kg.attractor.job_search.model.User;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class UserMapper {
 
+public class UserMapper {
     public UserDto toUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
@@ -35,6 +36,19 @@ public class UserMapper {
                 .accountType(userDto.getAccountType())
                 .build();
     }
+
+    public User toUser(CreateUserDto userDto) {
+        return User.builder()
+                .name(userDto.getName())
+                .surname(userDto.getSurname())
+                .age(userDto.getAge())
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
+                .phoneNumber(userDto.getPhoneNumber())
+                .accountType(userDto.getAccountType())
+                .build();
+    }
+
 
     public User toUser(EditUserDto userDto){
         return User.builder()
