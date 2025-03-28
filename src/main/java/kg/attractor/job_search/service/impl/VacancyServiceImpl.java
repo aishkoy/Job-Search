@@ -1,12 +1,13 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.VacancyDao;
+import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
 import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
-import kg.attractor.job_search.exceptions.*;
-import kg.attractor.job_search.exceptions.EmployerNotFoundException;
+import kg.attractor.job_search.exception.*;
+import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;
-import kg.attractor.job_search.models.Vacancy;
+import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -26,7 +27,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final UserService userService;
 
     @Override
-    public Long createVacancy(VacancyDto vacancyDto) {
+    public Long createVacancy(CreateVacancyDto vacancyDto) {
         if (vacancyDto.getAuthorId() == null) {
             throw new EmployerNotFoundException();
         }
@@ -46,7 +47,7 @@ public class VacancyServiceImpl implements VacancyService {
                 .stream()
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
-        log.info("Vacancies retrieved {}", vacancies.size());
+        validateVacanciesList(vacancies, "Список вакансий пуст!");
         return vacancies;
     }
 
@@ -57,7 +58,7 @@ public class VacancyServiceImpl implements VacancyService {
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
 
-        log.info("Active vacancies {}", activeVacancies.size());
+        validateVacanciesList(activeVacancies, "Активных вакансий не найдено!");
         return activeVacancies;
     }
 
@@ -75,7 +76,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public HttpStatus deleteVacancy(Long vacancyId) {
-        vacancyDao.getVacancyById(vacancyId);
+        getVacancyById(vacancyId);
         vacancyDao.deleteVacancy(vacancyId);
         log.info("Deleted vacancy {}", vacancyId);
         return HttpStatus.OK;
@@ -83,10 +84,12 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getVacanciesByCategoryId(Long categoryId) {
-        return vacancyDao.getVacanciesByCategoryId(categoryId)
+        List<VacancyDto> vacancies = vacancyDao.getVacanciesByCategoryId(categoryId)
                 .stream()
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
+        validateVacanciesList(vacancies, "Вакансии по указанной категории не найдены!");
+        return vacancies;
     }
 
     @Override
@@ -97,26 +100,40 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId) {
-        return vacancyDao.getVacanciesAppliedByUserId(applicantId)
+        List<VacancyDto> vacancies = vacancyDao.getVacanciesAppliedByUserId(applicantId)
                 .stream()
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
+        validateVacanciesList(vacancies, "Пользователь не откликался на вакансии!");
+        return vacancies;
     }
 
     @Override
     public List<VacancyDto> getVacanciesByEmployerId(Long employerId) {
-        return vacancyDao.getVacanciesByEmployerId(employerId)
+        List<VacancyDto> vacancies = vacancyDao.getVacanciesByEmployerId(employerId)
                 .stream()
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
+        validateVacanciesList(vacancies, "У работодателя нет опубликованных вакансий!");
+        return vacancies;
     }
 
     @Override
     public List<VacancyDto> getVacanciesByCategoryName(String categoryName) {
         String name = categoryName.trim().toLowerCase();
-        return vacancyDao.getVacanciesByCategoryName(name)
+        List<VacancyDto> vacancies =  vacancyDao.getVacanciesByCategoryName(name)
                 .stream()
                 .map(VacancyMapper::toVacancyDto)
                 .toList();
+        validateVacanciesList(vacancies, "Вакансии по категории '" + categoryName + "' не найдены!");
+        return vacancies;
+    }
+
+    private void validateVacanciesList(List<VacancyDto> vacancies, String errorMessage) {
+        if (vacancies.isEmpty()) {
+            log.warn(errorMessage);
+            throw new ResumeNotFoundException(errorMessage);
+        }
+        log.info("Retrieved {} vacancies", vacancies.size());
     }
 }

@@ -1,5 +1,7 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
 import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
@@ -27,12 +29,12 @@ public class VacancyController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVacancy(@RequestBody VacancyDto vacancyDto) {
+    public ResponseEntity<Long> createVacancy(@RequestBody @Valid CreateVacancyDto vacancyDto) {
         return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody EditVacancyDto vacancyDto) {
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid EditVacancyDto vacancyDto) {
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
     }
 
@@ -46,12 +48,12 @@ public class VacancyController {
         return ResponseEntity.ofNullable(vacancyService.getActiveVacancies());
     }
 
-    @GetMapping("category/{categoryId}")
+    @GetMapping("categories/{categoryId}")
     public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId));
     }
 
-    @GetMapping("category/by-name")
+    @GetMapping("categories/by-name")
     public ResponseEntity<List<VacancyDto>> getVacanciesByCategoryByName(@RequestParam("name") String name) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryName(name));
     }
@@ -61,7 +63,7 @@ public class VacancyController {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesAppliedByUserId(userId));
     }
 
-    @GetMapping("employer/{id}")
+    @GetMapping("employers/{id}")
     public ResponseEntity<List<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long id) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(id));
     }

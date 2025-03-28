@@ -3,22 +3,27 @@ package kg.attractor.job_search.service.impl;
 import kg.attractor.job_search.dao.ResumeDao;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
+import kg.attractor.job_search.dto.resume.CreateResumeDto;
 import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
-import kg.attractor.job_search.exceptions.*;
-import kg.attractor.job_search.exceptions.ApplicantNotFoundException;
+import kg.attractor.job_search.exception.*;
+import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;
-import kg.attractor.job_search.models.Resume;
+import kg.attractor.job_search.model.Resume;
 import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ObjLongConsumer;
 
@@ -37,7 +42,7 @@ public class ResumeServiceImpl implements ResumeService {
     public List<ResumeDto> getResumes() {
         List<ResumeDto> resumes = resumeDao.getResumes().stream().map(ResumeMapper::toResumeDto).toList();
         enrichResumesWithAdditionalData(resumes);
-        log.info("Retrieved resumes: {}", resumes.size());
+        validateResumesList(resumes, "Резюме не найдены");
         return resumes;
     }
 
@@ -48,7 +53,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(ResumeMapper::toResumeDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
-        log.info("Retrieved active resumes: {}", resumes.size());
+        validateResumesList(resumes, "Активные резюме не найдены");
         return resumes;
     }
 
@@ -60,6 +65,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(ResumeMapper::toResumeDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
+        validateResumesList(resumes, "Резюме для пользователя с ID: " + userId + " не найдены");
         return resumes;
     }
 
@@ -74,11 +80,13 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(ResumeMapper::toResumeDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
+        validateResumesList(resumes, "Резюме для пользователя с именем: " + userName + " не найдены");
         return resumes;
     }
 
     @Override
-    public Long createResume(ResumeDto resumeDto) {
+    @Transactional(rollbackFor = {Exception.class})
+    public Long createResume(CreateResumeDto resumeDto) {
         if (resumeDto.getApplicantId() == null) {
             throw new ApplicantNotFoundException();
         }
@@ -118,19 +126,48 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeDao.getResumeById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
-        ResumeDto resumeDto =  ResumeMapper.toResumeDto(resume);
+        ResumeDto resumeDto = ResumeMapper.toResumeDto(resume);
         enrichResumeWithAdditionalData(resumeDto);
         log.info("Retrieved resume: {}", resumeDto.getId());
         return resumeDto;
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Long updateResume(Long resumeId, EditResumeDto resumeDto) {
         getResumeById(resumeId);
-        categoryService.getCategoryIdIfPresent((resumeDto.getCategoryId()));
+        categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
+
         Resume resume = ResumeMapper.toResume(resumeDto);
         resume.setId(resumeId);
-        return resumeDao.updateResume(resume);
+        Long updatedResumeId = resumeDao.updateResume(resume);
+
+        updateResumeItems(
+                resumeId,
+                resumeDto.getEducations(),
+                EducationInfoDto::setResumeId,
+                educationInfoService::updateEducationInfo,
+                educationInfoService::createEducationInfo
+        );
+
+        updateResumeItems(
+                resumeId,
+                resumeDto.getWorkExperiences(),
+                WorkExperienceInfoDto::setResumeId,
+                workExperienceInfoService::updateWorkExperienceInfo,
+                workExperienceInfoService::createWorkExperience
+        );
+
+        updateResumeItems(
+                resumeId,
+                resumeDto.getContacts(),
+                ContactInfoDto::setResumeId,
+                contactInfoService::updateContactInfo,
+                contactInfoService::createContactInfo
+        );
+
+        log.info("Updated resume: {}", resumeId);
+        return updatedResumeId;
     }
 
     @Override
@@ -150,7 +187,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(ResumeMapper::toResumeDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
-        log.info("Retrieved resumes by category: {}", resumes.size());
+        validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
         return resumes;
     }
 
@@ -159,11 +196,38 @@ public class ResumeServiceImpl implements ResumeService {
                                         Function<T, ?> createFunction) {
         if (items != null && !items.isEmpty()) {
             for (T item : items) {
+                setResumeIdFunc.accept(item, resumeId);
+                createFunction.apply(item);
+            }
+        }
+    }
+
+    private <T> void updateResumeItems(
+            Long resumeId,
+            List<T> newItems,
+            ObjLongConsumer<T> setResumeIdFunc,
+            BiFunction<Long, T, Long> updateFunction,
+            Function<T, Long> createFunction
+    ) {
+        if (newItems != null) {
+            for (T item : newItems) {
                 try {
                     setResumeIdFunc.accept(item, resumeId);
-                    createFunction.apply(item);
-                } catch (Exception e) {
-                    log.error("Ошибка при создании элемента резюме: {}", e.getMessage());
+
+                    Method getIdMethod = item.getClass().getMethod("getId");
+                    Long itemId = (Long) getIdMethod.invoke(item);
+
+                    if (itemId != null) {
+                        updateFunction.apply(itemId, item);
+                    } else {
+                        createFunction.apply(item);
+                    }
+                } catch (NoSuchMethodException e) {
+                    log.error("Метод getId() не найден для класса {}", item.getClass().getName());
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -174,9 +238,18 @@ public class ResumeServiceImpl implements ResumeService {
             enrichResumeWithAdditionalData(resume);
         }
     }
+
     private void enrichResumeWithAdditionalData(ResumeDto resume) {
         resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
         resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
         resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
+    }
+
+    private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {
+        if (resumes.isEmpty()) {
+            log.warn(errorMessage);
+            throw new ResumeNotFoundException(errorMessage);
+        }
+        log.info("Retrieved {} resumes", resumes.size());
     }
 }

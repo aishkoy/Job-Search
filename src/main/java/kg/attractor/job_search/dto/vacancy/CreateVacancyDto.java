@@ -1,24 +1,25 @@
-package kg.attractor.job_search.models;
+package kg.attractor.job_search.dto.vacancy;
 
+import jakarta.validation.constraints.*;
 import lombok.*;
-
-import java.sql.Timestamp;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class Vacancy {
-    private Long id;
+public class CreateVacancyDto {
+    @NotBlank
     private String name;
     private String description;
+    @NotNull
     private Long categoryId;
+    @NotNull @PositiveOrZero
     private Float salary;
+    @NotNull @Positive
     private Integer expFrom;
+    @NotNull @Positive
     private Integer expTo;
-    private Boolean isActive;
+    @NotNull
     private Long authorId;
-    private Timestamp createdDate;
-    private Timestamp updateTime;
 }
