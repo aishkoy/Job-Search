@@ -17,7 +17,7 @@ public class CreateUserDto {
     @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
             message = "Фамилия может содержать только буквы и дефисы")
     private String surname;
-    @Min(18)
+    @NotNull @Min(18)
     private Integer age;
     @Email @NotBlank
     private String email;
@@ -30,10 +30,10 @@ public class CreateUserDto {
     )
     private String password;
 
-    @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
+    @NotBlank @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     private String phoneNumber;
 
-    @Pattern(
+    @NotBlank @Pattern(
             regexp = "^(employer|applicant)$",
             message = "Роль должна быть либо 'employer', либо 'applicant'"
     )

@@ -1,5 +1,6 @@
 package kg.attractor.job_search.exception.handler;
 
+import jakarta.validation.ConstraintViolationException;
 import kg.attractor.job_search.service.ErrorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseBody> handleConstraintViolation(ConstraintViolationException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(ex.getConstraintViolations()), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ErrorResponseBody handleNSEE(NoSuchElementException e) {

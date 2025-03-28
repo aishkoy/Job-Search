@@ -1,5 +1,6 @@
 package kg.attractor.job_search.mapper;
 
+import kg.attractor.job_search.dto.resume.CreateResumeDto;
 import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.model.Resume;
@@ -17,6 +18,8 @@ public class ResumeMapper {
                 .isActive(resumeDto.getIsActive())
                 .build();
     }
+
+
     public ResumeDto toResumeDto(Resume resume) {
         return ResumeDto.builder()
                 .id(resume.getId())
@@ -30,16 +33,12 @@ public class ResumeMapper {
                 .build();
     }
 
-    public Resume toResume(ResumeDto resumeDto) {
+    public static Resume toResume(CreateResumeDto resumeDto) {
         return Resume.builder()
-                .id(resumeDto.getId())
                 .applicantId(resumeDto.getApplicantId())
                 .name(resumeDto.getName())
                 .categoryId(resumeDto.getCategoryId())
                 .salary(resumeDto.getSalary())
-                .isActive(resumeDto.getIsActive())
-                .createdDate(resumeDto.getCreatedDate())
-                .updateTime(resumeDto.getUpdateTime())
                 .build();
     }
 }

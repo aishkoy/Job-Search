@@ -18,7 +18,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             return categoryDao.getCategoryById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new CategoryNotFoundException();
+            throw new CategoryNotFoundException("Не существует такой категории!");
         }
     }
 }
