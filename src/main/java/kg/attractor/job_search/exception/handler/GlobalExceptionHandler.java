@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     private final ErrorService errorService;
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseBody> handleNSEE(IllegalArgumentException e) {
+    public ResponseEntity<ErrorResponseBody> handleIAE(IllegalArgumentException e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
     }
