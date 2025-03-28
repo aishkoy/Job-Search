@@ -1,11 +1,11 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.UserDao;
+import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
-import kg.attractor.job_search.exception.IncorrectUserEmailException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.model.User;
@@ -74,13 +74,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long registerUser(UserDto userDto, boolean isEmployer) {
-        if (userDto.getEmail().isBlank() || userDto.getName().isBlank()) {
-            throw new IncorrectUserEmailException("Email и имя обязательны");
-        }
-
+    public Long registerUser(CreateUserDto userDto) {
         if (Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
-            throw new IncorrectUserEmailException("Пользователь с таким email уже существует");
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
         String userName = userDto.getName().trim().toLowerCase();
@@ -89,7 +85,7 @@ public class UserServiceImpl implements UserService {
         userDto.setName(userName);
         userDto.setEmail(userDto.getEmail().trim().toLowerCase());
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
-        userDto.setAccountType(isEmployer ? "employer" : "applicant");
+        userDto.setAccountType(userDto.getAccountType().trim().toLowerCase());
 
         Long id = userDao.registerUser(UserMapper.toUser(userDto)) ;
         log.info("Register user: {}", id);
