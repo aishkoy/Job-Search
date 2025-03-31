@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015_add-data-to-users
+      author: Aisha
+      changes:
+        - sql:
+            comment: insert applicant role_id
+            sql: |
+              update USERS
+              set ROLE_ID = (select ID from ROLES where ROLE like 'APPLICANT' limit 1)
+              where ACCOUNT_TYPE = 'applicant';
+        - sql:
+            comment: insert employer role_id
+            sql: |
+              update USERS
+              set ROLE_ID = (select ID from ROLES where ROLE like 'EMPLOYER' limit 1)
+              where ACCOUNT_TYPE = 'employer';
+        - sql:
+            comment: change users password
+            sql: |
+              update USERS
+              set PASSWORD = '$2a$12$787lkyww6lUkNVGiz/u3zeCeIvANQcKKvL7wWTZqcvNXbZA9UUAhG'
+              where NAME like 'Иван';
+
+              update USERS
+              set PASSWORD = '$2a$12$eF..BlZ653tWsSWsAC9iyueDrmO22X5tkffoYIM6vhAvruC8uCJP.'
+              where NAME like 'Мария';

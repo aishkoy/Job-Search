@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 014_add-roles
+      author: Aisha
+      changes:
+        - sql:
+            comment: insert roles into role table
+            sql: |
+              insert into ROLES (ROLE)
+              values ( 'EMPLOYER' ),
+                     ('APPLICANT');
