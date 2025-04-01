@@ -49,7 +49,7 @@ public class ResumeController {
 
     @GetMapping("{id}")
     public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
-        return ResponseEntity.ofNullable(resumeService.getResumeById(id));
+        return ResponseEntity.ofNullable(resumeService.getResumeById(id, adapter.getAuthId()));
     }
 
     @GetMapping("active")

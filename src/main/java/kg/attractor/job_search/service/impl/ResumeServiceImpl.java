@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ObjLongConsumer;
+import java.util.function.ToLongFunction;
 
 @Slf4j
 @Service
@@ -121,13 +122,25 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public ResumeDto getResumeById(Long resumeId) {
+    public ResumeDto getResumeById(Long resumeId, Long userId) {
+        ResumeDto resume = getResumeById(resumeId);
+        try {
+            userService.getEmployerById(userId);
+            return resume;
+        } catch (EmployerNotFoundException ignore) {
+            if (isResumeOwnedByApplicant(resumeId, userId)) {
+                return resume;
+            }
+            throw new AccessDeniedException("Соискатель может просматривать только свои резюме");
+        }
+    }
+
+    private ResumeDto getResumeById(Long resumeId) {
         Resume resume = resumeDao.getResumeById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
         ResumeDto resumeDto = ResumeMapper.toResumeDto(resume);
         enrichResumeWithAdditionalData(resumeDto);
-        log.info("Retrieved resume: {}", resumeDto.getId());
         return resumeDto;
     }
 
@@ -136,7 +149,7 @@ public class ResumeServiceImpl implements ResumeService {
     public Long updateResume(Long resumeId, ResumeFormDto resumeDto) {
         getResumeById(resumeId);
         categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
-        if(!isResumeOwnedByApplicant(resumeId, resumeDto.getApplicantId())) {
+        if (!isResumeOwnedByApplicant(resumeId, resumeDto.getApplicantId())) {
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
         }
 
@@ -175,7 +188,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public HttpStatus deleteResume(Long resumeId, Long userId) {
         getResumeById(resumeId);
-        if(!isResumeOwnedByApplicant(resumeId, userId)) {
+        if (!isResumeOwnedByApplicant(resumeId, userId)) {
             throw new AccessDeniedException("У вас нет прав на удаление этого резюме!");
         }
         resumeDao.deleteResume(resumeId);
@@ -199,11 +212,11 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Long changeActiveStatus(Long resumeId, Long userId) {
         ResumeDto resume = getResumeById(resumeId);
-        if(!isResumeOwnedByApplicant(resumeId, userId)) {
+        if (!isResumeOwnedByApplicant(resumeId, userId)) {
             throw new AccessDeniedException("У вас нет прав на изменение статуса этого резюме!");
         }
 
-        Boolean status = resume.getIsActive().equals(Boolean.FALSE) ? Boolean.TRUE :  Boolean.FALSE;
+        Boolean status = resume.getIsActive().equals(Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
 
         resumeDao.updateResumeActiveStatus(resumeId, status);
         return resumeId;
@@ -225,7 +238,7 @@ public class ResumeServiceImpl implements ResumeService {
             List<T> newItems,
             ObjLongConsumer<T> setResumeIdFunc,
             BiFunction<Long, T, Long> updateFunction,
-            Function<T, Long> createFunction
+            ToLongFunction<T> createFunction
     ) {
         if (newItems != null) {
             for (T item : newItems) {
@@ -238,7 +251,7 @@ public class ResumeServiceImpl implements ResumeService {
                     if (itemId != null) {
                         updateFunction.apply(itemId, item);
                     } else {
-                        createFunction.apply(item);
+                        createFunction.applyAsLong(item);
                     }
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     log.error("Метод getId() не найден для класса {}", item.getClass().getName());

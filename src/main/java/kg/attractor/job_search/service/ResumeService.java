@@ -17,7 +17,7 @@ public interface ResumeService {
 
     Long createResume(ResumeFormDto resumeDto);
 
-    ResumeDto getResumeById(Long resumeId);
+    ResumeDto getResumeById(Long resumeId, Long userId);
 
     Long updateResume(Long resumeId, ResumeFormDto resumeDto);
 
