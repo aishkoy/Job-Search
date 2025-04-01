@@ -29,11 +29,6 @@ public class ResumeController {
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
-        return ResponseEntity.ofNullable(resumeService.getResumeById(id));
-    }
-
     @PutMapping("{id}")
     public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody @Valid EditResumeDto resumeDto) {
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
@@ -42,6 +37,11 @@ public class ResumeController {
     @DeleteMapping("{id}")
     public HttpStatus deleteResume(@PathVariable("id") Long resumeId) {
         return resumeService.deleteResume(resumeId);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
+        return ResponseEntity.ofNullable(resumeService.getResumeById(id));
     }
 
     @GetMapping("active")
