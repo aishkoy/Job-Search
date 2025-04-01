@@ -3,6 +3,7 @@ package kg.attractor.job_search.service.impl;
 import jakarta.validation.ConstraintViolation;
 import kg.attractor.job_search.exception.handler.ErrorResponseBody;
 import kg.attractor.job_search.service.ErrorService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -10,6 +11,16 @@ import java.util.*;
 
 @Service
 public class ErrorServiceImpl implements ErrorService {
+
+    @Override
+    public ErrorResponseBody makeResponse(DataIntegrityViolationException e) {
+        String message = e.getMessage();
+
+        return ErrorResponseBody.builder()
+                .title("Validation Error")
+                .response(Map.of("errors", List.of(message)))
+                .build();
+    }
 
     @Override
     public ErrorResponseBody makeResponse(Exception e) {

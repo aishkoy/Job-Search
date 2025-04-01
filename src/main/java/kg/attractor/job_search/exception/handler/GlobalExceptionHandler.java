@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import kg.attractor.job_search.service.ErrorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,13 +33,20 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ErrorResponseBody handleNSEE(NoSuchElementException e) {
+    public ResponseEntity<ErrorResponseBody> handleNSEE(NoSuchElementException e) {
         log.error(e.getMessage());
-        return errorService.makeResponse(e);
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseBody> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseBody> handleAccessDenied(AccessDeniedException e) {
+        log.error(e.getMessage());
         return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.FORBIDDEN);
     }
 
