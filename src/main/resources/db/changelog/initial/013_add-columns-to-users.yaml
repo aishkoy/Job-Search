@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: 013_add-columns-to-user-table
+      author: Aisha
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: long
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_role_id
+            onDelete: RESTRICT
+            onUpdate: CASCADE

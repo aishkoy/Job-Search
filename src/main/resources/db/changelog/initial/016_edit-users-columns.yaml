@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 016_edit-columns-in-user-table
+      author: Aisha
+      changes:
+        - dropColumn:
+            tableName: users
+            columnName: account_type
+        - addNotNullConstraint:
+            tableName: users
+            columnName: role_id
+            validate: true

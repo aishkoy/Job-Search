@@ -1,7 +1,6 @@
 package kg.attractor.job_search.mapper;
 
-import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
-import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.model.Vacancy;
 import lombok.experimental.UtilityClass;
@@ -9,7 +8,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class VacancyMapper {
 
-    public Vacancy toVacancy(EditVacancyDto dto){
+    public Vacancy toVacancy(VacancyFormDto dto){
         return Vacancy.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
@@ -17,7 +16,7 @@ public class VacancyMapper {
                 .salary(dto.getSalary())
                 .expFrom(dto.getExpFrom())
                 .expTo(dto.getExpTo())
-                .isActive(dto.getIsActive())
+                .authorId(dto.getAuthorId())
                 .build();
     }
     public VacancyDto toVacancyDto(Vacancy vacancy) {
@@ -33,18 +32,6 @@ public class VacancyMapper {
                 .authorId(vacancy.getAuthorId())
                 .createdDate(vacancy.getCreatedDate())
                 .updateTime(vacancy.getUpdateTime())
-                .build();
-    }
-
-    public Vacancy toVacancy(CreateVacancyDto dto) {
-        return Vacancy.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .categoryId(dto.getCategoryId())
-                .salary(dto.getSalary())
-                .expFrom(dto.getExpFrom())
-                .expTo(dto.getExpTo())
-                .authorId(dto.getAuthorId())
                 .build();
     }
 

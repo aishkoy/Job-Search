@@ -33,9 +33,6 @@ public class CreateUserDto {
     @NotBlank @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     private String phoneNumber;
 
-    @NotBlank @Pattern(
-            regexp = "^(employer|applicant)$",
-            message = "Роль должна быть либо 'employer', либо 'applicant'"
-    )
-    private String accountType;
+    @NotNull
+    private Long roleId;
 }

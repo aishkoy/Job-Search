@@ -1,7 +1,5 @@
 package kg.attractor.job_search.mapper;
-
-import kg.attractor.job_search.dto.resume.CreateResumeDto;
-import kg.attractor.job_search.dto.resume.EditResumeDto;
+import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.model.Resume;
 import lombok.experimental.UtilityClass;
@@ -9,16 +7,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ResumeMapper {
-
-    public Resume toResume(EditResumeDto resumeDto) {
-        return Resume.builder()
-                .name(resumeDto.getName())
-                .categoryId(resumeDto.getCategoryId())
-                .salary(resumeDto.getSalary())
-                .isActive(resumeDto.getIsActive())
-                .build();
-    }
-
 
     public ResumeDto toResumeDto(Resume resume) {
         return ResumeDto.builder()
@@ -33,7 +21,7 @@ public class ResumeMapper {
                 .build();
     }
 
-    public static Resume toResume(CreateResumeDto resumeDto) {
+    public static Resume toResume(ResumeFormDto resumeDto) {
         return Resume.builder()
                 .applicantId(resumeDto.getApplicantId())
                 .name(resumeDto.getName())

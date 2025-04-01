@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.util.AuthAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("users")
 public class UserController {
     private final UserService userService;
+    private final AuthAdapter adapter;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
@@ -30,12 +32,13 @@ public class UserController {
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid EditUserDto userDto) {
+        userDto.setId(adapter.getAuthId());
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
 
     @DeleteMapping("{id}")
     public HttpStatus deleteUser(@PathVariable("id") Long userId) {
-        return userService.deleteUser(userId);
+        return userService.deleteUser(userId, adapter.getAuthId());
     }
 
     @GetMapping("by-name")
@@ -60,7 +63,7 @@ public class UserController {
 
     @PostMapping("{id}/avatar")
     public ResponseEntity<MultipartFile> uploadAvatar(@PathVariable("id") Long userId, @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file));
+        return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file, adapter.getAuthId()));
     }
 
     @GetMapping("{id}/avatar")

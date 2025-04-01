@@ -1,7 +1,5 @@
 package kg.attractor.job_search.service;
 
-import org.springframework.http.HttpStatus;
-
 public interface ResponseService {
-    HttpStatus applyVacancy(Long vacancyId);
+    Long applyVacancy(Long vacancyId, Long resumeId, Long applicantId);
 }

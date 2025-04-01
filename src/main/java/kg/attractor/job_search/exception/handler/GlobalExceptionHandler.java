@@ -4,11 +4,14 @@ import jakarta.validation.ConstraintViolationException;
 import kg.attractor.job_search.service.ErrorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.NoSuchElementException;
 
@@ -17,6 +20,24 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     private final ErrorService errorService;
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorResponseBody> handleMultipartException(MultipartException e) {
+        log.error("Multipart request processing error: {}", e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseBody> handleISE(IllegalStateException e) {
+        log.error("IllegalStateException processing error: {}", e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponseBody> handleRuntime(RuntimeException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseBody> handleIAE(IllegalArgumentException e) {
@@ -31,9 +52,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ErrorResponseBody handleNSEE(NoSuchElementException e) {
+    public ResponseEntity<ErrorResponseBody> handleNSEE(NoSuchElementException e) {
         log.error(e.getMessage());
-        return errorService.makeResponse(e);
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseBody> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseBody> handleAccessDenied(AccessDeniedException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

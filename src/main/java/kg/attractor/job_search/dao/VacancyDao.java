@@ -70,6 +70,16 @@ public class VacancyDao {
         return jdbcTemplate.query(sql, new VacancyDaoMapper(), employerId);
     }
 
+    public void updateVacancyActiveStatus(Long vacancyId, boolean isActive) {
+        String sql = "UPDATE vacancies SET is_active = ?, update_time = NOW() WHERE id = ?";
+        jdbcTemplate.update(sql, isActive, vacancyId);
+    }
+
+    public boolean isVacancyOwnedByAuthor(Long vacancyId, Long employerId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM vacancies WHERE id = ? AND author_id = ?) AS belongs_to_applicant";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, vacancyId, employerId));
+    }
+
     public Long createVacancy(Vacancy vacancy) {
         String sql = """
             INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
