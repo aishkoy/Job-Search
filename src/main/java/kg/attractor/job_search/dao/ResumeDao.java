@@ -57,6 +57,16 @@ public class ResumeDao {
         return Optional.ofNullable(resume);
     }
 
+    public void updateResumeActiveStatus(Long resumeId, boolean isActive) {
+        String sql = "UPDATE resumes SET is_active = ?, update_time = NOW() WHERE id = ?";
+        jdbcTemplate.update(sql, isActive, resumeId);
+    }
+
+    public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM resumes WHERE id = ? AND applicant_id = ?) AS belongs_to_applicant";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, resumeId, applicantId));
+    }
+
     public Long createResume(Resume resume) {
         String sql = """
         INSERT INTO resumes (name, category_id, salary, is_active, applicant_id, created_date, update_time)
@@ -72,7 +82,6 @@ public class ResumeDao {
             name = ?,
             category_id = ?,
             salary = ?,
-            is_active = ?,
             update_time = NOW()
         WHERE id = ?""";
 
@@ -88,8 +97,7 @@ public class ResumeDao {
             ps.setFloat(3, resume.getSalary());
 
             if (isUpdate) {
-                ps.setBoolean(4, resume.getIsActive());
-                ps.setLong(5, resume.getId());
+                ps.setLong(4, resume.getId());
             } else{
                 ps.setLong(4, resume.getApplicantId());
             }

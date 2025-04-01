@@ -3,10 +3,9 @@ package kg.attractor.job_search.service.impl;
 import kg.attractor.job_search.dao.ResumeDao;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
-import kg.attractor.job_search.dto.resume.CreateResumeDto;
-import kg.attractor.job_search.dto.resume.EditResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
+import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;
@@ -16,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,12 +86,11 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Long createResume(CreateResumeDto resumeDto) {
+    public Long createResume(ResumeFormDto resumeDto) {
         if (resumeDto.getApplicantId() == null) {
             throw new ApplicantNotFoundException();
         }
 
-        userService.getApplicantById(resumeDto.getApplicantId());
         categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
 
         Long resumeId = resumeDao.createResume(ResumeMapper.toResume(resumeDto));
@@ -134,9 +133,12 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Long updateResume(Long resumeId, EditResumeDto resumeDto) {
+    public Long updateResume(Long resumeId, ResumeFormDto resumeDto) {
         getResumeById(resumeId);
         categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
+        if(!isResumeOwnedByApplicant(resumeId, resumeDto.getApplicantId())) {
+            throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
+        }
 
         Resume resume = ResumeMapper.toResume(resumeDto);
         resume.setId(resumeId);
@@ -171,8 +173,11 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public HttpStatus deleteResume(Long resumeId) {
+    public HttpStatus deleteResume(Long resumeId, Long userId) {
         getResumeById(resumeId);
+        if(!isResumeOwnedByApplicant(resumeId, userId)) {
+            throw new AccessDeniedException("У вас нет прав на удаление этого резюме!");
+        }
         resumeDao.deleteResume(resumeId);
         log.info("Deleted resume: {}", resumeId);
         return HttpStatus.OK;
@@ -189,6 +194,19 @@ public class ResumeServiceImpl implements ResumeService {
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
         return resumes;
+    }
+
+    @Override
+    public Long changeActiveStatus(Long resumeId, Long userId) {
+        ResumeDto resume = getResumeById(resumeId);
+        if(!isResumeOwnedByApplicant(resumeId, userId)) {
+            throw new AccessDeniedException("У вас нет прав на изменение статуса этого резюме!");
+        }
+
+        Boolean status = resume.getIsActive().equals(Boolean.FALSE) ? Boolean.TRUE :  Boolean.FALSE;
+
+        resumeDao.updateResumeActiveStatus(resumeId, status);
+        return resumeId;
     }
 
     private <T> void processResumeItems(Collection<T> items, Long resumeId,
@@ -222,15 +240,15 @@ public class ResumeServiceImpl implements ResumeService {
                     } else {
                         createFunction.apply(item);
                     }
-                } catch (NoSuchMethodException e) {
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     log.error("Метод getId() не найден для класса {}", item.getClass().getName());
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
                 }
             }
         }
+    }
+
+    public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
+        return resumeDao.isResumeOwnedByApplicant(resumeId, applicantId);
     }
 
     private void enrichResumesWithAdditionalData(List<ResumeDto> resumes) {
