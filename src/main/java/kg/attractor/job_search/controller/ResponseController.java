@@ -1,8 +1,9 @@
 package kg.attractor.job_search.controller;
 
 import kg.attractor.job_search.service.ResponseService;
+import kg.attractor.job_search.util.AuthAdapter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -11,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("responses")
 public class ResponseController {
     private final ResponseService responseService;
+    private final AuthAdapter adapter;
 
-    @PostMapping("{vacancyId}") // /vacancies/1?applicantId=9
-    public HttpStatus applyVacancy(@PathVariable("vacancyId") Long vacancyId) {
-        // TODO откликнуться на вакансию
-        return responseService.applyVacancy(vacancyId);
+    @PostMapping("{vacancyId}")
+    public ResponseEntity<Long> applyVacancy(@PathVariable("vacancyId") Long vacancyId, @RequestParam("resumeId") Long resumeId) {
+        return ResponseEntity.ofNullable(responseService.applyVacancy(vacancyId, resumeId, adapter.getAuthId()));
     }
 }

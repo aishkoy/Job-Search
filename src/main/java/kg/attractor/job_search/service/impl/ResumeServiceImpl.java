@@ -131,7 +131,7 @@ public class ResumeServiceImpl implements ResumeService {
             if (isResumeOwnedByApplicant(resumeId, userId)) {
                 return resume;
             }
-            throw new AccessDeniedException("Соискатель может просматривать только свои резюме");
+            throw new AccessDeniedException("Это не ваше резюме");
         }
     }
 
