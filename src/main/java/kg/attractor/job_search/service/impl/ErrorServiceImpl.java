@@ -6,11 +6,34 @@ import kg.attractor.job_search.service.ErrorService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.*;
 
 @Service
 public class ErrorServiceImpl implements ErrorService {
+    @Override
+    public ErrorResponseBody makeResponse(IllegalStateException e) {
+        String message = Optional.ofNullable(e.getMessage())
+                .orElse("Invalid state encountered");
+
+        return ErrorResponseBody.builder()
+                .title("Illegal State Error")
+                .response(Map.of("errors", List.of(message)))
+                .build();
+    }
+
+
+    @Override
+    public ErrorResponseBody makeResponse(IllegalArgumentException e) {
+        String message = Optional.ofNullable(e.getMessage())
+                .orElse("Invalid argument provided");
+
+        return ErrorResponseBody.builder()
+                .title("Illegal Argument Error")
+                .response(Map.of("errors", List.of(message)))
+                .build();
+    }
 
     @Override
     public ErrorResponseBody makeResponse(DataIntegrityViolationException e) {
@@ -18,6 +41,17 @@ public class ErrorServiceImpl implements ErrorService {
 
         return ErrorResponseBody.builder()
                 .title("Validation Error")
+                .response(Map.of("errors", List.of(message)))
+                .build();
+    }
+
+    @Override
+    public ErrorResponseBody makeResponse(MultipartException e) {
+        String message = Optional.ofNullable(e.getMessage())
+                .orElse("Invalid multipart request or file upload");
+
+        return ErrorResponseBody.builder()
+                .title("File Upload Error")
                 .response(Map.of("errors", List.of(message)))
                 .build();
     }

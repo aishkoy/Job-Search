@@ -11,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.NoSuchElementException;
 
@@ -19,6 +20,18 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     private final ErrorService errorService;
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorResponseBody> handleMultipartException(MultipartException e) {
+        log.error("Multipart request processing error: {}", e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseBody> handleISE(IllegalStateException e) {
+        log.error("IllegalStateException processing error: {}", e.getMessage());
+        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseBody> handleIAE(IllegalArgumentException e) {
