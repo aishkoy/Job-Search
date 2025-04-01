@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 018 change vacancies and resumes
+      author: admin
+      changes:
+        - renameColumn:
+            tableName: resumes
+            oldColumnName: APPLICANT_ID
+            newColumnName: USER_ID
+
+        - renameColumn:
+            tableName: resumes
+            oldColumnName: update_time
+            newColumnName: updated_at
+
+        - renameColumn:
+            tableName: resumes
+            oldColumnName: created_date
+            newColumnName: created_at
+
+        - renameColumn:
+            tableName: vacancies
+            oldColumnName: author_id
+            newColumnName: user_id
+
+        - renameColumn:
+            tableName: vacancies
+            oldColumnName: update_time
+            newColumnName: updated_at
+
+        - renameColumn:
+            tableName: vacancies
+            oldColumnName: created_date
+            newColumnName: created_at
+
+        - renameColumn:
+            tableName: responded_applicants
+            oldColumnName: CONFIRMATION
+            newColumnName: is_confirmed
+
+        - renameTable:
+            oldTableName: contacts_info
+            newTableName: contact_info
