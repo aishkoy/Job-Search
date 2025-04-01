@@ -8,4 +8,5 @@ databaseChangeLog:
             sql: |
               insert into ROLES (ROLE)
               values ( 'EMPLOYER' ),
-                     ('APPLICANT');
+                     ('APPLICANT'),
+                     ('ADMIN');

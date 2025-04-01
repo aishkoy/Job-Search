@@ -16,7 +16,7 @@ databaseChangeLog:
               set ROLE_ID = (select ID from ROLES where ROLE like 'EMPLOYER' limit 1)
               where ACCOUNT_TYPE = 'employer';
         - sql:
-            comment: change users password
+            comment: change users password (hash_password_1), (hash_password_2)
             sql: |
               update USERS
               set PASSWORD = '$2a$12$787lkyww6lUkNVGiz/u3zeCeIvANQcKKvL7wWTZqcvNXbZA9UUAhG'
@@ -25,3 +25,11 @@ databaseChangeLog:
               update USERS
               set PASSWORD = '$2a$12$eF..BlZ653tWsSWsAC9iyueDrmO22X5tkffoYIM6vhAvruC8uCJP.'
               where NAME like 'Мария';
+        - sql:
+            comment: add admin data (password 'admin')
+            sql: |
+              insert into USERS(name, surname, age, email, password, phone_number, account_type, role_id)
+              values ('Admin', 'Admin', 18, 'admin@admin.com', 
+              '$2a$12$i5/wXq4ZaxEf5RCQ7/v4k.U5/tH08/ttgUsDksIikafP6wFfUxkLK', 
+              '+996553372007', 'admin',
+              (select id from ROLES where ROLE like 'ADMIN'))
