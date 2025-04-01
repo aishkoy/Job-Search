@@ -16,7 +16,7 @@ public class UserMapper {
                 .surname(user.getSurname())
                 .age(user.getAge())
                 .email(user.getEmail())
-                .accountType(user.getAccountType())
+                .roleId(user.getRoleId())
                 .avatar(user.getAvatar())
                 .phoneNumber(user.getPhoneNumber())
                 .password(user.getPassword())
@@ -33,7 +33,7 @@ public class UserMapper {
                 .password(userDto.getPassword())
                 .phoneNumber(userDto.getPhoneNumber())
                 .avatar(userDto.getAvatar())
-                .accountType(userDto.getAccountType())
+                .roleId(userDto.getRoleId())
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class UserMapper {
                 .email(userDto.getEmail())
                 .password(userDto.getPassword())
                 .phoneNumber(userDto.getPhoneNumber())
-                .accountType(userDto.getAccountType())
+                .roleId(userDto.getRoleId())
                 .build();
     }
 

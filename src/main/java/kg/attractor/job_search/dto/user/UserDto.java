@@ -16,5 +16,5 @@ public class UserDto {
     private String password;
     private String phoneNumber;
     private String avatar;
-    private String accountType;
+    private Long roleId;
 }

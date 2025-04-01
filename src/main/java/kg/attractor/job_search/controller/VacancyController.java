@@ -1,8 +1,8 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
-import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
+import kg.attractor.job_search.util.AuthAdapter;
+import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("vacancies")
 public class VacancyController {
     private final VacancyService vacancyService;
+    private final AuthAdapter adapter;
 
     @GetMapping
     public ResponseEntity<List<VacancyDto>> getVacancies() {
@@ -26,21 +27,6 @@ public class VacancyController {
     @GetMapping("{id}")
     public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
         return ResponseEntity.ofNullable(vacancyService.getVacancyById(id));
-    }
-
-    @PostMapping
-    public ResponseEntity<Long> createVacancy(@RequestBody @Valid CreateVacancyDto vacancyDto) {
-        return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid EditVacancyDto vacancyDto) {
-        return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
-    }
-
-    @DeleteMapping("{id}")
-    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
-        return vacancyService.deleteVacancy(vacancyId);
     }
 
     @GetMapping("active")
@@ -58,13 +44,35 @@ public class VacancyController {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryName(name));
     }
 
-    @GetMapping("applied/{userId}")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByApplicantId(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesAppliedByUserId(userId));
-    }
-
     @GetMapping("employers/{id}")
     public ResponseEntity<List<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long id) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<Long> createVacancy(@RequestBody @Valid VacancyFormDto vacancyDto) {
+        vacancyDto.setAuthorId(adapter.getAuthId());
+        return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid VacancyFormDto vacancyDto) {
+        vacancyDto.setAuthorId(adapter.getAuthId());
+        return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
+    }
+
+    @DeleteMapping("{id}")
+    public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
+        return vacancyService.deleteVacancy(vacancyId, adapter.getAuthId());
+    }
+
+    @PutMapping("{id}/active")
+    public ResponseEntity<Long> changeActivity(@PathVariable("id") Long vacancyId) {
+        return ResponseEntity.ofNullable(vacancyService.changeActiveStatus(vacancyId, adapter.getAuthId()));
+    }
+
+    @GetMapping("applied/{userId}")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByApplicantId(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesAppliedByUserId(userId));
     }
 }

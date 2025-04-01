@@ -22,7 +22,7 @@ public interface UserService {
     Long registerUser(CreateUserDto userDto);
     Long updateUser(Long userId, EditUserDto userDto);
 
-    HttpStatus deleteUser(Long userId);
+    HttpStatus deleteUser(Long userId, Long authId);
 
     List<UserDto> getEmployers();
 
@@ -32,7 +32,7 @@ public interface UserService {
 
     UserDto getApplicantById(Long id);
 
-    MultipartFile uploadAvatar(Long userId, MultipartFile file);
+    MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId);
 
     List<UserDto> getApplicationsByVacancyId(Long vacancyId);
 
