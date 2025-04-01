@@ -51,22 +51,22 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, Integer.class, email) > 0;
     }
     public List<User> getEmployers() {
-        String sql = "select * from users where ACCOUNT_TYPE = 'employer'";
+        String sql = "select * from users where role_id = (select id from roles where role like 'EMPLOYER')";
         return jdbcTemplate.query(sql, new UserDaoMapper());
     }
     public List<User> getApplicants() {
-        String sql = "select * from users where ACCOUNT_TYPE = 'applicant'";
+        String sql = "select * from users where role_id = (select id from roles where role like 'APPLICANT')";
         return jdbcTemplate.query(sql, new UserDaoMapper());
     }
 
     public Optional<User> getEmployerById(Long id) {
-        String sql = "select * from users where ACCOUNT_TYPE = 'employer' AND id = ?";
+        String sql = "select * from users where role_id = (select id from roles where role like 'EMPLOYER') AND id = ?";
         User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), id));
         return Optional.ofNullable(user);
     }
 
     public Optional<User> getApplicantById(Long id) {
-        String sql = "select * from users where ACCOUNT_TYPE = 'applicant' AND id = ?";
+        String sql = "select * from users where role_id = (select id from roles where role like 'APPLICANT') AND id = ?";
         User user = DataAccessUtils.singleResult(jdbcTemplate.query(sql, new UserDaoMapper(), id));
         return Optional.ofNullable(user);
     }
@@ -82,8 +82,8 @@ public class UserDao {
 
     public Long registerUser(User user) {
         String sql = """
-                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, account_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, role_id, enabled)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)""";
 
         return saveUser(user, sql);
     }
@@ -117,9 +117,8 @@ public class UserDao {
             } else{
                 ps.setString(6, user.getEmail());
                 ps.setString(7, user.getPassword());
-                ps.setString(8, user.getAccountType());
+                ps.setLong(8, user.getRoleId());
             }
-
             return ps;}, keyHolder
         );
 

@@ -23,9 +23,17 @@ spring:
     ansi:
       enabled: always
 
+  security:
+    user:
+      name: email
+      password: password
+
 logging:
   level:
     root: info
+    org:
+      springframework:
+        security: debug
 
   file:
     name: logs/spring.log

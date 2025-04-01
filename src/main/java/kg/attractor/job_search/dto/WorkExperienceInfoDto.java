@@ -20,6 +20,6 @@ public class WorkExperienceInfoDto {
     private String companyName;
     @NotBlank
     private String position;
+    @NotBlank
     private String responsibilities;
-
 }

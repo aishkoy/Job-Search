@@ -1,11 +1,9 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dao.VacancyDao;
-import kg.attractor.job_search.dto.vacancy.CreateVacancyDto;
-import kg.attractor.job_search.dto.vacancy.EditVacancyDto;
+import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.exception.*;
-import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;
 import kg.attractor.job_search.model.Vacancy;
 import kg.attractor.job_search.service.CategoryService;
@@ -14,6 +12,7 @@ import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +26,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final UserService userService;
 
     @Override
-    public Long createVacancy(CreateVacancyDto vacancyDto) {
-        if (vacancyDto.getAuthorId() == null) {
-            throw new EmployerNotFoundException();
-        }
-
+    public Long createVacancy(VacancyFormDto vacancyDto) {
         userService.getEmployerById(vacancyDto.getAuthorId());
         categoryService.getCategoryIdIfPresent(vacancyDto.getCategoryId());
         Long vacancyId = vacancyDao.createVacancy(VacancyMapper.toVacancy(vacancyDto));
@@ -63,8 +58,11 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Long updateVacancy(Long vacancyId, EditVacancyDto vacancyDto) {
+    public Long updateVacancy(Long vacancyId, VacancyFormDto vacancyDto) {
         getVacancyById(vacancyId);
+        if(!isVacancyOwnedByAuthor(vacancyId, vacancyDto.getAuthorId())) {
+            throw new AccessDeniedException("У вас нет права на редактирование этой вакансии!");
+        }
 
         categoryService.getCategoryIdIfPresent((vacancyDto.getCategoryId()));
         Vacancy vacancy = VacancyMapper.toVacancy(vacancyDto);
@@ -75,11 +73,26 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public HttpStatus deleteVacancy(Long vacancyId) {
+    public HttpStatus deleteVacancy(Long vacancyId, Long authorId) {
         getVacancyById(vacancyId);
+        if(!isVacancyOwnedByAuthor(vacancyId, authorId)) {
+            throw new AccessDeniedException("У вас нет права на удалении этой вакансии!");
+        }
         vacancyDao.deleteVacancy(vacancyId);
         log.info("Deleted vacancy {}", vacancyId);
         return HttpStatus.OK;
+    }
+
+    @Override
+    public Long changeActiveStatus(Long vacancyId, Long authorId) {
+        VacancyDto vacancy = getVacancyById(vacancyId);
+        if(!isVacancyOwnedByAuthor(vacancyId, authorId)) {
+            throw new AccessDeniedException("У вас нет права на изменение активности этой вакансии!");
+        }
+        Boolean status = vacancy.getIsActive() == Boolean.TRUE ? Boolean.FALSE : Boolean.TRUE;
+        vacancyDao.updateVacancyActiveStatus(vacancyId, status);
+        log.info("Changed vacancy active status to {}", status);
+        return vacancyId;
     }
 
     @Override
@@ -127,6 +140,10 @@ public class VacancyServiceImpl implements VacancyService {
                 .toList();
         validateVacanciesList(vacancies, "Вакансии по категории '" + categoryName + "' не найдены!");
         return vacancies;
+    }
+
+    public boolean isVacancyOwnedByAuthor(Long vacancyId, Long authorId) {
+        return vacancyDao.isVacancyOwnedByAuthor(vacancyId, authorId);
     }
 
     private void validateVacanciesList(List<VacancyDto> vacancies, String errorMessage) {
