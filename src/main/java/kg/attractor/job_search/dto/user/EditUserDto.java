@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class EditUserDto {
+    private Long id;
     @NotBlank
     @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
             message = "Имя может содержать только буквы и дефисы")

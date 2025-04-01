@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final RoleService roleService;
+    private final PasswordEncoder encoder;
 
     @Override
     public List<UserDto> getUsers() {
@@ -92,6 +95,7 @@ public class UserServiceImpl implements UserService {
         userDto.setEmail(userDto.getEmail().trim().toLowerCase());
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
         userDto.setRoleId(userDto.getRoleId());
+        userDto.setPassword(encoder.encode(userDto.getPassword()));
 
         Long id = userDao.registerUser(UserMapper.toUser(userDto)) ;
         log.info("Register user: {}", id);
@@ -101,6 +105,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long updateUser(Long userId, EditUserDto userDto) {
         getUserById(userId);
+
+        if(!userId.equals(userDto.getId())) {
+            throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
+        }
 
         String name = userDto.getName().trim().toLowerCase();
         name = StringUtils.capitalize(name);
@@ -118,8 +126,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public HttpStatus deleteUser(Long userId) {
+    public HttpStatus deleteUser(Long userId, Long authId) {
         getUserById(userId);
+        if(!userId.equals(authId)) {
+            throw new AccessDeniedException("Вы не имеете права удалять чужжой профиль!");
+        }
         userDao.deleteUser(userId);
         log.info("Deleted user: {}", userId);
         return HttpStatus.OK;
@@ -160,7 +171,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MultipartFile uploadAvatar(Long userId, MultipartFile file) {
+    public MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId) {
+        if(!userId.equals(authId)) {
+            throw new AccessDeniedException("Вы не имеете права на загрузку аватара другому профилю!");
+        }
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
             throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
