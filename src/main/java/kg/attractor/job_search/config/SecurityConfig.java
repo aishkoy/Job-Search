@@ -71,20 +71,15 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/vacancies/**").hasRole("EMPLOYER")
                                 .requestMatchers(HttpMethod.GET, "/users/responded/**", "/users/applicants/**").hasRole("EMPLOYER")
 
-                                .requestMatchers(HttpMethod.DELETE, "/users/**").hasAnyRole("APPLICANT", "EMPLOYER")
-
-                                .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/users/{id}").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/users/{id}/avatar").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/users/{id}/avatar").authenticated()
 
                                 .requestMatchers(HttpMethod.GET, "/users",
                                                                 "/users/by-name",
                                                                 "/users/by-phone",
                                                                 "/users/by-email",
                                                                 "/users/exists").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN")
-
                                 .anyRequest().permitAll()
                 );
 
