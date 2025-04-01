@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class EditVacancyDto {
+public class VacancyFormDto {
     @NotBlank
     private String name;
     private String description;
@@ -21,8 +21,8 @@ public class EditVacancyDto {
     private Float salary;
     @NotNull @Positive
     private Integer expFrom;
-    @NotNull @PositiveOrZero
+    @NotNull @Positive
     private Integer expTo;
     @NotNull
-    private Boolean isActive;
+    private Long authorId;
 }
