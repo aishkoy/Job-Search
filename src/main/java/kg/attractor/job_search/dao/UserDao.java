@@ -82,8 +82,8 @@ public class UserDao {
 
     public Long registerUser(User user) {
         String sql = """
-                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, account_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""";
+                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, role_id, enabled)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)""";
 
         return saveUser(user, sql);
     }
@@ -117,9 +117,8 @@ public class UserDao {
             } else{
                 ps.setString(6, user.getEmail());
                 ps.setString(7, user.getPassword());
-                ps.setString(8, user.getAccountType());
+                ps.setLong(8, user.getRoleId());
             }
-
             return ps;}, keyHolder
         );
 

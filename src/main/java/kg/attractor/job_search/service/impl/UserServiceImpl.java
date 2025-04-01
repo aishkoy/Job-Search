@@ -9,6 +9,7 @@ import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.service.RoleService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+    private final RoleService roleService;
 
     @Override
     public List<UserDto> getUsers() {
@@ -81,13 +83,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
+        roleService.getRoleId(userDto.getRoleId());
+
         String userName = userDto.getName().trim().toLowerCase();
         userName = StringUtils.capitalize(userName);
 
         userDto.setName(userName);
         userDto.setEmail(userDto.getEmail().trim().toLowerCase());
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
-        userDto.setAccountType(userDto.getAccountType().trim().toLowerCase());
+        userDto.setRoleId(userDto.getRoleId());
 
         Long id = userDao.registerUser(UserMapper.toUser(userDto)) ;
         log.info("Register user: {}", id);
