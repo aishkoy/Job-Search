@@ -1,4 +1,4 @@
-package kg.attractor.job_search.config;
+package kg.attractor.job_search.util;
 
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;

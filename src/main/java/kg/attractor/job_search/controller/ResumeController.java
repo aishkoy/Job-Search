@@ -1,7 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.config.AuthAdapter;
+import kg.attractor.job_search.util.AuthAdapter;
 import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
