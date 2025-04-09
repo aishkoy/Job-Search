@@ -20,19 +20,20 @@ import java.util.List;
 public class ContactInfoServiceImpl implements ContactInfoService {
     private final ContactInfoDao contactInfoDao;
     private final ContactTypeService contactTypeService;
+    private final ContactInfoMapper contactInfoMapper;
 
     @Override
     public List<ContactInfoDto> getContactInfoByResumeId(Long resumeId) {
-        List<ContactInfoDto> contacts = contactInfoDao.getContactInfoByResumeId(resumeId).stream().map(ContactInfoMapper::toDto).toList();
-        log.info("Retrieved {} contacts", contacts.size());
+        List<ContactInfoDto> contacts = contactInfoDao.getContactInfoByResumeId(resumeId).stream().map(contactInfoMapper::toDto).toList();
+        log.info("Получено {} контактов", contacts.size());
         return contacts;
     }
 
     @Override
     public Long createContactInfo(ContactInfoDto contactInfoDto) {
         contactTypeService.getContactTypeIdIfPresent(contactInfoDto.getTypeId());
-        Long id = contactInfoDao.createContactInfo(ContactInfoMapper.toEntity(contactInfoDto));
-        log.info("Created new contact: {}", contactInfoDto);
+        Long id = contactInfoDao.createContactInfo(contactInfoMapper.toEntity(contactInfoDto));
+        log.info("Создан новый контакт: {}", contactInfoDto);
         return id;
     }
 
@@ -42,22 +43,22 @@ public class ContactInfoServiceImpl implements ContactInfoService {
             throw new ContactInfoNotFoundException();
         }
         getContactInfoById(id);
-        log.info("Updating contact: {}", contactInfoDto);
-        return contactInfoDao.updateContactInfo(ContactInfoMapper.toEntity(contactInfoDto));
+        log.info("Обновление контакта: {}", contactInfoDto);
+        return contactInfoDao.updateContactInfo(contactInfoMapper.toEntity(contactInfoDto));
     }
 
     @Override
     public ContactInfoDto getContactInfoById(Long id) {
         ContactInfo contactInfo = contactInfoDao.getContactInfoById(id).orElseThrow(ContactInfoNotFoundException::new);
-        log.info("Retrieved contact: {}", contactInfo);
-        return ContactInfoMapper.toDto(contactInfo);
+        log.info("Полученный контакт: {}", contactInfo);
+        return contactInfoMapper.toDto(contactInfo);
     }
 
     @Override
     public HttpStatus deleteContactInfoById(Long id) {
         getContactInfoById(id);
         contactInfoDao.deleteContactInfo(id);
-        log.info("Deleted contact: {}", id);
+        log.info("Удаленный контакт: {}", id);
         return HttpStatus.OK;
     }
 }

@@ -30,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+    private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
 
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsers() {
         List<UserDto> users = userDao.getUsers()
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toDto)
                 .toList();
 
         validateUsersList(users, "Пока никто не зарегистрирован");
@@ -47,24 +48,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long userId) {
         User user = userDao.getUserById(userId).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким id!"));
-        log.info("Retrieved user by id: {}", user.getId());
-        return UserMapper.toUserDto(user);
+        log.info("Получено резюме по id: {}", user.getId());
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserDto getUserByPhone(String phoneNumber) {
         String phone = phoneNumber.trim().toLowerCase();
         User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким номером телефона!"));
-        log.info("Retrieved user by name: {}", user.getId());
-        return UserMapper.toUserDto(user);
+        log.info("Получен пользователь по имени: {}", user.getId());
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
         String userEmail = email.trim().toLowerCase();
         User user = userDao.getUserByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким email!"));
-        log.info("Retrieved user by email : {}", userEmail);
-        return UserMapper.toUserDto(user);
+        log.info("Получен пользователь по email : {}", userEmail);
+        return userMapper.toDto(user);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
         name = StringUtils.capitalize(name);
         List<UserDto> users = userDao.getUsersByName(name)
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toDto)
                 .toList();
 
         validateUsersList(users, "Не существует пользователей с таким именем!");
@@ -97,8 +98,8 @@ public class UserServiceImpl implements UserService {
         userDto.setRoleId(userDto.getRoleId());
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 
-        Long id = userDao.registerUser(UserMapper.toUser(userDto)) ;
-        log.info("Register user: {}", id);
+        Long id = userDao.registerUser(userMapper.toEntity(userDto)) ;
+        log.info("Зарегистрирован пользователь: {}", id);
         return id;
     }
 
@@ -116,11 +117,11 @@ public class UserServiceImpl implements UserService {
         userDto.setName(name);
         userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
 
-        User user = UserMapper.toUser(userDto);
+        User user = userMapper.toEntity(userDto);
         user.setId(userId);
         Long id = userDao.updateUser(user);
 
-        log.info("Updated user: {}", id);
+        log.info("Обновлена информация о пользователе: {}", id);
 
         return id;
     }
@@ -132,7 +133,7 @@ public class UserServiceImpl implements UserService {
             throw new AccessDeniedException("Вы не имеете права удалять чужжой профиль!");
         }
         userDao.deleteUser(userId);
-        log.info("Deleted user: {}", userId);
+        log.info("Удален пользователь: {}", userId);
         return HttpStatus.OK;
     }
 
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getEmployers() {
         List<UserDto> employers = userDao.getEmployers()
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toDto)
                 .toList();
 
         validateUsersList(employers, "Работодатели не найдены");
@@ -150,14 +151,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getEmployerById(Long userId) {
         User user = userDao.getEmployerById(userId).orElseThrow(() -> new EmployerNotFoundException("Не существует работодателя с таким id!"));
-        return UserMapper.toUserDto(user);
+        return userMapper.toDto(user);
     }
 
     @Override
     public List<UserDto> getApplicants() {
         List<UserDto> applicants = userDao.getApplicants()
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toDto)
                 .toList();
 
         validateUsersList(applicants, "Соискатели не найдены");
@@ -167,7 +168,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getApplicantById(Long userId) {
         User user = userDao.getApplicantById(userId).orElseThrow(() -> new ApplicantNotFoundException("Не существует соискателя с таким id!"));
-        return UserMapper.toUserDto(user);
+        return userMapper.toDto(user);
     }
 
     @Override
@@ -190,7 +191,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
         List<UserDto> applications = userDao.getApplicantsByVacancyId(vacancyId)
                 .stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toDto)
                 .toList();
 
         validateUsersList(applications, "Нет соискателей, откликнувшихся на данную вакансию");
@@ -226,6 +227,6 @@ public class UserServiceImpl implements UserService {
             log.warn(errorMessage);
             throw new UserNotFoundException(errorMessage);
         }
-        log.info("Retrieved {} users", users.size());
+        log.info("Получено {} пользователей", users.size());
     }
 }
