@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface UserService {
     List<UserDto> getUsers();
+
     UserDto getUserById(Long userId);
 
     UserDto getUserByPhone(String phoneNumber);
@@ -20,6 +21,7 @@ public interface UserService {
     List<UserDto> getUsersByName(String name);
 
     Long registerUser(CreateUserDto userDto);
+
     Long updateUser(Long userId, EditUserDto userDto);
 
     HttpStatus deleteUser(Long userId, Long authId);

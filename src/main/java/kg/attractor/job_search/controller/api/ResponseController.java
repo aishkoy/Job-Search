@@ -1,4 +1,4 @@
-package kg.attractor.job_search.controller;
+package kg.attractor.job_search.controller.api;
 
 import kg.attractor.job_search.service.ResponseService;
 import kg.attractor.job_search.util.AuthAdapter;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("responses")
+@RequestMapping("api/responses")
 public class ResponseController {
     private final ResponseService responseService;
     private final AuthAdapter adapter;
