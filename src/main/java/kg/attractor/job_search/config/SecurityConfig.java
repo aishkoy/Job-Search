@@ -78,6 +78,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/users/{id}").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}").authenticated()
                                 .requestMatchers(HttpMethod.POST, "/users/{id}/avatar").authenticated()
+                                .requestMatchers("/profile/**").authenticated()
 
                                 .requestMatchers(HttpMethod.GET, "/users",
                                         "/users/by-name",
