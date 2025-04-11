@@ -18,12 +18,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -88,19 +92,28 @@ public class UserServiceImpl implements UserService {
         }
 
         roleService.getRoleId(userDto.getRoleId());
-
-        String userName = userDto.getName().trim().toLowerCase();
-        userName = StringUtils.capitalize(userName);
-
-        userDto.setName(userName);
-        userDto.setEmail(userDto.getEmail().trim().toLowerCase());
-        userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
-        userDto.setRoleId(userDto.getRoleId());
+        normalizeUserData(userDto);
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 
         Long id = userDao.registerUser(userMapper.toEntity(userDto)) ;
         log.info("Зарегистрирован пользователь: {}", id);
         return id;
+    }
+
+    private void normalizeUserData(CreateUserDto dto) {
+        dto.setName(normalizeField(dto.getName(), true));
+        dto.setSurname(normalizeField(dto.getSurname(), true));
+        dto.setEmail(normalizeField(dto.getEmail(), false));
+        dto.setPhoneNumber(normalizeField(dto.getPhoneNumber(), false));
+    }
+
+    private String normalizeField(String field, boolean capitalize) {
+        if (field == null || field.isBlank()) {
+            return null;
+        }
+
+        String normalized = field.trim().toLowerCase();
+        return capitalize ? StringUtils.capitalize(normalized) : normalized;
     }
 
     @Override
@@ -111,11 +124,9 @@ public class UserServiceImpl implements UserService {
             throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
         }
 
-        String name = userDto.getName().trim().toLowerCase();
-        name = StringUtils.capitalize(name);
-
-        userDto.setName(name);
-        userDto.setPhoneNumber(userDto.getPhoneNumber().trim().toLowerCase());
+        userDto.setName(normalizeField(userDto.getName(), true));
+        userDto.setSurname(normalizeField(userDto.getSurname(), true));
+        userDto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
 
         User user = userMapper.toEntity(userDto);
         user.setId(userId);
@@ -228,5 +239,36 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(errorMessage);
         }
         log.info("Получено {} пользователей", users.size());
+    }
+
+    @Override
+    public UserDto getAuthUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Auth object: {}", authentication);
+        if (authentication != null) {
+            log.info("Auth type: {}, name: {}, isAuthenticated: {}",
+                    authentication.getClass().getName(),
+                    authentication.getName(),
+                    authentication.isAuthenticated());
+            log.info("Authorities: {}", authentication.getAuthorities());
+        }
+
+        if (authentication == null) {
+            log.error("Authentication is null");
+            throw new NoSuchElementException("user not authorized");
+        }
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            log.error("Authentication is anonymous");
+            throw new IllegalArgumentException("user not authorized");
+        }
+
+        String email = authentication.getName();
+        log.info("Looking up user by email: {}", email);
+        return getUserByEmail(email);
+    }
+
+    @Override
+    public Long getAuthId(){
+        return getAuthUser().getId();
     }
 }

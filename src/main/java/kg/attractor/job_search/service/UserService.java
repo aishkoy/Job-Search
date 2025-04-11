@@ -41,4 +41,8 @@ public interface UserService {
     Boolean existsUser(String email);
 
     ResponseEntity<?> getUserAvatar(Long userId);
+
+    UserDto getAuthUser();
+
+    Long getAuthId();
 }

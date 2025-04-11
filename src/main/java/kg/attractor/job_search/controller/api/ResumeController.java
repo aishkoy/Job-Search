@@ -1,7 +1,7 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.util.AuthAdapter;
+import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ResumeController {
 
     private final ResumeService resumeService;
-    private final AuthAdapter adapter;
+    private final UserService adapter;
 
     @GetMapping
     public ResponseEntity<List<ResumeDto>> getResumes() {

@@ -1,7 +1,7 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.util.AuthAdapter;
+import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("api/vacancies")
 public class VacancyController {
     private final VacancyService vacancyService;
-    private final AuthAdapter adapter;
+    private final UserService adapter;
 
     @GetMapping
     public ResponseEntity<List<VacancyDto>> getVacancies() {
