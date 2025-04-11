@@ -27,6 +27,10 @@ spring:
     user:
       name: email
       password: password
+  freemarker:
+    expose-session-attributes: true
+  mvc:
+    static-path-pattern: /static/**
 
 logging:
   level:
