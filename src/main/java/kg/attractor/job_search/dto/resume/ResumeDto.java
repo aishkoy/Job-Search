@@ -16,6 +16,7 @@ import java.util.List;
 public class ResumeDto {
     private Long id;
     private Long applicantId;
+    private String applicantName;
     private String name;
     private Long categoryId;
     private Float salary;

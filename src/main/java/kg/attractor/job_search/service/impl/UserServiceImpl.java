@@ -5,6 +5,7 @@ import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
+import kg.attractor.job_search.exception.CategoryNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
@@ -14,6 +15,7 @@ import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -275,5 +277,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long getAuthId(){
         return getAuthUser().getId();
+    }
+
+    @Override
+    public String getUserName(Long userId) {
+        try {
+            return userDao.getUserName(userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException("Пользователь с таким id не существует!");
+        }
     }
 }

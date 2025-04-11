@@ -70,6 +70,11 @@ public class UserController {
         return userService.getUserAvatar(userId);
     }
 
+    @GetMapping("{id}/name")
+    public ResponseEntity<String> getUserName(@PathVariable("id") Long userId) {
+        return  ResponseEntity.ofNullable(userService.getUserName(userId));
+    }
+
     @GetMapping("employers")
     public ResponseEntity<List<UserDto>> getEmployers() {
         return ResponseEntity.ofNullable(userService.getEmployers());

@@ -57,11 +57,7 @@
                     <div class="flex justify-between">
                         <div>
                             <h3 class="font-bold text-lg text-gray-800">${resume.name}</h3>
-                            <#if applicantNames?? && applicantNames[resume.applicantId?string]??>
-                                <p class="text-gray-600 mb-2">${applicantNames[resume.applicantId?string]}</p>
-                            <#else>
-                                <p class="text-gray-600 mb-2">Специалист</p>
-                            </#if>
+                            <p class="text-gray-600 mb-2">${resume.applicantName!'Специалист'}</p>
                             <div class="text-blue-600 font-medium">
                                 <#if resume.salary?? && resume.salary gt 0>
                                     ${resume.salary?string(",##0")} ₽

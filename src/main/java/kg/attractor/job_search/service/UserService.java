@@ -47,4 +47,6 @@ public interface UserService {
     UserDto getAuthUser();
 
     Long getAuthId();
+
+    String getUserName(Long userId);
 }

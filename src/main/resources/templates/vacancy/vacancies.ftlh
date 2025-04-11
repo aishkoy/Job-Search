@@ -56,6 +56,7 @@
                     <div class="flex justify-between">
                         <div>
                             <h3 class="font-bold text-lg text-gray-800">${vacancy.name}</h3>
+                            <p class="text-gray-600 mb-2">${vacancy.authorName!'Работодатель'} </p>
                             <div class="text-blue-600 font-medium">
                                 <#if vacancy.salary?? && vacancy.salary gt 0>
                                     ${vacancy.salary?string(",##0")} ₽

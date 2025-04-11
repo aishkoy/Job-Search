@@ -275,6 +275,7 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
         resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
         resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
+        resume.setApplicantName(userService.getUserName(resume.getApplicantId()));
     }
 
     private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {

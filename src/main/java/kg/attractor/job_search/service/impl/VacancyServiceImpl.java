@@ -41,8 +41,9 @@ public class VacancyServiceImpl implements VacancyService {
     public List<VacancyDto> getVacancies() {
         List<VacancyDto> vacancies = vacancyDao.getVacancies()
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
+
         validateVacanciesList(vacancies, "Список вакансий пуст!");
         return vacancies;
     }
@@ -51,7 +52,7 @@ public class VacancyServiceImpl implements VacancyService {
     public List<VacancyDto> getActiveVacancies() {
         List<VacancyDto> activeVacancies = vacancyDao.getActiveVacancies()
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
 
         validateVacanciesList(activeVacancies, "Активных вакансий не найдено!");
@@ -100,7 +101,7 @@ public class VacancyServiceImpl implements VacancyService {
     public List<VacancyDto> getVacanciesByCategoryId(Long categoryId) {
         List<VacancyDto> vacancies = vacancyDao.getVacanciesByCategoryId(categoryId)
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
         validateVacanciesList(vacancies, "Вакансии по указанной категории не найдены!");
         return vacancies;
@@ -109,14 +110,14 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public VacancyDto getVacancyById(Long vacancyId) {
         Vacancy vacancy = vacancyDao.getVacancyById(vacancyId).orElseThrow(() -> new VacancyNotFoundException("Не существует вакансии с таким id!"));
-        return vacancyMapper.toDto(vacancy);
+        return mapAndEnrich(vacancy);
     }
 
     @Override
     public List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId) {
         List<VacancyDto> vacancies = vacancyDao.getVacanciesAppliedByUserId(applicantId)
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
         validateVacanciesList(vacancies, "Пользователь не откликался на вакансии!");
         return vacancies;
@@ -126,7 +127,7 @@ public class VacancyServiceImpl implements VacancyService {
     public List<VacancyDto> getVacanciesByEmployerId(Long employerId) {
         List<VacancyDto> vacancies = vacancyDao.getVacanciesByEmployerId(employerId)
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
         validateVacanciesList(vacancies, "У работодателя нет опубликованных вакансий!");
         return vacancies;
@@ -137,7 +138,7 @@ public class VacancyServiceImpl implements VacancyService {
         String name = categoryName.trim().toLowerCase();
         List<VacancyDto> vacancies =  vacancyDao.getVacanciesByCategoryName(name)
                 .stream()
-                .map(vacancyMapper::toDto)
+                .map(this::mapAndEnrich)
                 .toList();
         validateVacanciesList(vacancies, "Вакансии по категории '" + categoryName + "' не найдены!");
         return vacancies;
@@ -154,4 +155,11 @@ public class VacancyServiceImpl implements VacancyService {
         }
         log.info("Получено {} вакансий", vacancies.size());
     }
+
+    private VacancyDto mapAndEnrich(Vacancy vacancy) {
+        VacancyDto dto = vacancyMapper.toDto(vacancy);
+        dto.setAuthorName(userService.getUserName(dto.getAuthorId()));
+        return dto;
+    }
+
 }

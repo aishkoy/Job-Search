@@ -81,6 +81,11 @@ public class UserDao {
         return jdbcTemplate.query(sql, new UserDaoMapper(), vacancyId);
     }
 
+    public String getUserName(Long userId) {
+        String sql = "select concat(name, ' ', surname) from users where id = ?";
+        return jdbcTemplate.queryForObject(sql, String.class, userId);
+    }
+
     public Long registerUser(User user) {
         String sql = """
                 INSERT INTO users (name, surname, phone_number, avatar, age, email, password, role_id, enabled)
