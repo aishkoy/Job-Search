@@ -27,6 +27,7 @@ spring:
     user:
       name: email
       password: password
+
   freemarker:
     expose-session-attributes: true
   mvc:
