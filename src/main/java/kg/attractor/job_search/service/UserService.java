@@ -34,6 +34,8 @@ public interface UserService {
 
     UserDto getApplicantById(Long id);
 
+    MultipartFile uploadAvatar(MultipartFile file, Long authId);
+
     MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId);
 
     List<UserDto> getApplicationsByVacancyId(Long vacancyId);

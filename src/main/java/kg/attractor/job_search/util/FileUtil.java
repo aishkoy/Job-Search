@@ -45,8 +45,37 @@ public class FileUtil {
     }
 
     @SneakyThrows
+    public ResponseEntity<?> getStaticFile(String fileName, String subDir, MediaType mediaType) {
+        if (!subDir.endsWith("/") && !subDir.isEmpty()) {
+            subDir += "/";
+        }
+
+        Path filePath = Paths.get("src/main/resources/static/" + subDir + fileName);
+
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException("Дефолтный аватар не найден: " + subDir + fileName);
+        }
+
+        byte[] image = Files.readAllBytes(filePath);
+        Resource resource = new ByteArrayResource(image);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + fileName + "\"")
+                .contentLength(resource.contentLength())
+                .contentType(mediaType)
+                .body(resource);
+    }
+
+    @SneakyThrows
     public ResponseEntity<?> getOutputFile(String filename, String subDir, MediaType mediaType) {
+        if (!subDir.endsWith("/") && !subDir.isEmpty()) {
+            subDir += "/";
+        }
+
         Path filePath = Paths.get(UPLOAD_DIR + subDir + filename);
+
+        if (Files.isDirectory(filePath)) {
+            throw new FileNotFoundException("Указанный путь является директорией, а не файлом: " + filePath);
+        }
 
         if (!Files.exists(filePath)) {
             throw new FileNotFoundException("Файл не найден: " + filename);

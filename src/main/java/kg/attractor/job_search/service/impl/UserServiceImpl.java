@@ -183,19 +183,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId) {
-        if(!userId.equals(authId)) {
-            throw new AccessDeniedException("Вы не имеете права на загрузку аватара другому профилю!");
-        }
+    public MultipartFile uploadAvatar(MultipartFile file, Long authId) {
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
             throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
         }
 
-        User user = userDao.getUserById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userDao.getUserById(authId).orElseThrow(UserNotFoundException::new);
         user.setAvatar(saveImage(file));
         userDao.updateUser(user);
         return file;
+    }
+
+    @Override
+    public MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId) {
+        if(!userId.equals(authId)) {
+            throw new AccessDeniedException("Вы не имеете права на загрузку аватара другому профилю!");
+        }
+        return uploadAvatar(file, authId);
     }
 
     @Override
@@ -219,8 +224,8 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getUserAvatar(Long userId) {
         UserDto userDto = getUserById(userId);
 
-        if (userDto.getAvatar() == null) {
-            return ResponseEntity.notFound().build();
+        if (userDto.getAvatar() == null || userDto.getAvatar().isEmpty()) {
+            return FileUtil.getStaticFile("default_avatar.jpg", "images/", MediaType.IMAGE_JPEG);
         }
 
         String filename = userDto.getAvatar();
