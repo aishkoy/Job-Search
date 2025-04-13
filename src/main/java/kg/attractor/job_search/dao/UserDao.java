@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.sql.Types;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -80,9 +81,14 @@ public class UserDao {
         return jdbcTemplate.query(sql, new UserDaoMapper(), vacancyId);
     }
 
+    public String getUserName(Long userId) {
+        String sql = "select concat(name, ' ', surname) from users where id = ?";
+        return jdbcTemplate.queryForObject(sql, String.class, userId);
+    }
+
     public Long registerUser(User user) {
         String sql = """
-                INSERT INTO users (name, surname, age, phone_number, avatar, email, password, role_id, enabled)
+                INSERT INTO users (name, surname, phone_number, avatar, age, email, password, role_id, enabled)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)""";
 
         return saveUser(user, sql);
@@ -93,7 +99,6 @@ public class UserDao {
                 UPDATE users
                 SET name = ?,
                     surname = ?,
-                    age = ?,
                     phone_number = ?,
                     avatar = ?
                 WHERE id = ?""";
@@ -108,13 +113,18 @@ public class UserDao {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
-            ps.setInt(3, user.getAge());
-            ps.setString(4, user.getPhoneNumber());
-            ps.setString(5, user.getAvatar());
+            ps.setString(3, user.getPhoneNumber());
+            ps.setString(4, user.getAvatar());
+
 
             if (sql.toUpperCase().contains("UPDATE")) {
-                ps.setLong(6, user.getId());
+                ps.setLong(5, user.getId());
             } else{
+                if (user.getAge() == null) {
+                    ps.setNull(5, Types.INTEGER);
+                } else {
+                    ps.setInt(5, user.getAge());
+                }
                 ps.setString(6, user.getEmail());
                 ps.setString(7, user.getPassword());
                 ps.setLong(8, user.getRoleId());

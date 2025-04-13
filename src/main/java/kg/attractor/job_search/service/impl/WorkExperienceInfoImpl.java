@@ -18,18 +18,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WorkExperienceInfoImpl implements WorkExperienceInfoService {
     private final WorkExperienceDao workExperienceDao;
+    private final WorkExperienceMapper workExperienceMapper;
 
     @Override
     public Long createWorkExperience(WorkExperienceInfoDto createWorkExperienceInfoDto) {
-        log.info("Created work experience to resume {}", createWorkExperienceInfoDto.getResumeId());
-        return workExperienceDao.createWorkExperience(WorkExperienceMapper.toWorkExperienceInfo(createWorkExperienceInfoDto));
+        log.info("Создан опыт работы для резюме с id {}", createWorkExperienceInfoDto.getResumeId());
+        return workExperienceDao.createWorkExperience(workExperienceMapper.toEntity(createWorkExperienceInfoDto));
     }
 
     @Override
     public List<WorkExperienceInfoDto> getWorkExperienceInfoByResumeId(Long resumeId) {
         return workExperienceDao.getWorkExperienceInfoByResumeId(resumeId)
                 .stream()
-                .map(WorkExperienceMapper::toWorkExperienceInfoDto)
+                .map(workExperienceMapper::toDto)
                 .toList();
     }
 
@@ -39,22 +40,22 @@ public class WorkExperienceInfoImpl implements WorkExperienceInfoService {
             throw new WorkExperienceNotFoundException("Не существует опыта работы с таким id");
         }
 
-        log.info("Updated work experience {}", workExperienceInfoDto.getId());
-        return workExperienceDao.updateWorkExperience(WorkExperienceMapper.toWorkExperienceInfo(workExperienceInfoDto));
+        log.info("Обновлена информация о опыте работы {}", workExperienceInfoDto.getId());
+        return workExperienceDao.updateWorkExperience(workExperienceMapper.toEntity(workExperienceInfoDto));
     }
 
     @Override
     public WorkExperienceInfoDto getWorkExperienceById(Long id) {
         WorkExperienceInfo workExperienceInfo = workExperienceDao.getWorkExperienceInfoById(id)
                 .orElseThrow(WorkExperienceNotFoundException::new);
-        return WorkExperienceMapper.toWorkExperienceInfoDto(workExperienceInfo);
+        return workExperienceMapper.toDto(workExperienceInfo);
     }
 
     @Override
     public HttpStatus deleteWorkExperienceInfo(Long id) {
         getWorkExperienceById(id);
         workExperienceDao.deleteWorkExperience(id);
-        log.info("Deleted work experience {}", id);
+        log.info("Удален опыт работы {}", id);
         return HttpStatus.OK;
     }
 }
