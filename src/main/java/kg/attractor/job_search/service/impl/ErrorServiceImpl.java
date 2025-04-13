@@ -15,10 +15,10 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     public ErrorResponseBody makeResponse(IllegalStateException e) {
         String message = Optional.ofNullable(e.getMessage())
-                .orElse("Invalid state encountered");
+                .orElse("Встречено недопустимое состояние");
 
         return ErrorResponseBody.builder()
-                .title("Illegal State Error")
+                .title("Ошибка недопустимого состояния")
                 .response(Map.of("errors", List.of(message)))
                 .build();
     }
@@ -27,10 +27,10 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     public ErrorResponseBody makeResponse(IllegalArgumentException e) {
         String message = Optional.ofNullable(e.getMessage())
-                .orElse("Invalid argument provided");
+                .orElse("Предоставлен недопустимый аргумент");
 
         return ErrorResponseBody.builder()
-                .title("Illegal Argument Error")
+                .title("Ошибка недопустимого аргумента")
                 .response(Map.of("errors", List.of(message)))
                 .build();
     }
@@ -40,7 +40,7 @@ public class ErrorServiceImpl implements ErrorService {
         String message = e.getMessage();
 
         return ErrorResponseBody.builder()
-                .title("Validation Error")
+                .title("Ошибка валидации")
                 .response(Map.of("errors", List.of(message)))
                 .build();
     }
@@ -48,10 +48,10 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     public ErrorResponseBody makeResponse(MultipartException e) {
         String message = Optional.ofNullable(e.getMessage())
-                .orElse("Invalid multipart request or file upload");
+                .orElse("Недопустимый multipart-запрос или загрузка файла");
 
         return ErrorResponseBody.builder()
-                .title("File Upload Error")
+                .title("Ошибка загрузки файла")
                 .response(Map.of("errors", List.of(message)))
                 .build();
     }
@@ -77,7 +77,7 @@ public class ErrorServiceImpl implements ErrorService {
                     reasons.get(err.getField()).add(err.getDefaultMessage());
                 });
         return ErrorResponseBody.builder()
-                .title("Validation Error")
+                .title("Ошибка валидации")
                 .response(reasons)
                 .build();
     }
@@ -92,7 +92,7 @@ public class ErrorServiceImpl implements ErrorService {
         });
 
         return ErrorResponseBody.builder()
-                .title("Validation Error")
+                .title("Ошибка валидации")
                 .response(reasons)
                 .build();
     }

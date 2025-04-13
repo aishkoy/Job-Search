@@ -4,59 +4,26 @@ import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.model.User;
-import lombok.experimental.UtilityClass;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@UtilityClass
+@Mapper (componentModel = "spring")
 
-public class UserMapper {
-    public UserDto toUserDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .surname(user.getSurname())
-                .age(user.getAge())
-                .email(user.getEmail())
-                .roleId(user.getRoleId())
-                .avatar(user.getAvatar())
-                .phoneNumber(user.getPhoneNumber())
-                .password(user.getPassword())
-                .build();
-    }
+public interface UserMapper {
+    UserDto toDto(User user);
 
-    public User toUser(UserDto userDto) {
-        return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .surname(userDto.getSurname())
-                .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .password(userDto.getPassword())
-                .phoneNumber(userDto.getPhoneNumber())
-                .avatar(userDto.getAvatar())
-                .roleId(userDto.getRoleId())
-                .build();
-    }
+    User toEntity(UserDto userDto);
 
-    public User toUser(CreateUserDto userDto) {
-        return User.builder()
-                .name(userDto.getName())
-                .surname(userDto.getSurname())
-                .age(userDto.getAge())
-                .email(userDto.getEmail())
-                .password(userDto.getPassword())
-                .phoneNumber(userDto.getPhoneNumber())
-                .roleId(userDto.getRoleId())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
+    User toEntity(CreateUserDto createUserDto);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roleId", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
+    User toEntity(EditUserDto editUserDto);
 
-    public User toUser(EditUserDto userDto){
-        return User.builder()
-                .name(userDto.getName())
-                .surname(userDto.getSurname())
-                .age(userDto.getAge())
-                .phoneNumber(userDto.getPhoneNumber())
-                .avatar(userDto.getAvatar())
-                .build();
-    }
 }

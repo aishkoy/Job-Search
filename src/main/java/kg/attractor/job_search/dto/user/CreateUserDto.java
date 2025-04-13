@@ -1,24 +1,25 @@
 package kg.attractor.job_search.dto.user;
 
 import jakarta.validation.constraints.*;
+import kg.attractor.job_search.validation.ValidUserByRole;
 import lombok.*;
 
+@ValidUserByRole
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CreateUserDto {
-    @NotBlank
-    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
-            message = "Имя может содержать только буквы и дефисы")
+    @NotBlank(message = "Имя/название компании не может быть пустым")
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё\\s-]+$",
+            message = "Имя/название компании может содержать только буквы, пробелы и дефисы")
     private String name;
-    @NotBlank
-    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
-            message = "Фамилия может содержать только буквы и дефисы")
+
     private String surname;
-    @NotNull @Min(18)
+
     private Integer age;
+
     @Email @NotBlank
     private String email;
 

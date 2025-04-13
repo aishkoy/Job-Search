@@ -33,6 +33,7 @@ import java.util.function.ToLongFunction;
 @RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
     private final ResumeDao resumeDao;
+    private final ResumeMapper resumeMapper;
     private final UserService userService;
     private final CategoryService categoryService;
     private final EducationInfoService educationInfoService;
@@ -41,7 +42,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<ResumeDto> getResumes() {
-        List<ResumeDto> resumes = resumeDao.getResumes().stream().map(ResumeMapper::toResumeDto).toList();
+        List<ResumeDto> resumes = resumeDao.getResumes().stream().map(resumeMapper::toDto).toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме не найдены");
         return resumes;
@@ -51,7 +52,7 @@ public class ResumeServiceImpl implements ResumeService {
     public List<ResumeDto> getActiveResumes() {
         List<ResumeDto> resumes = resumeDao.getActiveResumes()
                 .stream()
-                .map(ResumeMapper::toResumeDto)
+                .map(resumeMapper::toDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Активные резюме не найдены");
@@ -63,7 +64,7 @@ public class ResumeServiceImpl implements ResumeService {
         userService.getApplicantById(userId);
         List<ResumeDto> resumes = resumeDao.getResumesByApplicantId(userId)
                 .stream()
-                .map(ResumeMapper::toResumeDto)
+                .map(resumeMapper::toDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с ID: " + userId + " не найдены");
@@ -78,7 +79,7 @@ public class ResumeServiceImpl implements ResumeService {
         userService.getUsersByName(userName);
 
         List<ResumeDto> resumes = resumeDao.getResumesByApplicantName(userName).stream()
-                .map(ResumeMapper::toResumeDto)
+                .map(resumeMapper::toDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с именем: " + userName + " не найдены");
@@ -94,7 +95,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
 
-        Long resumeId = resumeDao.createResume(ResumeMapper.toResume(resumeDto));
+        Long resumeId = resumeDao.createResume(resumeMapper.toEntity(resumeDto));
 
         processResumeItems(
                 resumeDto.getEducations(),
@@ -117,7 +118,7 @@ public class ResumeServiceImpl implements ResumeService {
                 contactInfoService::createContactInfo
         );
 
-        log.info("Created resume: {}", resumeDto);
+        log.info("Созданное резюме: {}", resumeDto);
         return resumeId;
     }
 
@@ -139,7 +140,7 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeDao.getResumeById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
-        ResumeDto resumeDto = ResumeMapper.toResumeDto(resume);
+        ResumeDto resumeDto = resumeMapper.toDto(resume);
         enrichResumeWithAdditionalData(resumeDto);
         return resumeDto;
     }
@@ -153,7 +154,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
         }
 
-        Resume resume = ResumeMapper.toResume(resumeDto);
+        Resume resume = resumeMapper.toEntity(resumeDto);
         resume.setId(resumeId);
         Long updatedResumeId = resumeDao.updateResume(resume);
 
@@ -181,7 +182,7 @@ public class ResumeServiceImpl implements ResumeService {
                 contactInfoService::createContactInfo
         );
 
-        log.info("Updated resume: {}", resumeId);
+        log.info("Обновлено резюме: {}", resumeId);
         return updatedResumeId;
     }
 
@@ -192,7 +193,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new AccessDeniedException("У вас нет прав на удаление этого резюме!");
         }
         resumeDao.deleteResume(resumeId);
-        log.info("Deleted resume: {}", resumeId);
+        log.info("Удалено резюме: {}", resumeId);
         return HttpStatus.OK;
     }
 
@@ -202,7 +203,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         List<ResumeDto> resumes = resumeDao.getResumesByCategoryId(category)
                 .stream()
-                .map(ResumeMapper::toResumeDto)
+                .map(resumeMapper::toDto)
                 .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
@@ -274,6 +275,7 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
         resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
         resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
+        resume.setApplicantName(userService.getUserName(resume.getApplicantId()));
     }
 
     private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {
@@ -281,6 +283,6 @@ public class ResumeServiceImpl implements ResumeService {
             log.warn(errorMessage);
             throw new ResumeNotFoundException(errorMessage);
         }
-        log.info("Retrieved {} resumes", resumes.size());
+        log.info("Получено {} резюме", resumes.size());
     }
 }

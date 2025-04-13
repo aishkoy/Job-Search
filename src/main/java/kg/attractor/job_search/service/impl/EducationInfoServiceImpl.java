@@ -18,10 +18,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EducationInfoServiceImpl implements EducationInfoService {
     private final EducationInfoDao educationInfoDao;
+    private final EducationInfoMapper educationInfoMapper;
 
     @Override
     public Long createEducationInfo(EducationInfoDto educationInfoDto){
-        Long id = educationInfoDao.createEducationInfo(EducationInfoMapper.toEducationInfo(educationInfoDto));
+        Long id = educationInfoDao.createEducationInfo(educationInfoMapper.toEntity(educationInfoDto));
         log.info("Created education: {}", educationInfoDto);
         return id;
     }
@@ -29,7 +30,7 @@ public class EducationInfoServiceImpl implements EducationInfoService {
     @Override
     public List<EducationInfoDto> getEducationInfoByResumeId(Long resumeId) {
         List<EducationInfoDto> educationInfos =  educationInfoDao.getEducationInfosByResumeId(resumeId).stream()
-                .map(EducationInfoMapper::toEducationInfoDto)
+                .map(educationInfoMapper::toDto)
                 .toList();
         log.info("Retrieved education infos {}", educationInfos);
         return educationInfos;
@@ -42,7 +43,7 @@ public class EducationInfoServiceImpl implements EducationInfoService {
         }
         getEducationInfoById(educationInfoDto.getId());
         log.info("Updating education: {}", educationInfoDto);
-        return educationInfoDao.updateEducationInfo(EducationInfoMapper.toEducationInfo(educationInfoDto));
+        return educationInfoDao.updateEducationInfo(educationInfoMapper.toEntity(educationInfoDto));
     }
 
     @Override
@@ -57,6 +58,6 @@ public class EducationInfoServiceImpl implements EducationInfoService {
     public EducationInfoDto getEducationInfoById(Long id){
         EducationInfo educationInfo = educationInfoDao.getEducationInfoById(id).orElseThrow(EducationInfoNotFoundException::new);
         log.info("Retrieved education: {}", educationInfo);
-        return EducationInfoMapper.toEducationInfoDto(educationInfo);
+        return educationInfoMapper.toDto(educationInfo);
     }
 }

@@ -1,10 +1,9 @@
-package kg.attractor.job_search.controller;
+package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.util.AuthAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("users")
+@RequestMapping("api/users")
 public class UserController {
     private final UserService userService;
-    private final AuthAdapter adapter;
+    private final UserService adapter;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
@@ -69,6 +68,11 @@ public class UserController {
     @GetMapping("{id}/avatar")
     public ResponseEntity<?> getAvatar(@PathVariable("id") Long userId) {
         return userService.getUserAvatar(userId);
+    }
+
+    @GetMapping("{id}/name")
+    public ResponseEntity<String> getUserName(@PathVariable("id") Long userId) {
+        return  ResponseEntity.ofNullable(userService.getUserName(userId));
     }
 
     @GetMapping("employers")
