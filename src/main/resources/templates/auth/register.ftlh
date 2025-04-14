@@ -10,52 +10,58 @@
 <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-6 sm:p-8">
     <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Регистрация</h1>
 
+    <#import "/spring.ftl" as spring>
     <form action="/auth/register" method="POST" class="space-y-6">
         <div class="mb-6">
             <p class="text-sm font-medium text-gray-700 mb-2">Выберите тип учетной записи:</p>
             <div class="flex space-x-4">
-                <label class="flex items-center">
-                    <input type="radio" name="roleId" value="2" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
-                    <span class="ml-2 text-gray-700">Соискатель</span>
-                </label>
-                <label class="flex items-center">
-                    <input type="radio" name="roleId" value="1" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                    <span class="ml-2 text-gray-700">Работодатель</span>
-                </label>
+                <#assign roleOptions = {"2":"Соискатель", "1":"Работодатель"}>
+                <@spring.formRadioButtons
+                "userDto.roleId",
+                {"2":"Соискатель", "1":"Работодатель"},
+                "<br>",
+                "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"
+                />
+                <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
             </div>
         </div>
 
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Имя/Название компании</label>
-            <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            <@spring.formInput "userDto.name", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'", "text"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
         </div>
 
         <div>
             <label for="surname" class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
-            <input type="text" id="surname" name="surname" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            <p class="mt-1 text-xs text-gray-500">Требуется только для соискателей</p>
+            <@spring.formInput "userDto.surname", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'", "text"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
         </div>
 
         <div>
             <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Возраст</label>
-            <input type="number" id="age" name="age" min="18" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <@spring.formInput "userDto.age", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500' min='18'", "number"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
             <p class="mt-1 text-xs text-gray-500">Требуется только для соискателей, минимум 18 лет</p>
         </div>
 
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            <@spring.formInput "userDto.email", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'", "email"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
         </div>
 
         <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
-            <input type="password" id="password" name="password" minlength="8" maxlength="20" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            <@spring.formPasswordInput "userDto.password", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500' minlength='8' maxlength='20'"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
             <p class="mt-1 text-xs text-gray-500">Минимум 8 символов, включая буквы и цифры</p>
         </div>
 
         <div>
             <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
-            <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            <@spring.formInput "userDto.phoneNumber", "class='w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500'", "tel"/>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
         </div>
 
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
