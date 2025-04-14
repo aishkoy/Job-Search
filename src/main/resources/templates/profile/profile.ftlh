@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль пользователя</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-gray-50">
-
+<#import "../layout.ftlh" as main>
+<@main.layout>
 <div class="bg-white shadow">
     <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row items-center">
@@ -269,5 +261,4 @@
         </#if>
     </#if>
 </div>
-</body>
-</html>
+</@main.layout>
