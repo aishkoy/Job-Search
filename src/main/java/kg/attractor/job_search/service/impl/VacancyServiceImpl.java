@@ -144,6 +144,17 @@ public class VacancyServiceImpl implements VacancyService {
         return vacancies;
     }
 
+    @Override
+    public List<VacancyDto> getLast3Vacancies(){
+        List<VacancyDto> vacancies =  vacancyDao.getNewVacancies()
+                .stream()
+                .limit(3)
+                .map(this::mapAndEnrich)
+                .toList();
+        validateVacanciesList(vacancies, "Новые вакансии не были найдены!");
+        return vacancies;
+    }
+
     public boolean isVacancyOwnedByAuthor(Long vacancyId, Long authorId) {
         return vacancyDao.isVacancyOwnedByAuthor(vacancyId, authorId);
     }
@@ -161,5 +172,4 @@ public class VacancyServiceImpl implements VacancyService {
         dto.setAuthorName(userService.getUserName(dto.getAuthorId()));
         return dto;
     }
-
 }

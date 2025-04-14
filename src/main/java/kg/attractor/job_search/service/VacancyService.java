@@ -3,7 +3,6 @@ package kg.attractor.job_search.service;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -28,4 +27,6 @@ public interface VacancyService {
     List<VacancyDto> getVacanciesByCategoryName(String categoryName);
 
     Long changeActiveStatus(Long vacancyId, Long authorId);
+
+    List<VacancyDto> getLast3Vacancies();
 }

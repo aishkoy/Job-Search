@@ -80,6 +80,11 @@ public class VacancyDao {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, vacancyId, employerId));
     }
 
+    public List<Vacancy> getNewVacancies(){
+        String sql = "SELECT * FROM vacancies ORDER BY CREATED_DATE DESC";
+        return jdbcTemplate.query(sql, new VacancyDaoMapper());
+    }
+
     public Long createVacancy(Vacancy vacancy) {
         String sql = """
             INSERT INTO vacancies (name, description, category_id, salary, exp_from, exp_to, is_active, author_id, created_date, update_time)
