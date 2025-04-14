@@ -136,7 +136,8 @@ public class ResumeServiceImpl implements ResumeService {
         }
     }
 
-    private ResumeDto getResumeById(Long resumeId) {
+    @Override
+    public ResumeDto getResumeById(Long resumeId) {
         Resume resume = resumeDao.getResumeById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 

@@ -1,42 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobSearch - Резюме</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-</head>
-<body class="bg-gray-100 min-h-screen pb-16">
-<header class="bg-blue-600 text-white p-4">
-    <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center">
-            <div class="bg-white rounded-full w-10 h-10 flex items-center justify-center mr-3">
-                <i class="fas fa-briefcase text-blue-600"></i>
-            </div>
-            <h1 class="text-xl font-bold">JobSearch</h1>
-        </div>
-        <div class="flex items-center space-x-4">
-            <a href="/profile" class="text-white hover:text-blue-200">
-                <i class="fas fa-user"></i>
-            </a>
-        </div>
-    </div>
-</header>
+<#import "../layout.ftlh" as main>
+
+<@main.layout>
 
 <div class="bg-blue-600 text-white pb-6">
     <div class="container mx-auto px-4">
         <form action="#" method="get">
             <div class="flex items-center bg-white rounded-full p-2 shadow-md">
                 <i class="fas fa-search text-gray-500 ml-3 mr-2"></i>
-                <input
-                        type="text"
-                        name="query"
-                        placeholder="Поиск резюме, специалистов..."
-                        class="flex-1 outline-none text-gray-800 py-2 px-1"
-                >
+                <label>
+                    <input
+                            type="text"
+                            name="query"
+                            placeholder="Поиск резюме, специалистов..."
+                            class="flex-1 outline-none text-gray-800 py-2 px-1"
+                    >
+                </label>
                 <button type="submit" class="bg-gray-100 text-gray-600 p-2 rounded-full mr-1">
                     <i class="fas fa-filter"></i>
                 </button>
@@ -136,16 +114,4 @@
         </#if>
     </div>
 </main>
-
-<footer class="fixed bottom-0 w-full bg-white border-t shadow-md py-2">
-    <div class="container mx-auto">
-        <div class="flex justify-around">
-            <a href="/profile" class="flex flex-col items-center text-gray-500">
-                <i class="fas fa-user"></i>
-                <span class="text-xs mt-1">Профиль</span>
-            </a>
-        </div>
-    </div>
-</footer>
-</body>
-</html>
+</@main.layout>

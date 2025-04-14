@@ -19,6 +19,8 @@ public interface ResumeService {
 
     ResumeDto getResumeById(Long resumeId, Long userId);
 
+    ResumeDto getResumeById(Long resumeId);
+
     Long updateResume(Long resumeId, ResumeFormDto resumeDto);
 
     HttpStatus deleteResume(Long resumeId, Long userId);
