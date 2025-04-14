@@ -46,6 +46,8 @@ public interface UserService {
 
     UserDto getAuthUser();
 
+    EditUserDto mapToEditUser(UserDto userDto);
+
     Long getAuthId();
 
     String getUserName(Long userId);
