@@ -218,24 +218,6 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public void deleteEducation(Long educationId) {
-        educationInfoService.deleteEducationInfo(educationId);
-        log.info("Удалено образование с ID: {}", educationId);
-    }
-
-    @Override
-    public void deleteWorkExperience(Long workExperienceId) {
-        workExperienceInfoService.deleteWorkExperienceInfo(workExperienceId);
-        log.info("Удален опыт работы с ID: {}", workExperienceId);
-    }
-
-    @Override
-    public void deleteContact(Long contactId) {
-        contactInfoService.deleteContactInfoById(contactId);
-        log.info("Удалена контактная информация с ID: {}", contactId);
-    }
-
-    @Override
     public HttpStatus deleteResume(Long resumeId, Long userId) {
         getResumeById(resumeId);
         if (!isResumeOwnedByApplicant(resumeId, userId)) {

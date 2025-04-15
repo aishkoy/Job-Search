@@ -29,12 +29,6 @@ public interface ResumeService {
 
     void addContact(ResumeFormDto resumeForm);
 
-    void deleteEducation(Long educationId);
-
-    void deleteWorkExperience(Long workExperienceId);
-
-    void deleteContact(Long contactId);
-
     HttpStatus deleteResume(Long resumeId, Long userId);
 
     List<ResumeDto> getResumesByCategoryId(Long categoryId);
