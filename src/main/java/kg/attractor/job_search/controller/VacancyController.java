@@ -2,6 +2,7 @@ package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -26,10 +27,11 @@ public class VacancyController {
 
     @GetMapping("{id}")
     public String vacancy(@PathVariable Long id, Model model) {
-        UserDto userDto = null ;
-        try{
-            userService.getAuthUser();
-        } catch (Exception ignored){}
+        UserDto userDto = null;
+        try {
+            userDto = userService.getAuthUser();
+        } catch (Exception ignored) {
+        }
         model.addAttribute("currentUser", userDto);
         model.addAttribute("vacancy", vacancyService.getVacancyById(id));
         return "vacancy/vacancy";
@@ -46,12 +48,35 @@ public class VacancyController {
     public String create(@ModelAttribute("vacancyForm") @Valid VacancyFormDto vacancyFormDto,
                          BindingResult bindingResult,
                          Model model) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             model.addAttribute("user", userService.getAuthUser());
             return "vacancy/create-vacancy";
         }
 
         vacancyService.createVacancy(vacancyFormDto);
+        return "redirect:/profile";
+    }
+
+    @GetMapping("{id}/edit")
+    public String edit(@PathVariable("id") Long vacancyId, Model model) {
+        VacancyDto dto = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+        VacancyFormDto formDto = vacancyService.convertToFormDto(dto);
+        model.addAttribute("vacancy", dto);
+        model.addAttribute("vacancyForm", formDto);
+        return "vacancy/edit-vacancy";
+    }
+
+    @PostMapping("{id}/edit")
+    public String edit(@PathVariable("id") Long vacancyId,
+                       @ModelAttribute("vacancyForm") @Valid VacancyFormDto vacancyDto,
+                       BindingResult bindingResult,
+                       Model model) {
+        if (bindingResult.hasErrors()) {
+            VacancyDto vacancy = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+            model.addAttribute("vacancy", vacancy);
+            return "vacancy/edit-vacancy";
+        }
+        vacancyService.updateVacancy(vacancyId, vacancyDto);
         return "redirect:/profile";
     }
 }

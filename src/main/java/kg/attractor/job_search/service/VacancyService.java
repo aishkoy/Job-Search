@@ -12,6 +12,7 @@ public interface VacancyService {
     List<VacancyDto> getVacancies();
 
     List<VacancyDto> getActiveVacancies();
+
     Long updateVacancy(Long vacancyId, VacancyFormDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId, Long authorId);
@@ -19,6 +20,8 @@ public interface VacancyService {
     List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 
     VacancyDto getVacancyById(Long vacancyId);
+
+    VacancyDto getVacancyByIdAndAuthor(Long vacancyId, Long authorId);
 
     List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId);
 
@@ -29,4 +32,6 @@ public interface VacancyService {
     Long changeActiveStatus(Long vacancyId, Long authorId);
 
     List<VacancyDto> getLast3Vacancies();
+
+    VacancyFormDto convertToFormDto(VacancyDto dto);
 }

@@ -109,7 +109,15 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public VacancyDto getVacancyById(Long vacancyId) {
-        Vacancy vacancy = vacancyDao.getVacancyById(vacancyId).orElseThrow(() -> new VacancyNotFoundException("Не существует вакансии с таким id!"));
+        Vacancy vacancy = vacancyDao.getVacancyById(vacancyId)
+                .orElseThrow(() -> new VacancyNotFoundException("Не существует вакансии с таким id!"));
+        return mapAndEnrich(vacancy);
+    }
+
+    @Override
+    public VacancyDto getVacancyByIdAndAuthor(Long vacancyId, Long authorId) {
+        Vacancy vacancy = vacancyDao.getVacancyByIdAndAuthorId(vacancyId, authorId)
+                .orElseThrow(() -> new VacancyNotFoundException("Это не ваша вакансия"));
         return mapAndEnrich(vacancy);
     }
 
@@ -153,6 +161,11 @@ public class VacancyServiceImpl implements VacancyService {
                 .toList();
         validateVacanciesList(vacancies, "Новые вакансии не были найдены!");
         return vacancies;
+    }
+
+    @Override
+    public VacancyFormDto convertToFormDto(VacancyDto dto){
+        return vacancyMapper.toFormDto(dto);
     }
 
     public boolean isVacancyOwnedByAuthor(Long vacancyId, Long authorId) {
