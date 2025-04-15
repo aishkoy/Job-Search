@@ -7,12 +7,11 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class WorkExperienceInfoDto {
     private Long id;
-    @Positive
     private Long resumeId;
     @NotNull @Positive
     private Integer years;

@@ -7,15 +7,14 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ContactInfoDto {
     private Long id;
+    private Long resumeId;
     @NotNull @Positive
     private Long typeId;
-    @Positive
-    private Long resumeId;
     @NotBlank
     private String contactValue;
 }
