@@ -3,6 +3,7 @@ package kg.attractor.job_search.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import kg.attractor.job_search.validation.ValidDateRange;
 import lombok.*;
 
 import java.sql.Date;
@@ -12,6 +13,8 @@ import java.sql.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@ValidDateRange(message = "Дата начала обучения должна быть раньше даты окончания")
 public class EducationInfoDto {
     private Long id;
     private Long resumeId;
