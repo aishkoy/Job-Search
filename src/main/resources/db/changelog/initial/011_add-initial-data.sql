@@ -9,8 +9,8 @@ VALUES ('it', NULL);
 
 --data-subcategories
 INSERT INTO categories (name, parent_id)
-VALUES ('разработка', (SELECT id FROM categories WHERE name = 'IT' LIMIT 1)),
-       ('тестирование', (SELECT id FROM categories WHERE name = 'IT' LIMIT 1));
+VALUES ('разработка', (SELECT id FROM categories WHERE name = 'it' LIMIT 1)),
+       ('тестирование', (SELECT id FROM categories WHERE name = 'it' LIMIT 1));
 
 --data-contact-types
 INSERT INTO contact_types (type)

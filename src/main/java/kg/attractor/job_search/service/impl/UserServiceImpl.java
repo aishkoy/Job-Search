@@ -5,7 +5,6 @@ import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
-import kg.attractor.job_search.exception.CategoryNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
@@ -89,10 +88,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long registerUser(CreateUserDto userDto) {
-        if (Boolean.TRUE.equals(userDao.existsUserByEmail(userDto.getEmail()))) {
-            throw new IllegalArgumentException("Пользователь с таким email уже существует");
-        }
-
         roleService.getRoleId(userDto.getRoleId());
         normalizeUserData(userDto);
         userDto.setPassword(encoder.encode(userDto.getPassword()));
@@ -131,7 +126,6 @@ public class UserServiceImpl implements UserService {
         userDto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
 
         User user = userMapper.toEntity(userDto);
-        user.setId(userId);
         Long id = userDao.updateUser(user);
 
         log.info("Обновлена информация о пользователе: {}", id);
@@ -191,9 +185,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
         }
 
-        User user = userDao.getUserById(authId).orElseThrow(UserNotFoundException::new);
-        user.setAvatar(saveImage(file));
-        userDao.updateUser(user);
+        userDao.updateUserAvatar(authId, saveImage(file));
         return file;
     }
 
@@ -272,6 +264,11 @@ public class UserServiceImpl implements UserService {
         String email = authentication.getName();
         log.info("Looking up user by email: {}", email);
         return getUserByEmail(email);
+    }
+
+    @Override
+    public EditUserDto mapToEditUser(UserDto userDto){
+        return userMapper.toEditUserDto(userDto);
     }
 
     @Override
