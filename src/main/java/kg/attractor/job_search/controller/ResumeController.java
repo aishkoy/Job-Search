@@ -1,9 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.dto.EducationInfoDto;
-import kg.attractor.job_search.dto.WorkExperienceInfoDto;
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
@@ -13,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 
 @Controller("mvcResumes")
 @RequestMapping("resumes")
@@ -31,7 +28,7 @@ public class ResumeController {
     @GetMapping("{id}")
     public String getResume(@PathVariable("id") Long resumeId, Model model) {
         model.addAttribute("currentUser", userService.getAuthUser());
-        model.addAttribute("resume",resumeService.getResumeById(resumeId, userService.getAuthId()));
+        model.addAttribute("resume", resumeService.getResumeById(resumeId, userService.getAuthId()));
         return "resume/resume";
     }
 
@@ -51,10 +48,10 @@ public class ResumeController {
                                Model model) {
 
         switch (action) {
-            case "addExperience" -> addExperience(resumeForm);
-            case "addEducation" -> addEducation(resumeForm);
-            case "addContact" -> addContact(resumeForm);
-            default -> {
+            case "addExperience" -> resumeService.addExperience(resumeForm);
+            case "addEducation" -> resumeService.addEducation(resumeForm);
+            case "addContact" -> resumeService.addContact(resumeForm);
+            case "save" -> {
                 if (bindingResult.hasErrors()) {
                     return "resume/create-resume";
                 }
@@ -67,24 +64,62 @@ public class ResumeController {
         return "resume/create-resume";
     }
 
-    private void addExperience(ResumeFormDto resumeForm) {
-        if (resumeForm.getWorkExperiences() == null) {
-            resumeForm.setWorkExperiences(new ArrayList<>());
-        }
-        resumeForm.getWorkExperiences().add(new WorkExperienceInfoDto());
+    @GetMapping("{id}/edit")
+    public String editResume(@PathVariable("id") Long resumeId, Model model) {
+        ResumeDto resume = resumeService.getResumeById(resumeId, userService.getAuthId());
+        ResumeFormDto formDto = resumeService.convertToFormDto(resume);
+
+        model.addAttribute("currentUser", userService.getAuthUser());
+        model.addAttribute("resume", resume);
+        model.addAttribute("resumeForm", formDto);
+        return "resume/edit-resume";
     }
 
-    private void addEducation(ResumeFormDto resumeForm) {
-        if (resumeForm.getEducations() == null) {
-            resumeForm.setEducations(new ArrayList<>());
+    @PostMapping("{id}/edit")
+    public String updateResume(@ModelAttribute("resumeForm") @Valid ResumeFormDto resumeForm,
+                               BindingResult bindingResult,
+                               @RequestParam(required = false) String action,
+                               Model model,
+                               @PathVariable("id") Long resumeId) {
+
+
+        model.addAttribute("currentUser", userService.getAuthUser());
+        model.addAttribute("resumeForm", resumeForm);
+        model.addAttribute("resume", resumeService.getResumeById(resumeId, userService.getAuthId()));
+
+        switch (action) {
+            case "addExperience" -> resumeService.addExperience(resumeForm);
+            case "addEducation" -> resumeService.addEducation(resumeForm);
+            case "addContact" -> resumeService.addContact(resumeForm);
+            case "save" -> {
+                if (bindingResult.hasErrors()) {
+                    break;
+                }
+                resumeService.updateResume(resumeId, resumeForm);
+                return "redirect:/profile";
+            }
         }
-        resumeForm.getEducations().add(new EducationInfoDto());
+        return "resume/edit-resume";
     }
 
-    private void addContact(ResumeFormDto resumeForm) {
-        if (resumeForm.getContacts() == null) {
-            resumeForm.setContacts(new ArrayList<>());
-        }
-        resumeForm.getContacts().add(new ContactInfoDto());
+    @PostMapping("{resumeId}/educations/{educationId}/delete")
+    public String deleteEducation(@PathVariable Long resumeId,
+                                  @PathVariable Long educationId) {
+        resumeService.deleteEducation(educationId);
+        return  "redirect:/resumes/%d/edit".formatted(resumeId);
+    }
+
+    @PostMapping("{resumeId}/experiences/{experienceId}/delete")
+    public String deleteWorkExperience(@PathVariable Long resumeId,
+                                       @PathVariable Long experienceId) {
+        resumeService.deleteWorkExperience(experienceId);
+        return  "redirect:/resumes/%d/edit".formatted(resumeId);
+    }
+
+    @PostMapping("{resumeId}/contacts/{contactId}/delete")
+    public String deleteContact(@PathVariable Long resumeId,
+                                @PathVariable Long contactId) {
+        resumeService.deleteContact(contactId);
+        return "redirect:/resumes/%d/edit".formatted(resumeId);
     }
 }

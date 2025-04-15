@@ -9,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface ResumeMapper {
     ResumeDto toDto(Resume resume);
     Resume toEntity(ResumeFormDto resumeDto);
+    ResumeFormDto toFormDto(ResumeDto resume);
 }

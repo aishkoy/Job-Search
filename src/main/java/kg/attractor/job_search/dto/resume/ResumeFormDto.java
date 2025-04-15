@@ -26,6 +26,8 @@ public class ResumeFormDto {
     @NotNull @PositiveOrZero
     private Float salary;
 
+    private Boolean isActive;
+
     @Valid
     private List<WorkExperienceInfoDto> workExperiences;
 
