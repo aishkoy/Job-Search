@@ -6,7 +6,6 @@
     <title>Редактирование профиля</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<#import "/spring.ftl" as spring>
 <body class="bg-gray-100 min-h-screen">
 <div class="container mx-auto py-8">
     <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">

@@ -1,6 +1,7 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -8,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller("mvcVacancies")
 @RequestMapping("vacancies")
@@ -24,6 +22,17 @@ public class VacancyController {
     public String vacancies(Model model) {
         model.addAttribute("vacancies", vacancyService.getVacancies());
         return "vacancy/vacancies";
+    }
+
+    @GetMapping("{id}")
+    public String vacancy(@PathVariable Long id, Model model) {
+        UserDto userDto = null ;
+        try{
+            userService.getAuthUser();
+        } catch (Exception ignored){}
+        model.addAttribute("currentUser", userDto);
+        model.addAttribute("vacancy", vacancyService.getVacancyById(id));
+        return "vacancy/vacancy";
     }
 
     @GetMapping("create")
