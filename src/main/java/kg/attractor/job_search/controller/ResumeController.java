@@ -87,39 +87,11 @@ public class ResumeController {
         model.addAttribute("resumeForm", resumeForm);
         model.addAttribute("resume", resumeService.getResumeById(resumeId, userService.getAuthId()));
 
-        switch (action) {
-            case "addExperience" -> resumeService.addExperience(resumeForm);
-            case "addEducation" -> resumeService.addEducation(resumeForm);
-            case "addContact" -> resumeService.addContact(resumeForm);
-            case "save" -> {
-                if (bindingResult.hasErrors()) {
-                    break;
-                }
-                resumeService.updateResume(resumeId, resumeForm);
-                return "redirect:/profile";
-            }
+        if (bindingResult.hasErrors()) {
+            return "resume/edit-resume";
         }
-        return "resume/edit-resume";
-    }
 
-    @PostMapping("{resumeId}/educations/{educationId}/delete")
-    public String deleteEducation(@PathVariable Long resumeId,
-                                  @PathVariable Long educationId) {
-        resumeService.deleteEducation(educationId);
-        return  "redirect:/resumes/%d/edit".formatted(resumeId);
-    }
-
-    @PostMapping("{resumeId}/experiences/{experienceId}/delete")
-    public String deleteWorkExperience(@PathVariable Long resumeId,
-                                       @PathVariable Long experienceId) {
-        resumeService.deleteWorkExperience(experienceId);
-        return  "redirect:/resumes/%d/edit".formatted(resumeId);
-    }
-
-    @PostMapping("{resumeId}/contacts/{contactId}/delete")
-    public String deleteContact(@PathVariable Long resumeId,
-                                @PathVariable Long contactId) {
-        resumeService.deleteContact(contactId);
-        return "redirect:/resumes/%d/edit".formatted(resumeId);
+        resumeService.updateResume(resumeId, resumeForm);
+        return "redirect:/profile";
     }
 }
