@@ -28,4 +28,5 @@ public class VacancyFormDto {
     private Integer expTo;
     @NotNull
     private Long authorId;
+    private Boolean isActive;
 }
