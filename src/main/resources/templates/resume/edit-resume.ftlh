@@ -41,8 +41,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="salary" class="block text-sm font-medium text-gray-700">Желаемая зарплата (в USD)
-                            *</label>
+                        <label for="salary" class="block text-sm font-medium text-gray-700">Желаемая зарплата (в USD) *</label>
                         <@spring.formInput "resumeForm.salary", 'type="number" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Укажите зарплату"', "number" />
                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                     </div>
@@ -60,8 +59,7 @@
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Учебное заведение
-                                            *</label>
+                                        <label class="block text-sm font-medium text-gray-700">Учебное заведение *</label>
                                         <@spring.formInput "resumeForm.educations[${education_index}].institution", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Название учебного заведения"', "text" />
                                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                                     </div>
@@ -90,10 +88,19 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" name="action" value="removeEducation-${education_index}"
-                                        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Удалить
-                                </button>
+                                <#if education.id??>
+                                    <form action="/resumes/${resume.id}/educations/${education.id}/delete" method="post" class="inline-block">
+                                        <button type="submit"
+                                                class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            Удалить
+                                        </button>
+                                    </form>
+                                <#else>
+                                    <button type="submit" name="action" value="removeEducation-${education_index}"
+                                            class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        Удалить
+                                    </button>
+                                </#if>
                             </div>
                         </#list>
                     </#if>
@@ -129,8 +136,7 @@
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Продолжительность работы
-                                            (в годах) *</label>
+                                        <label class="block text-sm font-medium text-gray-700">Продолжительность работы (в годах) *</label>
                                         <@spring.formInput "resumeForm.workExperiences[${workExperience_index}].years", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Количество лет"', "number" />
                                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                                     </div>
@@ -142,10 +148,19 @@
                                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                                 </div>
 
-                                <button type="submit" name="action" value="removeExperience-${workExperience_index}"
-                                        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Удалить
-                                </button>
+                                <#if workExperience.id??>
+                                    <form action="/resumes/${resume.id}/experiences/${workExperience.id}/delete" method="post" class="inline-block">
+                                        <button type="submit"
+                                                class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            Удалить
+                                        </button>
+                                    </form>
+                                <#else>
+                                    <button type="submit" name="action" value="removeExperience-${workExperience_index}"
+                                            class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        Удалить
+                                    </button>
+                                </#if>
                             </div>
                         </#list>
                     </#if>
@@ -190,10 +205,19 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" name="action" value="removeContact-${contact_index}"
-                                        class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Удалить
-                                </button>
+                                <#if contact.id??>
+                                    <form action="/resumes/${resume.id}/contacts/${contact.id}/delete" method="post" class="inline-block">
+                                        <button type="submit"
+                                                class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            Удалить
+                                        </button>
+                                    </form>
+                                <#else>
+                                    <button type="submit" name="action" value="removeContact-${contact_index}"
+                                            class="mt-2 inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        Удалить
+                                    </button>
+                                </#if>
                             </div>
                         </#list>
                     </#if>

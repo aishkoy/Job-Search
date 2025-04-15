@@ -15,7 +15,6 @@
         <div class="mb-6">
             <p class="text-sm font-medium text-gray-700 mb-2">Выберите тип учетной записи:</p>
             <div class="flex space-x-4">
-                <#assign roleOptions = {"2":"Соискатель", "1":"Работодатель"}>
                 <@spring.formRadioButtons
                 "userDto.roleId",
                 {"2":"Соискатель", "1":"Работодатель"},

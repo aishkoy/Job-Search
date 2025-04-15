@@ -85,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Ссылка на регистрацию -->
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
                     Ещё нет аккаунта?

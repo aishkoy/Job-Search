@@ -60,7 +60,7 @@
                         Все вакансии
                     </a>
                     <#if user.roleId == 2>
-                        <a href="#"
+                        <a href="resumes/create"
                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor">
@@ -70,7 +70,7 @@
                             Создать резюме
                         </a>
                     <#else>
-                        <a href="#"
+                        <a href="vacancies/create"
                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor">
@@ -113,26 +113,6 @@
                                     </span>
                             </div>
 
-                            <#if categories?? && categories[resume.categoryId?string]??>
-                                <p class="text-gray-600 flex items-center mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
-                                    ${categories[resume.categoryId?string]}
-                                </p>
-                            <#else>
-                                <p class="text-gray-600 flex items-center mb-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                         viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
-                                    Категория не указана
-                                </p>
-                            </#if>
-
                             <p class="text-gray-600 flex items-center mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
                                      viewBox="0 0 24 24" stroke="currentColor">
@@ -154,7 +134,7 @@
                                 <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 font-medium">Подробнее</a>
 
                                 <div class="flex gap-2">
-                                    <a href="/resumes/edit/${resume.id}"
+                                    <a href="/resumes/${resume.id}/edit"
                                        class="text-yellow-600 hover:text-yellow-800">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                              viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +211,7 @@
                                 <a href="/vacancies/${vacancy.id}" class="text-blue-600 hover:text-blue-800 font-medium">Подробнее</a>
 
                                 <div class="flex gap-2">
-                                    <a href="/vacancies/edit/${vacancy.id}"
+                                    <a href="/vacancies/${vacancy.id}/edit"
                                        class="text-yellow-600 hover:text-yellow-800">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                              viewBox="0 0 24 24" stroke="currentColor">
