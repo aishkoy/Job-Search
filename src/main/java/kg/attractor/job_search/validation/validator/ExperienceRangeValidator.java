@@ -33,7 +33,7 @@ public class ExperienceRangeValidator implements ConstraintValidator<ValidExperi
         if(!isValid) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(errorMessage)
-                    .addPropertyNode(expToField)
+                    .addPropertyNode(expFromField)
                     .addConstraintViolation();
         }
 

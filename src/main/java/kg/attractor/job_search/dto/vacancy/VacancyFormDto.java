@@ -9,8 +9,8 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 
 @ValidExperienceRange(message = "Минимальный опыт работы должен быть меньше максимального\"")
