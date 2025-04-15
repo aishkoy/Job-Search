@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import kg.attractor.job_search.validation.ValidExperienceRange;
 import lombok.*;
 
 @Getter
@@ -11,6 +12,8 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
+
+@ValidExperienceRange(message = "Минимальный опыт работы должен быть меньше максимального\"")
 public class VacancyFormDto {
     @NotBlank
     private String name;
