@@ -19,7 +19,6 @@
 
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <!-- Основной блок информации -->
             <div class="p-6 border-b">
                 <div class="flex flex-col md:flex-row justify-between">
                     <div>
@@ -151,6 +150,7 @@
 
             <div class="p-6 bg-gray-50">
                 <div class="flex flex-col md:flex-row justify-between items-center">
+                    <#--                    TODO-->
                     <div class="flex space-x-4">
                         <button class="text-blue-600 hover:text-blue-800">
                             <i class="far fa-bookmark mr-1"></i> Сохранить
@@ -160,7 +160,7 @@
                         </button>
                     </div>
 
-                    <#if currentUser?? && currentUser.roleId == 2> <!-- Предполагаем, что roleId=2 для работодателя -->
+                    <#if currentUser?? && currentUser.roleId == 1>
                         <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium">
                             <i class="fas fa-paper-plane mr-2"></i>Пригласить на собеседование
                         </button>

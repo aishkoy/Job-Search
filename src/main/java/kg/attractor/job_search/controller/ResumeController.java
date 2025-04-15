@@ -1,13 +1,19 @@
 package kg.attractor.job_search.controller;
 
+import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.ContactInfoDto;
+import kg.attractor.job_search.dto.EducationInfoDto;
+import kg.attractor.job_search.dto.WorkExperienceInfoDto;
+import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @Controller("mvcResumes")
 @RequestMapping("resumes")
@@ -27,5 +33,58 @@ public class ResumeController {
         model.addAttribute("currentUser", userService.getAuthUser());
         model.addAttribute("resume",resumeService.getResumeById(resumeId, userService.getAuthId()));
         return "resume/resume";
+    }
+
+    @GetMapping("create")
+    public String createResume(Model model) {
+        ResumeFormDto resumeFormDto = new ResumeFormDto();
+        resumeFormDto.setApplicantId(userService.getAuthId());
+        model.addAttribute("resumeForm", resumeFormDto);
+
+        return "resume/create-resume";
+    }
+
+    @PostMapping("/create")
+    public String createResume(@ModelAttribute("resumeForm") @Valid ResumeFormDto resumeForm,
+                               BindingResult bindingResult,
+                               @RequestParam(required = false) String action,
+                               Model model) {
+
+        switch (action) {
+            case "addExperience" -> addExperience(resumeForm);
+            case "addEducation" -> addEducation(resumeForm);
+            case "addContact" -> addContact(resumeForm);
+            default -> {
+                if (bindingResult.hasErrors()) {
+                    return "resume/create-resume";
+                }
+                resumeService.createResume(resumeForm);
+                return "redirect:/profile";
+            }
+        }
+
+        model.addAttribute("resumeForm", resumeForm);
+        return "resume/create-resume";
+    }
+
+    private void addExperience(ResumeFormDto resumeForm) {
+        if (resumeForm.getWorkExperiences() == null) {
+            resumeForm.setWorkExperiences(new ArrayList<>());
+        }
+        resumeForm.getWorkExperiences().add(new WorkExperienceInfoDto());
+    }
+
+    private void addEducation(ResumeFormDto resumeForm) {
+        if (resumeForm.getEducations() == null) {
+            resumeForm.setEducations(new ArrayList<>());
+        }
+        resumeForm.getEducations().add(new EducationInfoDto());
+    }
+
+    private void addContact(ResumeFormDto resumeForm) {
+        if (resumeForm.getContacts() == null) {
+            resumeForm.setContacts(new ArrayList<>());
+        }
+        resumeForm.getContacts().add(new ContactInfoDto());
     }
 }
