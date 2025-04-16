@@ -1,10 +1,11 @@
 package kg.attractor.job_search.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -13,15 +14,15 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-public class RespondedApplicantDto {
+public class MessageDto {
     Long id;
 
-    @NotNull
-    ResumeDto resume;
+    @NotBlank
+    String content;
+
+    @NotNull @NotBlank
+    Timestamp timestamp;
 
     @NotNull
-    VacancyDto vacancy;
-
-    @NotNull
-    Boolean confirmation;
+    RespondedApplicantDto respondedApplicant;
 }

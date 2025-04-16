@@ -19,14 +19,14 @@ public class ContactInfo {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id",
-            nullable = false)
-    ContactType contactType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id",
             nullable = false)
     Resume resume;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id",
+            nullable = false)
+    ContactType contactType;
 
     @Column(name = "contact_value",
             nullable = false)

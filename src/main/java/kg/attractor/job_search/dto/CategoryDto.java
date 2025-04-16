@@ -5,11 +5,12 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ContactTypeDto {
-     Long id;
-     String type;
+public class CategoryDto {
+    Long id;
+    String name;
+    CategoryDto parentCategory;
 }

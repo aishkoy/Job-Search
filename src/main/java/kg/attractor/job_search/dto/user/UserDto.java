@@ -1,20 +1,25 @@
 package kg.attractor.job_search.dto.user;
 
+import kg.attractor.job_search.dto.RoleDto;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class UserDto {
-    private Long id;
-    private String name;
-    private String surname;
-    private Integer age;
-    private String email;
-    private String password;
-    private String phoneNumber;
-    private String avatar;
-    private Long roleId;
+    Long id;
+    String name;
+    String surname;
+    Integer age;
+    String email;
+    String password;
+    String phoneNumber;
+    String avatar;
+    Boolean enabled;
+    RoleDto role;
 }
