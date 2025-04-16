@@ -20,6 +20,6 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategoryIfPresent(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Не существует такой категории!"));
-        return categoryMapper.toCategoryDto(category);
+        return categoryMapper.toDto(category);
     }
 }
