@@ -53,7 +53,7 @@
 <#--            TODO-->
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Популярные категории</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="/vacancies?category=it"
+                <a href="/yies?category=it"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-laptop-code text-blue-600 text-xl"></i>
@@ -103,7 +103,7 @@
                             <div class="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 class="font-bold text-lg text-gray-800">${vacancy.name}</h3>
-                                    <p class="text-gray-600">${vacancy.authorName}</p>
+                                    <p class="text-gray-600">${vacancy.employer.name}</p>
                                 </div>
                                 <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Полная занятость</span>
                             </div>
@@ -124,8 +124,8 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-500 date-from-now"
-                                      data-timestamp="${vacancy.createdDate?long?c}">
-                                Опубликовано ${vacancy.createdDate?datetime}
+                                      data-timestamp="${vacancy.createdAt?long?c}">
+                                Опубликовано ${vacancy.createdAt?datetime}
                                 </span>
                                 <a href="/vacancies/${vacancy.id}"
                                    class="text-blue-600 hover:text-blue-800 font-medium">

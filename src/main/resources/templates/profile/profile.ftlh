@@ -12,7 +12,7 @@
             <div class="md:w-3/4 md:pl-8">
                 <h1 class="text-3xl font-bold text-gray-800">${user.name} ${user.surname!''}</h1>
 
-                <#if user.roleId == 2>
+                <#if user.role.id == 2>
                     <p class="text-gray-600 mt-2">Возраст: ${user.age!'Возраст не указан'}</p>
                 </#if>
 
@@ -59,7 +59,7 @@
                         </svg>
                         Все вакансии
                     </a>
-                    <#if user.roleId == 2>
+                    <#if user.role.id == 2>
                         <a href="resumes/create"
                            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
@@ -98,7 +98,7 @@
 </div>
 
 <div class="container mx-auto px-4 py-8">
-    <#if user.roleId == 2>
+    <#if user.role.id == 2>
         <h2 class="text-2xl font-bold text-gray-800 mb-6">Мои резюме</h2>
 
         <#if resumes?? && resumes?size gt 0>
@@ -127,7 +127,7 @@
                             </p>
 
                             <p class="text-sm text-gray-500">
-                                Создано: ${resume.createdDate?string("dd.MM.yyyy")}
+                                Создано: ${resume.createdAt?string("dd.MM.yyyy")}
                             </p>
 
                             <div class="mt-4 flex justify-between">
@@ -204,7 +204,7 @@
                             </p>
 
                             <p class="text-sm text-gray-500">
-                                Создано: ${vacancy.createdDate?string("dd.MM.yyyy")}
+                                Создано: ${vacancy.createdAt?string("dd.MM.yyyy")}
                             </p>
 
                             <div class="mt-4 flex justify-between">

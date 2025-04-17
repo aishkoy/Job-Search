@@ -28,7 +28,7 @@ public class ResumeController {
     @GetMapping("{id}")
     public String getResume(@PathVariable("id") Long resumeId, Model model) {
         model.addAttribute("currentUser", userService.getAuthUser());
-        model.addAttribute("resume", resumeService.getResumeById(resumeId, userService.getAuthId()));
+        model.addAttribute("resume", resumeService.getResumeDtoById(resumeId, userService.getAuthId()));
         return "resume/resume";
     }
 
