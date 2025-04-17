@@ -26,10 +26,12 @@ public class EducationInfo {
             nullable = false)
     Resume resume;
 
+    @Lob
     @Column(name = "institution",
             nullable = false)
     String institution;
 
+    @Lob
     @Column(name = "program",
             nullable = false)
     String program;

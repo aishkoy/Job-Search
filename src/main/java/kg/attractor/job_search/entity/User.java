@@ -43,6 +43,7 @@ public class User {
             name = "phone_number")
     String phoneNumber;
 
+    @Lob
     @Column(name = "avatar")
     String avatar;
 

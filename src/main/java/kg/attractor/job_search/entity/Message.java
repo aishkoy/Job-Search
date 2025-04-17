@@ -20,6 +20,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Lob
     @Column(name = "content",
             nullable = false)
     String content;

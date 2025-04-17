@@ -31,10 +31,12 @@ public class WorkExperienceInfo {
             nullable = false)
     String companyName;
 
+    @Lob
     @Column(name = "position",
             nullable = false)
     String position;
 
+    @Lob
     @Column(name = "responsibilities")
     String responsibilities;
 }

@@ -24,6 +24,7 @@ public class Vacancy {
             nullable = false)
     String name;
 
+    @Lob
     @Column(name = "description")
     String description;
 

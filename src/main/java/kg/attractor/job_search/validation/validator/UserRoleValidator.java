@@ -9,13 +9,13 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, C
 
     @Override
     public boolean isValid(CreateUserDto dto, ConstraintValidatorContext context) {
-        if (dto.getRoleId() == null) {
+        if (dto.getRole().getId() == null) {
             return false;
         }
 
         context.disableDefaultConstraintViolation();
 
-        return switch (dto.getRoleId().intValue()) {
+        return switch (dto.getRole().getId().intValue()) {
             case 1 -> validateEmployer(dto, context);
             case 2 -> validateApplicant(dto, context);
             default -> {

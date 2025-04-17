@@ -23,7 +23,6 @@ public interface UserMapper {
 
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
-    @Mapping(target = "roleId", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "avatar", ignore = true)
     User toEntity(EditUserDto editUserDto);
