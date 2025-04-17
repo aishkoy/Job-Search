@@ -50,5 +50,4 @@ public interface UserService {
 
     Long getAuthId();
 
-    String getUserName(Long userId);
 }

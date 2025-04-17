@@ -3,7 +3,7 @@ package kg.attractor.job_search.mapper;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -11,6 +11,8 @@ import org.mapstruct.Mapping;
 
 public interface UserMapper {
     UserDto toDto(User user);
+
+    UserDto toDto(CreateUserDto createUserDto);
 
     User toEntity(UserDto userDto);
 

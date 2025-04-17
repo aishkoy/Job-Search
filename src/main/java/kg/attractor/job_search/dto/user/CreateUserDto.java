@@ -40,5 +40,5 @@ public class CreateUserDto {
     private String phoneNumber;
 
     @NotNull
-    private RoleDto roleDto;
+    private RoleDto role;
 }
