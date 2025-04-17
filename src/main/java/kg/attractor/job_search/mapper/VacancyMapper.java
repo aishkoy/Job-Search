@@ -2,7 +2,7 @@ package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
-import kg.attractor.job_search.model.Vacancy;
+import kg.attractor.job_search.entity.Vacancy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

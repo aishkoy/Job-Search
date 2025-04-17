@@ -1,11 +1,11 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.VacancyDao;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.mapper.VacancyMapper;
-import kg.attractor.job_search.model.Vacancy;
+import kg.attractor.job_search.entity.Vacancy;
+import kg.attractor.job_search.repository.VacancyRepository;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -21,25 +21,27 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class VacancyServiceImpl implements VacancyService {
-    private final VacancyDao vacancyDao;
     private final VacancyMapper vacancyMapper;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final VacancyRepository vacancyRepository;
 
     @Override
     public Long createVacancy(VacancyFormDto vacancyDto) {
-        userService.getEmployerById(vacancyDto.getAuthorId());
-        categoryService.getCategoryIdIfPresent(vacancyDto.getCategoryId());
-        Long vacancyId = vacancyDao.createVacancy(vacancyMapper.toEntity(vacancyDto));
+        userService.getEmployerById(vacancyDto.getEmployer().getId());
+        categoryService.getCategoryIfPresent(vacancyDto.getCategory().getId());
 
-        log.info("Создана вакансия {}", vacancyId);
+        Vacancy vacancy = vacancyMapper.toEntity(vacancyDto);
+        vacancyRepository.save(vacancy);
 
-        return vacancyId;
+        log.info("Создана вакансия {}", vacancy.getId());
+
+        return vacancy.getId();
     }
 
     @Override
     public List<VacancyDto> getVacancies() {
-        List<VacancyDto> vacancies = vacancyDao.getVacancies()
+        List<VacancyDto> vacancies = vacancyRepository.findAll()
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -50,7 +52,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getActiveVacancies() {
-        List<VacancyDto> activeVacancies = vacancyDao.getActiveVacancies()
+        List<VacancyDto> activeVacancies = vacancyRepository.findAllByIsActiveTrue()
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -61,45 +63,45 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Long updateVacancy(Long vacancyId, VacancyFormDto vacancyDto) {
-        getVacancyById(vacancyId);
-        if(!isVacancyOwnedByAuthor(vacancyId, vacancyDto.getAuthorId())) {
+        VacancyDto existing = getVacancyDtoById(vacancyId);
+        if (isVacancyNotOwnedByAuthor(vacancyId, vacancyDto.getEmployer().getId())) {
             throw new AccessDeniedException("У вас нет права на редактирование этой вакансии!");
         }
 
-        categoryService.getCategoryIdIfPresent((vacancyDto.getCategoryId()));
-        Vacancy vacancy = vacancyMapper.toEntity(vacancyDto);
-        vacancy.setId(vacancyId);
 
+        categoryService.getCategoryIfPresent((vacancyDto.getCategory().getId()));
+
+        existing.setName(vacancyDto.getName());
+        existing.setDescription(vacancyDto.getDescription());
+        existing.setCategory(vacancyDto.getCategory());
+        existing.setSalary(vacancyDto.getSalary());
+        existing.setExpFrom(vacancyDto.getExpFrom());
+        existing.setExpTo(vacancyDto.getExpTo());
+        existing.setIsActive(vacancyDto.getIsActive());
+
+
+        Vacancy vacancy = vacancyMapper.toEntity(existing);
+
+        vacancyRepository.save(vacancy);
         log.info("Обновлена вакансия {}", vacancyId);
-        return vacancyDao.updateVacancy(vacancy);
+        return vacancyId;
     }
 
     @Override
     public HttpStatus deleteVacancy(Long vacancyId, Long authorId) {
-        getVacancyById(vacancyId);
-        if(!isVacancyOwnedByAuthor(vacancyId, authorId)) {
+        getVacancyDtoById(vacancyId);
+        if (isVacancyNotOwnedByAuthor(vacancyId, authorId)) {
             throw new AccessDeniedException("У вас нет права на удалении этой вакансии!");
         }
-        vacancyDao.deleteVacancy(vacancyId);
+
+        vacancyRepository.deleteById(vacancyId);
         log.info("Удалена вакансия {}", vacancyId);
         return HttpStatus.OK;
     }
 
     @Override
-    public Long changeActiveStatus(Long vacancyId, Long authorId) {
-        VacancyDto vacancy = getVacancyById(vacancyId);
-        if(!isVacancyOwnedByAuthor(vacancyId, authorId)) {
-            throw new AccessDeniedException("У вас нет права на изменение активности этой вакансии!");
-        }
-        Boolean status = vacancy.getIsActive() == Boolean.TRUE ? Boolean.FALSE : Boolean.TRUE;
-        vacancyDao.updateVacancyActiveStatus(vacancyId, status);
-        log.info("Изменен статус вакансии на {}", status);
-        return vacancyId;
-    }
-
-    @Override
     public List<VacancyDto> getVacanciesByCategoryId(Long categoryId) {
-        List<VacancyDto> vacancies = vacancyDao.getVacanciesByCategoryId(categoryId)
+        List<VacancyDto> vacancies = vacancyRepository.findAllByCategoryId(categoryId)
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -108,22 +110,30 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public VacancyDto getVacancyById(Long vacancyId) {
-        Vacancy vacancy = vacancyDao.getVacancyById(vacancyId)
+    public VacancyDto getVacancyDtoById(Long vacancyId) {
+        Vacancy vacancy = vacancyRepository.findById(vacancyId)
                 .orElseThrow(() -> new VacancyNotFoundException("Не существует вакансии с таким id!"));
         return mapAndEnrich(vacancy);
     }
 
     @Override
-    public VacancyDto getVacancyByIdAndAuthor(Long vacancyId, Long authorId) {
-        Vacancy vacancy = vacancyDao.getVacancyByIdAndAuthorId(vacancyId, authorId)
+    public Vacancy getVacancyById(Long vacancyId) {
+        Vacancy vacancy = vacancyRepository.findById(vacancyId)
+                .orElseThrow(() -> new VacancyNotFoundException("Не существует вакансии с таким id!"));
+        log.info("Получена вакансия {} ", vacancyId);
+        return vacancy;
+    }
+
+    @Override
+    public VacancyDto getVacancyDtoByIdAndAuthor(Long vacancyId, Long authorId) {
+        Vacancy vacancy = vacancyRepository.findByIdAndEmployerId(vacancyId, authorId)
                 .orElseThrow(() -> new VacancyNotFoundException("Это не ваша вакансия"));
         return mapAndEnrich(vacancy);
     }
 
     @Override
     public List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId) {
-        List<VacancyDto> vacancies = vacancyDao.getVacanciesAppliedByUserId(applicantId)
+        List<VacancyDto> vacancies = vacancyRepository.findVacanciesAppliedByUserId(applicantId)
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -133,7 +143,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getVacanciesByEmployerId(Long employerId) {
-        List<VacancyDto> vacancies = vacancyDao.getVacanciesByEmployerId(employerId)
+        List<VacancyDto> vacancies = vacancyRepository.findAllByEmployerId(employerId)
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -144,7 +154,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public List<VacancyDto> getVacanciesByCategoryName(String categoryName) {
         String name = categoryName.trim().toLowerCase();
-        List<VacancyDto> vacancies =  vacancyDao.getVacanciesByCategoryName(name)
+        List<VacancyDto> vacancies = vacancyRepository.findAllByCategoryName(name)
                 .stream()
                 .map(this::mapAndEnrich)
                 .toList();
@@ -153,8 +163,8 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getLast3Vacancies(){
-        List<VacancyDto> vacancies =  vacancyDao.getNewVacancies()
+    public List<VacancyDto> getLast3Vacancies() {
+        List<VacancyDto> vacancies = vacancyRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .limit(3)
                 .map(this::mapAndEnrich)
@@ -164,12 +174,12 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public VacancyFormDto convertToFormDto(VacancyDto dto){
+    public VacancyFormDto convertToFormDto(VacancyDto dto) {
         return vacancyMapper.toFormDto(dto);
     }
 
-    public boolean isVacancyOwnedByAuthor(Long vacancyId, Long authorId) {
-        return vacancyDao.isVacancyOwnedByAuthor(vacancyId, authorId);
+    public boolean isVacancyNotOwnedByAuthor(Long vacancyId, Long authorId) {
+        return !vacancyRepository.existsByIdAndEmployerId(vacancyId, authorId);
     }
 
     private void validateVacanciesList(List<VacancyDto> vacancies, String errorMessage) {
@@ -182,7 +192,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     private VacancyDto mapAndEnrich(Vacancy vacancy) {
         VacancyDto dto = vacancyMapper.toDto(vacancy);
-        dto.setAuthorName(userService.getUserName(dto.getAuthorId()));
+        dto.setEmployer(userService.getUserById(dto.getEmployer().getId()));
         return dto;
     }
 }

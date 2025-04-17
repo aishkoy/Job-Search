@@ -30,8 +30,7 @@ public class VacancyController {
         UserDto userDto = null;
         try {
             userDto = userService.getAuthUser();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         model.addAttribute("currentUser", userDto);
         model.addAttribute("vacancy", vacancyService.getVacancyById(id));
         return "vacancy/vacancy";
@@ -59,7 +58,7 @@ public class VacancyController {
 
     @GetMapping("{id}/edit")
     public String edit(@PathVariable("id") Long vacancyId, Model model) {
-        VacancyDto dto = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+        VacancyDto dto = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
         VacancyFormDto formDto = vacancyService.convertToFormDto(dto);
         model.addAttribute("vacancy", dto);
         model.addAttribute("vacancyForm", formDto);
@@ -72,7 +71,7 @@ public class VacancyController {
                        BindingResult bindingResult,
                        Model model) {
         if (bindingResult.hasErrors()) {
-            VacancyDto vacancy = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+            VacancyDto vacancy = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
             model.addAttribute("vacancy", vacancy);
             return "vacancy/edit-vacancy";
         }
