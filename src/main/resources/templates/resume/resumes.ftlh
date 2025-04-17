@@ -35,7 +35,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <h3 class="font-bold text-lg text-gray-800">${resume.name}</h3>
-                                <p class="text-gray-600 mb-2">${resume.applicantName!'Специалист'}</p>
+                                <p class="text-gray-600 mb-2">${resume.applicant.name!'Специалист'}</p>
                                 <div class="text-blue-600 font-medium">
                                     <#if resume.salary?? && resume.salary gt 0>
                                         ${resume.salary?string(",##0")} ₽
@@ -46,10 +46,10 @@
                             </div>
                             <div class="flex flex-col items-end justify-between">
                                 <span class="text-xs text-gray-400 mt-4">
-                                <#if resume.updateTime??>
-                                    Обновлено: ${resume.updateTime?datetime?string("dd.MM.yyyy")}
-                                <#elseif resume.createdDate??>
-                                    Создано: ${resume.createdDate?datetime?string("dd.MM.yyyy")}
+                                <#if resume.updatedAt??>
+                                    Обновлено: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
+                                <#elseif resume.createdAt??>
+                                    Создано: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
                                 <#else>
                                     Дата не указана
                                 </#if>

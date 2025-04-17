@@ -7,7 +7,7 @@
         <h2 class="text-center text-3xl font-extrabold text-gray-900">Создать резюме</h2>
 
         <form action="/resumes/create" method="post" class="space-y-6">
-            <@spring.formHiddenInput "resumeForm.applicantId"/>
+            <@spring.formHiddenInput "resumeForm.applicant"/>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -21,7 +21,7 @@
                 <div>
                     <label for="categoryId" class="block text-sm font-medium text-gray-700">ID категории</label>
                     <@spring.formSingleSelect
-                    "resumeForm.categoryId",
+                    "resumeForm.category",
                     {
                     "1": "IT",
                     "2": "Разработка",
@@ -156,7 +156,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Тип контакта</label>
                                 <@spring.formSingleSelect
-                                "resumeForm.contacts[${contact?index}].typeId",
+                                "resumeForm.contacts[${contact?index}].contactType",
                                 {
                                 "1": "email",
                                 "2": "телефон",

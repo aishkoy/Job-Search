@@ -15,7 +15,7 @@
 
             <form id="form" action="/resumes/${resume.id}/edit" method="post" class="space-y-8">
                 <@spring.formHiddenInput "resume.id"/>
-                <@spring.formHiddenInput "resumeForm.applicantId"/>
+                <@spring.formHiddenInput "resumeForm.applicant"/>
 
                 <div class="space-y-6">
                     <h3 class="text-xl font-semibold text-gray-800 border-b pb-2">Основная информация</h3>
@@ -44,7 +44,7 @@
                     <div>
                         <label for="categoryId" class="block text-sm font-medium text-gray-700">Категория</label>
                         <@spring.formSingleSelect
-                        "resumeForm.categoryId",
+                        "resumeForm.category",
                         {
                         "1": "IT",
                         "2": "Разработка",
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="salary" class="block text-sm font-medium text-gray-700">Желаемая зарплата (в USD)
+                        <label for="salary" class="block text-sm font-medium text-gray-700">Желаемая зарплата
                             *</label>
                         <@spring.formInput "resumeForm.salary", 'type="number" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Укажите зарплату"', "number" />
                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
