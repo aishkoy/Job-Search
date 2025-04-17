@@ -35,7 +35,7 @@ public class ResumeController {
     @GetMapping("create")
     public String createResume(Model model) {
         ResumeFormDto resumeFormDto = new ResumeFormDto();
-        resumeFormDto.setApplicantId(userService.getAuthId());
+        resumeFormDto.setApplicant(userService.getAuthUser());
         model.addAttribute("resumeForm", resumeFormDto);
 
         return "resume/create-resume";
@@ -66,7 +66,7 @@ public class ResumeController {
 
     @GetMapping("{id}/edit")
     public String editResume(@PathVariable("id") Long resumeId, Model model) {
-        ResumeDto resume = resumeService.getResumeById(resumeId, userService.getAuthId());
+        ResumeDto resume = resumeService.getResumeDtoById(resumeId, userService.getAuthId());
         ResumeFormDto formDto = resumeService.convertToFormDto(resume);
 
         model.addAttribute("currentUser", userService.getAuthUser());
