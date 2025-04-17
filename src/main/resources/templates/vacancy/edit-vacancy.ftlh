@@ -15,7 +15,7 @@
 
             <form action="/vacancies/${vacancy.id}/edit" method="post" class="mt-8 space-y-6">
                 <input type="hidden" name="id" value="${vacancy.id}"/>
-                <input type="hidden" name="authorId" value="${vacancyForm.authorId}"/>
+                <input type="hidden" name="employer" value="${vacancyForm.employer}"/>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Статус вакансии</label>
@@ -48,7 +48,7 @@
                     <div class="mb-4">
                         <label for="categoryId" class="block text-sm font-medium text-gray-700">Категория *</label>
                         <@spring.formSingleSelect
-                        "vacancyForm.categoryId",
+                        "vacancyForm.category",
                         {
                         "1": "IT",
                         "2": "Разработка",

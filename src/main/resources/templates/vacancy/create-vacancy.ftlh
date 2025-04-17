@@ -33,7 +33,7 @@
                     <div class="mb-4">
                         <label for="categoryId" class="block text-sm font-medium text-gray-700">Категория *</label>
                         <@spring.formSingleSelect
-                        "vacancyForm.categoryId",
+                        "vacancyForm.category",
                         {
                         "1": "IT",
                         "2": "Разработка",

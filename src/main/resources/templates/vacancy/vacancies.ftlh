@@ -34,7 +34,7 @@
                     <div class="flex justify-between">
                         <div>
                             <h3 class="font-bold text-lg text-gray-800">${vacancy.name}</h3>
-                            <p class="text-gray-600 mb-2">${vacancy.authorName!'Работодатель'} </p>
+                            <p class="text-gray-600 mb-2">${vacancy.employer.name!'Работодатель'}</p>
                             <div class="text-blue-600 font-medium">
                                 <#if vacancy.salary?? && vacancy.salary gt 0>
                                     ${vacancy.salary?string(",##0")} ₽
@@ -45,8 +45,8 @@
                         </div>
                         <div class="flex flex-col items-end justify-between">
                             <span class="text-xs text-gray-400 mt-4">
-                                    <#if vacancy.createdDate??>
-                                        ${vacancy.createdDate?datetime?string("dd.MM.yyyy")}
+                                    <#if vacancy.createdAt??>
+                                        ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
                                     <#else>
                                         Дата не указана
                                     </#if>
