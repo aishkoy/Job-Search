@@ -46,7 +46,8 @@ public class Vacancy {
 
     @Column(name = "is_active",
             nullable = false)
-    Boolean isActive;
+    @Builder.Default
+    Boolean isActive = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
@@ -55,8 +56,10 @@ public class Vacancy {
 
     @Column(name = "created_at",
             nullable = false)
-    Timestamp createdAt;
+    @Builder.Default
+    Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "updated_at")
-    Timestamp updatedAt;
+    @Builder.Default
+    Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 }

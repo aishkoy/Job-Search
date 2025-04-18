@@ -38,6 +38,10 @@
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">Вакансия закрыта</span>
                             </#if>
 
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                    <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
+                            </span>
+
                             <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
                                 Опыт: ${vacancy.expFrom} - ${vacancy.expTo} ${getPluralForm(vacancy.expTo, "год", "года", "лет")}
                             </span>
@@ -114,7 +118,8 @@
                     </div>
 
                     <#if !currentUser??>
-                        <a href="/auth/login" class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium">
+                        <a href="/auth/login"
+                           class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium">
                             <i class="fas fa-sign-in-alt mr-2"></i>Войти, чтобы откликнуться
                         </a>
                     <#elseif currentUser.role.id == 2>

@@ -33,9 +33,7 @@ public class VacancyServiceImpl implements VacancyService {
 
         Vacancy vacancy = vacancyMapper.toEntity(vacancyDto);
         vacancyRepository.save(vacancy);
-
         log.info("Создана вакансия {}", vacancy.getId());
-
         return vacancy.getId();
     }
 
@@ -64,23 +62,16 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public Long updateVacancy(Long vacancyId, VacancyFormDto vacancyDto) {
         VacancyDto existing = getVacancyDtoById(vacancyId);
+
+        categoryService.getCategoryIfPresent((vacancyDto.getCategory().getId()));
         if (isVacancyNotOwnedByAuthor(vacancyId, vacancyDto.getEmployer().getId())) {
             throw new AccessDeniedException("У вас нет права на редактирование этой вакансии!");
         }
 
-
-        categoryService.getCategoryIfPresent((vacancyDto.getCategory().getId()));
-
-        existing.setName(vacancyDto.getName());
-        existing.setDescription(vacancyDto.getDescription());
-        existing.setCategory(vacancyDto.getCategory());
-        existing.setSalary(vacancyDto.getSalary());
-        existing.setExpFrom(vacancyDto.getExpFrom());
-        existing.setExpTo(vacancyDto.getExpTo());
-        existing.setIsActive(vacancyDto.getIsActive());
-
-
-        Vacancy vacancy = vacancyMapper.toEntity(existing);
+        Vacancy vacancy = vacancyMapper.toEntity(vacancyDto);
+        vacancy.setId(existing.getId());
+        vacancy.setCreatedAt(existing.getCreatedAt());
+        vacancy.setEmployer(userService.getEntityById(existing.getEmployer().getId()));
 
         vacancyRepository.save(vacancy);
         log.info("Обновлена вакансия {}", vacancyId);
