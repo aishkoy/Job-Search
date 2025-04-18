@@ -3,6 +3,7 @@ package kg.attractor.job_search.service;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,8 @@ import java.util.List;
 
 public interface UserService {
     List<UserDto> getUsers();
+
+    User getEntityById(Long userId);
 
     UserDto getUserById(Long userId);
 
