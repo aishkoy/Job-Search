@@ -71,7 +71,7 @@ public class VacancyServiceImpl implements VacancyService {
         Vacancy vacancy = vacancyMapper.toEntity(vacancyDto);
         vacancy.setId(existing.getId());
         vacancy.setCreatedAt(existing.getCreatedAt());
-        vacancy.setEmployer(userService.getEntityById(existing.getEmployer().getId()));
+        vacancy.setIsActive(vacancyDto.getIsActive());
 
         vacancyRepository.save(vacancy);
         log.info("Обновлена вакансия {}", vacancyId);
