@@ -15,9 +15,14 @@
         <div class="mb-6">
             <p class="text-sm font-medium text-gray-700 mb-2">Выберите тип учетной записи:</p>
             <div class="flex space-x-4">
+                <#assign roleMap = {}>
+                <#list roles as role>
+                    <#assign roleMap = roleMap + {role.id?string: role.role}>
+                </#list>
+
                 <@spring.formRadioButtons
-                "userDto.roleId",
-                {"2":"Соискатель", "1":"Работодатель"},
+                "userDto.role.id",
+                roleMap,
                 "<br>",
                 "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"
                 />

@@ -98,9 +98,6 @@ public class UserServiceImpl implements UserService {
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 
         User user = userMapper.toEntity(userDto);
-        user.setAvatar(null);
-        user.setEnabled(true);
-
         userRepository.save(user);
         log.info("Зарегистрирован пользователь: {}", user.getId());
         return user.getId();
@@ -124,12 +121,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long updateUser(Long userId, EditUserDto userDto) {
-        UserDto dto = getUserById(userId);
-
         if (!userId.equals(userDto.getId())) {
             throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
         }
 
+        UserDto dto = getUserById(userId);
         dto.setName(normalizeField(userDto.getName(), true));
         dto.setSurname(normalizeField(userDto.getSurname(), true));
         dto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));

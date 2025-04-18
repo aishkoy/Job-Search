@@ -45,11 +45,13 @@ public class User {
 
     @Lob
     @Column(name = "avatar")
-    String avatar;
+    @Builder.Default
+    String avatar = null;
 
     @Column(nullable = false,
             name = "enabled")
-    Boolean enabled;
+    @Builder.Default
+    Boolean enabled = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id",

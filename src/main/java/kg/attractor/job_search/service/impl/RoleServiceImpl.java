@@ -9,6 +9,8 @@ import kg.attractor.job_search.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
@@ -20,5 +22,17 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findById(id).
                 orElseThrow(() -> new RoleNotFoundException("Не существует роли с таким id!"));
         return roleMapper.toDto(role);
+    }
+
+    @Override
+    public List<RoleDto> getAllRoles(){
+        List<RoleDto> roles = roleRepository.findAll()
+                .stream()
+                .map(roleMapper::toDto)
+                .toList();
+        if(roles.isEmpty()){
+            throw new RoleNotFoundException("Не было найдено никаких ролей!");
+        }
+        return roles;
     }
 }
