@@ -31,13 +31,13 @@ public class ResumeDao {
 
     public List<Resume> getResumesByCategoryId(Long categoryId) {
         String sql = """
-                select * from resumes where is_active = true and category_id in
+                select * from resumes where category_id in
                                             (select id from CATEGORIES where id = ? or parent_id = ?)""";
         return jdbcTemplate.query(sql, new ResumeDaoMapper(), categoryId, categoryId);
     }
 
     public List<Resume> getResumesByApplicantId(Long userId) {
-        String sql = "select * from resumes where is_active = true and applicant_id = ?";
+        String sql = "select * from resumes where applicant_id = ?";
         return jdbcTemplate.query(sql, new ResumeDaoMapper(), userId);
     }
 
@@ -82,6 +82,7 @@ public class ResumeDao {
             name = ?,
             category_id = ?,
             salary = ?,
+            is_active = ?,
             update_time = NOW()
         WHERE id = ?""";
 
@@ -97,7 +98,8 @@ public class ResumeDao {
             ps.setFloat(3, resume.getSalary());
 
             if (isUpdate) {
-                ps.setLong(4, resume.getId());
+                ps.setBoolean(4, resume.getIsActive());
+                ps.setLong(5, resume.getId());
             } else{
                 ps.setLong(4, resume.getApplicantId());
             }

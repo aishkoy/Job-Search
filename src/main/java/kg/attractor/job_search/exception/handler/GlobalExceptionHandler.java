@@ -1,77 +1,103 @@
 package kg.attractor.job_search.exception.handler;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import kg.attractor.job_search.service.ErrorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
 
 import java.util.NoSuchElementException;
 
 @Slf4j
-@RestControllerAdvice
+@ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
-    private final ErrorService errorService;
 
     @ExceptionHandler(MultipartException.class)
-    public ResponseEntity<ErrorResponseBody> handleMultipartException(MultipartException e) {
-        log.error("Multipart request processing error: {}", e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+    public String handleMultipartException(Model model, HttpServletRequest request, MultipartException e) {
+        log.error("MultipartException processing error: {}",e.getMessage());
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponseBody> handleISE(IllegalStateException e) {
+    public String handleISE(Model model, HttpServletRequest request, IllegalStateException e) {
         log.error("IllegalStateException processing error: {}", e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponseBody> handleRuntime(RuntimeException e) {
+    public String handleRuntime(Model model, HttpServletRequest request, RuntimeException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.CONFLICT);
+        model.addAttribute("status", HttpStatus.CONFLICT.value());
+        model.addAttribute("reason", HttpStatus.CONFLICT.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseBody> handleIAE(IllegalArgumentException e) {
+    public String handleIAE(Model model, HttpServletRequest request, IllegalArgumentException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponseBody> handleConstraintViolation(ConstraintViolationException ex) {
+    public String handleConstraintViolation(Model model, HttpServletRequest request, ConstraintViolationException ex) {
         log.error(ex.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(ex.getConstraintViolations()), HttpStatus.BAD_REQUEST);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponseBody> handleNSEE(NoSuchElementException e) {
+    public String handleNSEE(Model model, HttpServletRequest request, NoSuchElementException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.NOT_FOUND);
+        model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+        model.addAttribute("reason", HttpStatus.NOT_FOUND.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponseBody> handleDataIntegrityViolation(DataIntegrityViolationException e) {
+    public String handleDataIntegrityViolation(Model model, HttpServletRequest request, DataIntegrityViolationException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.BAD_REQUEST);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponseBody> handleAccessDenied(AccessDeniedException e) {
+    public String handleAccessDenied(Model model, HttpServletRequest request, AccessDeniedException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e), HttpStatus.FORBIDDEN);
+        model.addAttribute("status", HttpStatus.FORBIDDEN.value());
+        model.addAttribute("reason", HttpStatus.FORBIDDEN.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseBody> handleValidation(MethodArgumentNotValidException e) {
+    public String handleValidation(Model model, HttpServletRequest request, MethodArgumentNotValidException e) {
         log.error(e.getMessage());
-        return new ResponseEntity<>(errorService.makeResponse(e.getBindingResult()), HttpStatus.BAD_REQUEST);
+        model.addAttribute("status", HttpStatus.BAD_REQUEST.value());
+        model.addAttribute("reason", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        model.addAttribute("details", request);
+        return "error/error";
     }
 }

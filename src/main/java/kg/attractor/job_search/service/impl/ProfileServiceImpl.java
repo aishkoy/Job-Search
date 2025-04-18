@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.NoSuchElementException;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -27,9 +29,13 @@ public class ProfileServiceImpl implements ProfileService {
         Long authId = userService.getAuthId();
 
         if (roleId.equals(1L)) {
-            model.addAttribute("vacancies", vacancyService.getVacanciesByEmployerId(authId));
+            try{
+                model.addAttribute("vacancies", vacancyService.getVacanciesByEmployerId(authId));
+            }catch (NoSuchElementException ignored){}
         } else if (roleId.equals(2L)) {
-            model.addAttribute("resumes", resumeService.getResumesByApplicantId(authId));
+            try{
+                model.addAttribute("resumes", resumeService.getResumesByApplicantId(authId));
+            } catch (NoSuchElementException ignored){}
         }
     }
 }

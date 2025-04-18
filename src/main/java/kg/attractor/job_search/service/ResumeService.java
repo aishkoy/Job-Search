@@ -19,11 +19,21 @@ public interface ResumeService {
 
     ResumeDto getResumeById(Long resumeId, Long userId);
 
+    ResumeDto getResumeById(Long resumeId);
+
     Long updateResume(Long resumeId, ResumeFormDto resumeDto);
+
+    void addExperience(ResumeFormDto resumeForm);
+
+    void addEducation(ResumeFormDto resumeForm);
+
+    void addContact(ResumeFormDto resumeForm);
 
     HttpStatus deleteResume(Long resumeId, Long userId);
 
     List<ResumeDto> getResumesByCategoryId(Long categoryId);
 
     Long changeActiveStatus(Long resumeId, Long authId);
+
+    ResumeFormDto convertToFormDto(ResumeDto dto);
 }

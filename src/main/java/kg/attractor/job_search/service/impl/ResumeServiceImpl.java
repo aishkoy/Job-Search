@@ -19,14 +19,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.ObjLongConsumer;
-import java.util.function.ToLongFunction;
 
 @Slf4j
 @Service
@@ -136,7 +133,8 @@ public class ResumeServiceImpl implements ResumeService {
         }
     }
 
-    private ResumeDto getResumeById(Long resumeId) {
+    @Override
+    public ResumeDto getResumeById(Long resumeId) {
         Resume resume = resumeDao.getResumeById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
@@ -158,32 +156,65 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setId(resumeId);
         Long updatedResumeId = resumeDao.updateResume(resume);
 
-        updateResumeItems(
-                resumeId,
-                resumeDto.getEducations(),
-                EducationInfoDto::setResumeId,
-                educationInfoService::updateEducationInfo,
-                educationInfoService::createEducationInfo
-        );
+        if (resumeDto.getEducations() != null) {
+            for (EducationInfoDto education : resumeDto.getEducations()) {
+                education.setResumeId(resumeId);
+                if (education.getId() == null) {
+                    educationInfoService.createEducationInfo(education);
+                } else {
+                    educationInfoService.updateEducationInfo(education.getId(), education);
+                }
+            }
+        }
 
-        updateResumeItems(
-                resumeId,
-                resumeDto.getWorkExperiences(),
-                WorkExperienceInfoDto::setResumeId,
-                workExperienceInfoService::updateWorkExperienceInfo,
-                workExperienceInfoService::createWorkExperience
-        );
+        if (resumeDto.getWorkExperiences() != null) {
+            for (WorkExperienceInfoDto workExperience : resumeDto.getWorkExperiences()) {
+                workExperience.setResumeId(resumeId);
+                if (workExperience.getId() == null) {
+                    workExperienceInfoService.createWorkExperience(workExperience);
+                } else {
+                    workExperienceInfoService.updateWorkExperienceInfo(workExperience.getId(), workExperience);
+                }
+            }
+        }
 
-        updateResumeItems(
-                resumeId,
-                resumeDto.getContacts(),
-                ContactInfoDto::setResumeId,
-                contactInfoService::updateContactInfo,
-                contactInfoService::createContactInfo
-        );
+        if (resumeDto.getContacts() != null) {
+            for (ContactInfoDto contact : resumeDto.getContacts()) {
+                contact.setResumeId(resumeId);
+                if (contact.getId() == null) {
+                    contactInfoService.createContactInfo(contact);
+                } else {
+                    contactInfoService.updateContactInfo(contact.getId(), contact);
+                }
+            }
+        }
 
         log.info("Обновлено резюме: {}", resumeId);
         return updatedResumeId;
+    }
+
+    @Override
+    public void addExperience(ResumeFormDto resumeForm) {
+        if (resumeForm.getWorkExperiences() == null) {
+            resumeForm.setWorkExperiences(new ArrayList<>());
+        }
+        resumeForm.getWorkExperiences().add(new WorkExperienceInfoDto());
+    }
+
+    @Override
+    public void addEducation(ResumeFormDto resumeForm) {
+        if (resumeForm.getEducations() == null) {
+            resumeForm.setEducations(new ArrayList<>());
+        }
+        resumeForm.getEducations().add(new EducationInfoDto());
+    }
+
+    @Override
+    public void addContact(ResumeFormDto resumeForm) {
+        if (resumeForm.getContacts() == null) {
+            resumeForm.setContacts(new ArrayList<>());
+        }
+        resumeForm.getContacts().add(new ContactInfoDto());
     }
 
     @Override
@@ -223,6 +254,11 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeId;
     }
 
+    @Override
+    public ResumeFormDto convertToFormDto(ResumeDto dto){
+        return resumeMapper.toFormDto(dto);
+    }
+
     private <T> void processResumeItems(Collection<T> items, Long resumeId,
                                         ObjLongConsumer<T> setResumeIdFunc,
                                         Function<T, ?> createFunction) {
@@ -230,33 +266,6 @@ public class ResumeServiceImpl implements ResumeService {
             for (T item : items) {
                 setResumeIdFunc.accept(item, resumeId);
                 createFunction.apply(item);
-            }
-        }
-    }
-
-    private <T> void updateResumeItems(
-            Long resumeId,
-            List<T> newItems,
-            ObjLongConsumer<T> setResumeIdFunc,
-            BiFunction<Long, T, Long> updateFunction,
-            ToLongFunction<T> createFunction
-    ) {
-        if (newItems != null) {
-            for (T item : newItems) {
-                try {
-                    setResumeIdFunc.accept(item, resumeId);
-
-                    Method getIdMethod = item.getClass().getMethod("getId");
-                    Long itemId = (Long) getIdMethod.invoke(item);
-
-                    if (itemId != null) {
-                        updateFunction.apply(itemId, item);
-                    } else {
-                        createFunction.applyAsLong(item);
-                    }
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    log.error("Метод getId() не найден для класса {}", item.getClass().getName());
-                }
             }
         }
     }

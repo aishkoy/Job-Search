@@ -14,8 +14,9 @@ public interface VacancyMapper {
     Vacancy toEntity(VacancyDto vacancyDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updateTime", ignore = true)
     Vacancy toEntity(VacancyFormDto vacancyFormDto);
+
+    VacancyFormDto toFormDto(VacancyDto vacancyDto);
 }

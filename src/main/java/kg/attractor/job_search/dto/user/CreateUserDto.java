@@ -1,6 +1,7 @@
 package kg.attractor.job_search.dto.user;
 
 import jakarta.validation.constraints.*;
+import kg.attractor.job_search.validation.UniqueEmail;
 import kg.attractor.job_search.validation.ValidUserByRole;
 import lombok.*;
 
@@ -20,7 +21,9 @@ public class CreateUserDto {
 
     private Integer age;
 
-    @Email @NotBlank
+    @Email
+    @NotBlank
+    @UniqueEmail
     private String email;
 
     @NotBlank
@@ -31,7 +34,8 @@ public class CreateUserDto {
     )
     private String password;
 
-    @NotBlank @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
+    @NotBlank
+    @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     private String phoneNumber;
 
     @NotNull
