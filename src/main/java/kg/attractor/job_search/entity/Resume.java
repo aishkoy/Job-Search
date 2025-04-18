@@ -40,12 +40,15 @@ public class Resume {
 
     @Column(nullable = false,
             name = "is_active")
-    Boolean isActive;
+    @Builder.Default
+    Boolean isActive = true;
 
     @Column(nullable = false,
             name = "created_at")
-    Timestamp createdAt;
+    @Builder.Default
+    Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "updated_at")
-    Timestamp updatedAt;
+    @Builder.Default
+    Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 }

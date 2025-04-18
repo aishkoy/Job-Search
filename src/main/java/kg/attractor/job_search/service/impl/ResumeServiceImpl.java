@@ -19,7 +19,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -100,11 +99,11 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
-        ResumeDto dto = resumeMapper.toDto(resumeDto);
-        dto.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        dto.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-        Resume resume = resumeMapper.toEntity(dto);
+
+        Resume resume = resumeMapper.toEntity(resumeDto);
         resumeRepository.save(resume);
+
+        ResumeDto dto = resumeMapper.toDto(resume);
 
         processResumeItems(
                 resumeDto.getEducations(),
@@ -182,28 +181,22 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public Long updateResume(Long resumeId, ResumeFormDto resumeForm) {
-        ResumeDto dto = getResumeDtoById(resumeId);
+        ResumeDto existing = getResumeDtoById(resumeId);
         categoryService.getCategoryIfPresent(resumeForm.getCategory().getId());
 
         if (!isResumeOwnedByApplicant(resumeId, resumeForm.getApplicant().getId())) {
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
         }
 
-        dto.setName(resumeForm.getName());
-        dto.setCategory(resumeForm.getCategory());
-        dto.setSalary(resumeForm.getSalary());
-        dto.setIsActive(resumeForm.getIsActive());
-        dto.setContacts(resumeForm.getContacts());
-        dto.setWorkExperiences(resumeForm.getWorkExperiences());
-        dto.setEducations(resumeForm.getEducations());
-        dto.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-
-        Resume resume = resumeMapper.toEntity(dto);
+        Resume resume = resumeMapper.toEntity(resumeForm);
+        resume.setId(resumeId);
+        resume.setCreatedAt(existing.getCreatedAt());
+        resume.setIsActive(resumeForm.getIsActive());
         resumeRepository.save(resume);
 
         if (resumeForm.getEducations() != null) {
             for (EducationInfoDto education : resumeForm.getEducations()) {
-                education.setResume(dto);
+                education.setResume(existing);
                 if (education.getId() == null) {
                     educationInfoService.createEducationInfo(education);
                 } else {
@@ -214,7 +207,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         if (resumeForm.getWorkExperiences() != null) {
             for (WorkExperienceInfoDto workExperience : resumeForm.getWorkExperiences()) {
-                workExperience.setResume(dto);
+                workExperience.setResume(existing);
                 if (workExperience.getId() == null) {
                     workExperienceInfoService.createWorkExperience(workExperience);
                 } else {
@@ -225,7 +218,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         if (resumeForm.getContacts() != null) {
             for (ContactInfoDto contact : resumeForm.getContacts()) {
-                contact.setResume(dto);
+                contact.setResume(existing);
                 if (contact.getId() == null) {
                     contactInfoService.createContactInfo(contact);
                 } else {

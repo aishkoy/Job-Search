@@ -42,6 +42,10 @@
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">Не ищет работу</span>
                             </#if>
 
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                    <i class="fas fa-tags mr-1"></i>${resume.category.name}
+                            </span>
+
                             <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
                                 <#assign totalYears = 0>
                                 <#list resume.workExperiences as exp>
