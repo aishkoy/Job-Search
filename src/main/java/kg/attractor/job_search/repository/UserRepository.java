@@ -37,7 +37,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             inner join Resume r on u.id = r.applicant.id
             inner join RespondedApplicant ra on ra.resume.id = r.id
             where ra.vacancy.id = :vacancyId""")
-    List<User> findApplicantsByVacancyId(Long vacancyId);
+    List<User> findApplicantsByVacancyId(@Param("vacancyId")  Long vacancyId);
 
     boolean existsByEmail(String email);
 }

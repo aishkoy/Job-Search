@@ -94,9 +94,10 @@
                         <#else>
                             <p class="text-gray-600 text-sm mt-3 italic">Опыт работы не указан</p>
                         </#if>
-                    </div>
-                    <div class="flex justify-between items-center mt-4">
-                        <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
+
+                        <div class="flex justify-between items-center mt-4">
+                            <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
+                        </div>
                     </div>
                 </#list>
             <#else>
