@@ -37,6 +37,8 @@ public class ResumeFormDto {
 
     Boolean isActive;
 
+    private Boolean isActive;
+
     @Valid
     List<WorkExperienceInfoDto> workExperiences;
 
