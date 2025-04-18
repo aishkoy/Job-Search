@@ -1,25 +1,28 @@
 package kg.attractor.job_search.dto.vacancy;
 
+import kg.attractor.job_search.dto.CategoryDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class VacancyDto {
-    private Long id;
-    private String name;
-    private String description;
-    private Long categoryId;
-    private Float salary;
-    private Integer expFrom;
-    private Integer expTo;
-    private Boolean isActive;
-    private Long authorId;
-    private String authorName;
-    private Timestamp createdDate;
-    private Timestamp updateTime;
+    Long id;
+    String name;
+    String description;
+    CategoryDto category;
+    Float salary;
+    Integer expFrom;
+    Integer expTo;
+    Boolean isActive;
+    UserDto employer;
+    Timestamp createdAt;
+    Timestamp updatedAt;
 }

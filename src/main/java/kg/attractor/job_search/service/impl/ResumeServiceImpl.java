@@ -1,6 +1,5 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.ResumeDao;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
@@ -9,7 +8,8 @@ import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;
-import kg.attractor.job_search.model.Resume;
+import kg.attractor.job_search.entity.Resume;
+import kg.attractor.job_search.repository.ResumeRepository;
 import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,14 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.ObjLongConsumer;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
-    private final ResumeDao resumeDao;
+    private final ResumeRepository resumeRepository;
     private final ResumeMapper resumeMapper;
     private final UserService userService;
     private final CategoryService categoryService;
@@ -39,7 +39,11 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<ResumeDto> getResumes() {
-        List<ResumeDto> resumes = resumeDao.getResumes().stream().map(resumeMapper::toDto).toList();
+        List<ResumeDto> resumes =
+                resumeRepository.findAll()
+                        .stream()
+                        .map(resumeMapper::toDto)
+                        .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме не найдены");
         return resumes;
@@ -47,10 +51,11 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<ResumeDto> getActiveResumes() {
-        List<ResumeDto> resumes = resumeDao.getActiveResumes()
-                .stream()
-                .map(resumeMapper::toDto)
-                .toList();
+        List<ResumeDto> resumes =
+                resumeRepository.findAllByIsActiveTrue()
+                        .stream()
+                        .map(resumeMapper::toDto)
+                        .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Активные резюме не найдены");
         return resumes;
@@ -59,10 +64,11 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public List<ResumeDto> getResumesByApplicantId(Long userId) {
         userService.getApplicantById(userId);
-        List<ResumeDto> resumes = resumeDao.getResumesByApplicantId(userId)
-                .stream()
-                .map(resumeMapper::toDto)
-                .toList();
+        List<ResumeDto> resumes =
+                resumeRepository.findAllByApplicantId(userId)
+                        .stream()
+                        .map(resumeMapper::toDto)
+                        .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с ID: " + userId + " не найдены");
         return resumes;
@@ -75,9 +81,11 @@ public class ResumeServiceImpl implements ResumeService {
 
         userService.getUsersByName(userName);
 
-        List<ResumeDto> resumes = resumeDao.getResumesByApplicantName(userName).stream()
-                .map(resumeMapper::toDto)
-                .toList();
+        List<ResumeDto> resumes =
+                resumeRepository.findAllByApplicantName(userName)
+                        .stream()
+                        .map(resumeMapper::toDto)
+                        .toList();
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с именем: " + userName + " не найдены");
         return resumes;
@@ -86,42 +94,45 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @Transactional(rollbackFor = {Exception.class})
     public Long createResume(ResumeFormDto resumeDto) {
-        if (resumeDto.getApplicantId() == null) {
+        if (resumeDto.getApplicant() == null) {
             throw new ApplicantNotFoundException();
         }
 
-        categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
+        categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
 
-        Long resumeId = resumeDao.createResume(resumeMapper.toEntity(resumeDto));
+        Resume resume = resumeMapper.toEntity(resumeDto);
+        resumeRepository.save(resume);
+
+        ResumeDto dto = resumeMapper.toDto(resume);
 
         processResumeItems(
                 resumeDto.getEducations(),
-                resumeId,
-                EducationInfoDto::setResumeId,
+                dto,
+                EducationInfoDto::setResume,
                 educationInfoService::createEducationInfo
         );
 
         processResumeItems(
                 resumeDto.getWorkExperiences(),
-                resumeId,
-                WorkExperienceInfoDto::setResumeId,
+                dto,
+                WorkExperienceInfoDto::setResume,
                 workExperienceInfoService::createWorkExperience
         );
 
         processResumeItems(
                 resumeDto.getContacts(),
-                resumeId,
-                ContactInfoDto::setResumeId,
+                dto,
+                ContactInfoDto::setResume,
                 contactInfoService::createContactInfo
         );
 
         log.info("Созданное резюме: {}", resumeDto);
-        return resumeId;
+        return resume.getId();
     }
 
     @Override
-    public ResumeDto getResumeById(Long resumeId, Long userId) {
-        ResumeDto resume = getResumeById(resumeId);
+    public Resume getResumeById(Long resumeId, Long userId) {
+        Resume resume = getResumeById(resumeId);
         try {
             userService.getEmployerById(userId);
             return resume;
@@ -134,8 +145,32 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public ResumeDto getResumeById(Long resumeId) {
-        Resume resume = resumeDao.getResumeById(resumeId)
+    public Resume getResumeById(Long resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
+
+        log.info("Получено резюме {}", resumeId);
+        return resume;
+    }
+
+
+    @Override
+    public ResumeDto getResumeDtoById(Long resumeId, Long userId) {
+        ResumeDto resume = getResumeDtoById(resumeId);
+        try {
+            userService.getEmployerById(userId);
+            return resume;
+        } catch (EmployerNotFoundException ignore) {
+            if (isResumeOwnedByApplicant(resumeId, userId)) {
+                return resume;
+            }
+            throw new AccessDeniedException("Это не ваше резюме");
+        }
+    }
+
+    @Override
+    public ResumeDto getResumeDtoById(Long resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
         ResumeDto resumeDto = resumeMapper.toDto(resume);
@@ -145,20 +180,23 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Long updateResume(Long resumeId, ResumeFormDto resumeDto) {
-        getResumeById(resumeId);
-        categoryService.getCategoryIdIfPresent(resumeDto.getCategoryId());
-        if (!isResumeOwnedByApplicant(resumeId, resumeDto.getApplicantId())) {
+    public Long updateResume(Long resumeId, ResumeFormDto resumeForm) {
+        ResumeDto existing = getResumeDtoById(resumeId);
+        categoryService.getCategoryIfPresent(resumeForm.getCategory().getId());
+
+        if (!isResumeOwnedByApplicant(resumeId, resumeForm.getApplicant().getId())) {
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
         }
 
-        Resume resume = resumeMapper.toEntity(resumeDto);
+        Resume resume = resumeMapper.toEntity(resumeForm);
         resume.setId(resumeId);
-        Long updatedResumeId = resumeDao.updateResume(resume);
+        resume.setCreatedAt(existing.getCreatedAt());
+        resume.setIsActive(resumeForm.getIsActive());
+        resumeRepository.save(resume);
 
-        if (resumeDto.getEducations() != null) {
-            for (EducationInfoDto education : resumeDto.getEducations()) {
-                education.setResumeId(resumeId);
+        if (resumeForm.getEducations() != null) {
+            for (EducationInfoDto education : resumeForm.getEducations()) {
+                education.setResume(existing);
                 if (education.getId() == null) {
                     educationInfoService.createEducationInfo(education);
                 } else {
@@ -167,9 +205,9 @@ public class ResumeServiceImpl implements ResumeService {
             }
         }
 
-        if (resumeDto.getWorkExperiences() != null) {
-            for (WorkExperienceInfoDto workExperience : resumeDto.getWorkExperiences()) {
-                workExperience.setResumeId(resumeId);
+        if (resumeForm.getWorkExperiences() != null) {
+            for (WorkExperienceInfoDto workExperience : resumeForm.getWorkExperiences()) {
+                workExperience.setResume(existing);
                 if (workExperience.getId() == null) {
                     workExperienceInfoService.createWorkExperience(workExperience);
                 } else {
@@ -178,9 +216,9 @@ public class ResumeServiceImpl implements ResumeService {
             }
         }
 
-        if (resumeDto.getContacts() != null) {
-            for (ContactInfoDto contact : resumeDto.getContacts()) {
-                contact.setResumeId(resumeId);
+        if (resumeForm.getContacts() != null) {
+            for (ContactInfoDto contact : resumeForm.getContacts()) {
+                contact.setResume(existing);
                 if (contact.getId() == null) {
                     contactInfoService.createContactInfo(contact);
                 } else {
@@ -190,7 +228,7 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         log.info("Обновлено резюме: {}", resumeId);
-        return updatedResumeId;
+        return resumeId;
     }
 
     @Override
@@ -219,59 +257,47 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public HttpStatus deleteResume(Long resumeId, Long userId) {
-        getResumeById(resumeId);
+        getResumeDtoById(resumeId);
         if (!isResumeOwnedByApplicant(resumeId, userId)) {
             throw new AccessDeniedException("У вас нет прав на удаление этого резюме!");
         }
-        resumeDao.deleteResume(resumeId);
+        resumeRepository.deleteById(resumeId);
         log.info("Удалено резюме: {}", resumeId);
         return HttpStatus.OK;
     }
 
     @Override
     public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
-        Long category = categoryService.getCategoryIdIfPresent(categoryId);
+        categoryService.getCategoryIfPresent(categoryId);
 
-        List<ResumeDto> resumes = resumeDao.getResumesByCategoryId(category)
+        List<ResumeDto> resumes = resumeRepository.findAllByCategoryId(categoryId)
                 .stream()
                 .map(resumeMapper::toDto)
                 .toList();
+
         enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
         return resumes;
     }
 
     @Override
-    public Long changeActiveStatus(Long resumeId, Long userId) {
-        ResumeDto resume = getResumeById(resumeId);
-        if (!isResumeOwnedByApplicant(resumeId, userId)) {
-            throw new AccessDeniedException("У вас нет прав на изменение статуса этого резюме!");
-        }
-
-        Boolean status = resume.getIsActive().equals(Boolean.FALSE) ? Boolean.TRUE : Boolean.FALSE;
-
-        resumeDao.updateResumeActiveStatus(resumeId, status);
-        return resumeId;
-    }
-
-    @Override
-    public ResumeFormDto convertToFormDto(ResumeDto dto){
+    public ResumeFormDto convertToFormDto(ResumeDto dto) {
         return resumeMapper.toFormDto(dto);
     }
 
-    private <T> void processResumeItems(Collection<T> items, Long resumeId,
-                                        ObjLongConsumer<T> setResumeIdFunc,
+    private <T> void processResumeItems(Collection<T> items, ResumeDto resumeDto,
+                                        BiConsumer<T, ResumeDto> setResumeFunc,
                                         Function<T, ?> createFunction) {
         if (items != null && !items.isEmpty()) {
             for (T item : items) {
-                setResumeIdFunc.accept(item, resumeId);
+                setResumeFunc.accept(item, resumeDto);
                 createFunction.apply(item);
             }
         }
     }
 
     public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
-        return resumeDao.isResumeOwnedByApplicant(resumeId, applicantId);
+        return resumeRepository.existsByIdAndApplicantId(resumeId, applicantId);
     }
 
     private void enrichResumesWithAdditionalData(List<ResumeDto> resumes) {
@@ -284,7 +310,7 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
         resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
         resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
-        resume.setApplicantName(userService.getUserName(resume.getApplicantId()));
+        resume.setApplicant(userService.getUserById(resume.getApplicant().getId()));
     }
 
     private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {

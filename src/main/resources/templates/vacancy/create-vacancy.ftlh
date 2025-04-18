@@ -14,7 +14,7 @@
             </div>
 
             <form action="/vacancies/create" method="post" class="mt-8 space-y-6">
-                <input type="hidden" name="authorId" value="${user.id}"/>
+                <input type="hidden" name="employer.id" value="${user.id}"/>
 
                 <div class="rounded-md -space-y-px">
                     <div class="mb-4">
@@ -31,21 +31,22 @@
                     </div>
 
                     <div class="mb-4">
-                        <label for="categoryId" class="block text-sm font-medium text-gray-700">Категория *</label>
+                        <label for="category.id" class="block text-sm font-medium text-gray-700">Категория *</label>
+                        <#assign categoryMap = {}>
+                        <#list categories as category>
+                            <#assign categoryMap = categoryMap + {category.id?string: category.name}>
+                        </#list>
+
                         <@spring.formSingleSelect
-                        "vacancyForm.categoryId",
-                        {
-                        "1": "IT",
-                        "2": "Разработка",
-                        "3": "Тестирование"
-                        },
+                        "vacancyForm.category.id",
+                        categoryMap,
                         'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                         />
                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                     </div>
 
                     <div class="mb-4">
-                        <label for="salary" class="block text-sm font-medium text-gray-700">Зарплата (в USD) *</label>
+                        <label for="salary" class="block text-sm font-medium text-gray-700">Зарплата (в сомах) *</label>
                         <@spring.formInput "vacancyForm.salary", 'type="number" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Укажите зарплату"' />
                         <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                     </div>

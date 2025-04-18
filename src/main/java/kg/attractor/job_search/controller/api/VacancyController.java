@@ -26,7 +26,7 @@ public class VacancyController {
 
     @GetMapping("{id}")
     public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
-        return ResponseEntity.ofNullable(vacancyService.getVacancyById(id));
+        return ResponseEntity.ofNullable(vacancyService.getVacancyDtoById(id));
     }
 
     @GetMapping("active")
@@ -51,24 +51,19 @@ public class VacancyController {
 
     @PostMapping
     public ResponseEntity<Long> createVacancy(@RequestBody @Valid VacancyFormDto vacancyDto) {
-        vacancyDto.setAuthorId(adapter.getAuthId());
+        vacancyDto.setEmployer(adapter.getAuthUser());
         return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid VacancyFormDto vacancyDto) {
-        vacancyDto.setAuthorId(adapter.getAuthId());
+        vacancyDto.setEmployer(adapter.getAuthUser());
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
     }
 
     @DeleteMapping("{id}")
     public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
         return vacancyService.deleteVacancy(vacancyId, adapter.getAuthId());
-    }
-
-    @PutMapping("{id}/active")
-    public ResponseEntity<Long> changeActivity(@PathVariable("id") Long vacancyId) {
-        return ResponseEntity.ofNullable(vacancyService.changeActiveStatus(vacancyId, adapter.getAuthId()));
     }
 
     @GetMapping("applied/{userId}")

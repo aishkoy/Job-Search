@@ -1,6 +1,7 @@
 package kg.attractor.job_search.dto.user;
 
 import jakarta.validation.constraints.*;
+import kg.attractor.job_search.dto.RoleDto;
 import kg.attractor.job_search.validation.UniqueEmail;
 import kg.attractor.job_search.validation.ValidUserByRole;
 import lombok.*;
@@ -39,5 +40,5 @@ public class CreateUserDto {
     private String phoneNumber;
 
     @NotNull
-    private Long roleId;
+    private RoleDto role;
 }

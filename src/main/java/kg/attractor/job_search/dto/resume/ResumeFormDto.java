@@ -4,10 +4,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import kg.attractor.job_search.dto.CategoryDto;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
@@ -16,24 +19,32 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class ResumeFormDto {
     @NotNull
-    private Long applicantId;
+    UserDto applicant;
+
     @NotBlank
-    private String name;
+    String name;
+
     @NotNull
-    private Long categoryId;
-    @NotNull @PositiveOrZero
-    private Float salary;
+    CategoryDto category;
+
+    @NotNull
+    @PositiveOrZero
+    Float salary;
+
+    Boolean isActive;
 
     private Boolean isActive;
 
     @Valid
-    private List<WorkExperienceInfoDto> workExperiences;
+    List<WorkExperienceInfoDto> workExperiences;
 
     @Valid
-    private List<EducationInfoDto> educations;
+    List<EducationInfoDto> educations;
 
     @Valid
-    private List<ContactInfoDto> contacts;
+    List<ContactInfoDto> contacts;
 }

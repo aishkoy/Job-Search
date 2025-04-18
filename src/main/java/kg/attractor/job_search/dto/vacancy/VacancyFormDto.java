@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import kg.attractor.job_search.dto.CategoryDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.validation.ValidExperienceRange;
 import lombok.*;
 
@@ -17,16 +19,26 @@ import lombok.*;
 public class VacancyFormDto {
     @NotBlank
     private String name;
+
     private String description;
+
     @NotNull
-    private Long categoryId;
-    @NotNull @PositiveOrZero
+    private CategoryDto category;
+
+    @NotNull
+    @PositiveOrZero
     private Float salary;
-    @NotNull @Positive
-    private Integer expFrom;
-    @NotNull @Positive
-    private Integer expTo;
+
     @NotNull
-    private Long authorId;
+    @Positive
+    private Integer expFrom;
+
+    @NotNull
+    @Positive
+    private Integer expTo;
+
+    @NotNull
+    private UserDto employer;
+
     private Boolean isActive;
 }

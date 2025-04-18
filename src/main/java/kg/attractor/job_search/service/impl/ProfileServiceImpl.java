@@ -25,7 +25,7 @@ public class ProfileServiceImpl implements ProfileService {
         UserDto user = userService.getAuthUser();
         model.addAttribute("user", user);
 
-        Long roleId = user.getRoleId();
+        Long roleId = user.getRole().getId();
         Long authId = userService.getAuthId();
 
         if (roleId.equals(1L)) {
