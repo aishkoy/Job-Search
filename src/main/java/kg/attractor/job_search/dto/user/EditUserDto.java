@@ -5,8 +5,8 @@ import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class EditUserDto {
     private Long id;
@@ -20,5 +20,4 @@ public class EditUserDto {
     private String surname;
     @NotBlank @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     private String phoneNumber;
-    private String avatar;
 }

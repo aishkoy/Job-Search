@@ -88,26 +88,9 @@ public class UserDao {
 
     public Long registerUser(User user) {
         String sql = """
-                INSERT INTO users (name, surname, phone_number, avatar, age, email, password, role_id, enabled)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)""";
+            INSERT INTO users (name, surname, phone_number, avatar, age, email, password, role_id, enabled)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, true)""";
 
-        return saveUser(user, sql);
-    }
-
-    public Long updateUser(User user){
-        String sql = """
-                UPDATE users
-                SET name = ?,
-                    surname = ?,
-                    phone_number = ?,
-                    avatar = ?
-                WHERE id = ?""";
-
-
-        return saveUser(user, sql);
-    }
-
-    private Long saveUser(User user, String sql) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
@@ -116,21 +99,53 @@ public class UserDao {
             ps.setString(3, user.getPhoneNumber());
             ps.setString(4, user.getAvatar());
 
-
-            if (sql.toUpperCase().contains("UPDATE")) {
-                ps.setLong(5, user.getId());
-            } else{
-                if (user.getAge() == null) {
-                    ps.setNull(5, Types.INTEGER);
-                } else {
-                    ps.setInt(5, user.getAge());
-                }
-                ps.setString(6, user.getEmail());
-                ps.setString(7, user.getPassword());
-                ps.setLong(8, user.getRoleId());
+            if (user.getAge() == null) {
+                ps.setNull(5, Types.INTEGER);
+            } else {
+                ps.setInt(5, user.getAge());
             }
-            return ps;}, keyHolder
-        );
+            ps.setString(6, user.getEmail());
+            ps.setString(7, user.getPassword());
+            ps.setLong(8, user.getRoleId());
+
+            return ps;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public Long updateUser(User user) {
+        String sql = """
+            UPDATE users
+            SET name = ?,
+                surname = ?,
+                phone_number = ?
+            WHERE id = ?""";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getSurname());
+            ps.setString(3, user.getPhoneNumber());
+            ps.setLong(4, user.getId());
+
+            return ps;
+        }, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public Long updateUserAvatar(Long userId, String avatar) {
+        String sql = "UPDATE users SET avatar = ? WHERE id = ?";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(sql, new String[]{"id"});
+            ps.setString(1, avatar);
+            ps.setLong(2, userId);
+            return ps;
+        }, keyHolder);
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }

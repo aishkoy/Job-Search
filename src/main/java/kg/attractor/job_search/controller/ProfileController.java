@@ -2,11 +2,13 @@ package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.ProfileService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +27,10 @@ public class ProfileController {
 
     @GetMapping("edit")
     public String editProfile(Model model) {
-        model.addAttribute("user", userService.getAuthUser());
+        UserDto currentUser = userService.getAuthUser();
+        EditUserDto editUserDto = userService.mapToEditUser(currentUser);
+
+        model.addAttribute("userDto", editUserDto);
         return "profile/edit-profile";
     }
 
@@ -36,7 +41,15 @@ public class ProfileController {
     }
 
     @PostMapping("edit")
-    public String editProfile(@ModelAttribute @Valid EditUserDto userDto) {
+    public String editProfile(@ModelAttribute("userDto") @Valid EditUserDto userDto,
+                              BindingResult bindingResult,
+                              Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("user", userService.getAuthUser());
+            return "profile/edit-profile";
+        }
+
         userService.updateUser(userService.getAuthId(), userDto);
         return "redirect:/profile";
     }
