@@ -35,7 +35,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <h3 class="font-bold text-lg text-gray-800">${resume.name}</h3>
-                                <p class="text-gray-600 mb-2">${resume.applicantName!'Специалист'}</p>
+                                <p class="text-gray-600 mb-2">${resume.applicant.name!'Специалист'}</p>
                                 <div class="text-blue-600 font-medium">
                                     <#if resume.salary?? && resume.salary gt 0>
                                         ${resume.salary?string(",##0")} ₽
@@ -46,10 +46,10 @@
                             </div>
                             <div class="flex flex-col items-end justify-between">
                                 <span class="text-xs text-gray-400 mt-4">
-                                <#if resume.updateTime??>
-                                    Обновлено: ${resume.updateTime?datetime?string("dd.MM.yyyy")}
-                                <#elseif resume.createdDate??>
-                                    Создано: ${resume.createdDate?datetime?string("dd.MM.yyyy")}
+                                <#if resume.updatedAt??>
+                                    Обновлено: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
+                                <#elseif resume.createdAt??>
+                                    Создано: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
                                 <#else>
                                     Дата не указана
                                 </#if>
@@ -78,6 +78,10 @@
                             <#else>
                                 <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">Не активно</span>
                             </#if>
+
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                    <i class="fas fa-tags mr-1"></i>${resume.category.name}
+                            </span>
                         </div>
 
                         <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
@@ -90,9 +94,10 @@
                         <#else>
                             <p class="text-gray-600 text-sm mt-3 italic">Опыт работы не указан</p>
                         </#if>
-                    </div>
-                    <div class="flex justify-between items-center mt-4">
-                        <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
+
+                        <div class="flex justify-between items-center mt-4">
+                            <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
+                        </div>
                     </div>
                 </#list>
             <#else>

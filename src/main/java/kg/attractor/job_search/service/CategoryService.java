@@ -1,5 +1,11 @@
 package kg.attractor.job_search.service;
 
+import kg.attractor.job_search.dto.CategoryDto;
+
+import java.util.List;
+
 public interface CategoryService {
-    Long getCategoryIdIfPresent(Long id);
+    CategoryDto getCategoryIfPresent(Long id);
+
+    List<CategoryDto> getAllCategories();
 }

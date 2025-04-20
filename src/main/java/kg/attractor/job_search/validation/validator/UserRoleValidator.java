@@ -9,54 +9,61 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, C
 
     @Override
     public boolean isValid(CreateUserDto dto, ConstraintValidatorContext context) {
-        if (dto.getRoleId() == null) {
+        if (dto.getRole() == null || dto.getRole().getId() == null) {
             return false;
         }
 
         context.disableDefaultConstraintViolation();
+        boolean isValid;
 
-        return switch (dto.getRoleId().intValue()) {
-            case 1 -> validateEmployer(dto, context);
-            case 2 -> validateApplicant(dto, context);
+        switch (dto.getRole().getId().intValue()) {
+            case 1 -> isValid = validateEmployer(dto, context);
+            case 2 -> isValid = validateApplicant(dto, context);
             default -> {
-                addViolation(context, "Неизвестный тип роли", "roleId");
-                yield false;
+                addViolation(context, "Неизвестный тип роли", "role.id");
+                isValid = false;
             }
-        };
+        }
+
+        return isValid;
     }
 
     private boolean validateEmployer(CreateUserDto dto, ConstraintValidatorContext context) {
+        boolean isValid = true;
+
         if (dto.getAge() != null) {
             addViolation(context, "Возраст не должен указываться для работодателя", "age");
-            return false;
+            isValid = false;
         }
+
         if (isBlank(dto.getName())) {
             addViolation(context, "Название компании обязательно", "name");
-            return false;
+            isValid = false;
         }
-        return true;
+
+        return isValid;
     }
 
     private boolean validateApplicant(CreateUserDto dto, ConstraintValidatorContext context) {
+        boolean isValid = true;
+
         if (dto.getAge() == null) {
             addViolation(context, "Возраст обязателен для соискателя", "age");
-            return false;
-        }
-        if (dto.getAge() < 18 || dto.getAge() > 100) {
+            isValid = false;
+        } else if (dto.getAge() < 18 || dto.getAge() > 100) {
             addViolation(context, "Возраст должен быть в диапазоне 18-100 лет", "age");
-            return false;
+            isValid = false;
         }
 
-        if (isBlank(dto.getSurname())) {
+        if (dto.getSurname() == null || dto.getSurname().isBlank()) {
             addViolation(context, "Фамилия обязательна для соискателя", "surname");
-            return false;
+            isValid = false;
+        } else if (!dto.getSurname().matches("^[A-Za-zА-Яа-яЁё-]+$")) {
+            addViolation(context, "Фамилия может содержать только буквы и дефисы", "surname");
+            isValid = false;
         }
 
-        if (!dto.getSurname().matches("^[A-Za-zА-Яа-яЁё-]+$")) {
-            addViolation(context, "Фамилия может содержать только буквы и дефисы", "surname");
-            return false;
-        }
-        return true;
+        return isValid;
     }
 
     private void addViolation(ConstraintValidatorContext context, String message, String property) {

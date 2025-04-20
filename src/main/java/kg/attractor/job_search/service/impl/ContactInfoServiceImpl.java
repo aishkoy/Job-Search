@@ -1,10 +1,10 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.ContactInfoDao;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.exception.ContactInfoNotFoundException;
 import kg.attractor.job_search.mapper.ContactInfoMapper;
-import kg.attractor.job_search.model.ContactInfo;
+import kg.attractor.job_search.entity.ContactInfo;
+import kg.attractor.job_search.repository.ContactInfoRepository;
 import kg.attractor.job_search.service.ContactInfoService;
 import kg.attractor.job_search.service.ContactTypeService;
 import lombok.RequiredArgsConstructor;
@@ -18,38 +18,48 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ContactInfoServiceImpl implements ContactInfoService {
-    private final ContactInfoDao contactInfoDao;
+    private final ContactInfoRepository contactInfoRepository;
     private final ContactTypeService contactTypeService;
     private final ContactInfoMapper contactInfoMapper;
 
     @Override
     public List<ContactInfoDto> getContactInfoByResumeId(Long resumeId) {
-        List<ContactInfoDto> contacts = contactInfoDao.getContactInfoByResumeId(resumeId).stream().map(contactInfoMapper::toDto).toList();
+        List<ContactInfoDto> contacts =
+                contactInfoRepository.findAllByResumeId(resumeId)
+                        .stream()
+                        .map(contactInfoMapper::toDto)
+                        .toList();
         log.info("Получено {} контактов", contacts.size());
         return contacts;
     }
 
     @Override
     public Long createContactInfo(ContactInfoDto contactInfoDto) {
-        contactTypeService.getContactTypeIdIfPresent(contactInfoDto.getTypeId());
-        Long id = contactInfoDao.createContactInfo(contactInfoMapper.toEntity(contactInfoDto));
+        contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().getId());
+        ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
+        contactInfoRepository.save(contactInfo);
         log.info("Создан новый контакт: {}", contactInfoDto);
-        return id;
+        return contactInfo.getId();
     }
 
     @Override
     public Long updateContactInfo(Long id, ContactInfoDto contactInfoDto) {
-        if (!contactInfoDto.getResumeId().equals(id)) {
+        if (!contactInfoDto.getResume().getId().equals(id)) {
             throw new ContactInfoNotFoundException();
         }
         getContactInfoById(id);
+
+        ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
         log.info("Обновление контакта: {}", contactInfoDto);
-        return contactInfoDao.updateContactInfo(contactInfoMapper.toEntity(contactInfoDto));
+        contactInfoRepository.save(contactInfo);
+        return contactInfo.getId();
     }
 
     @Override
     public ContactInfoDto getContactInfoById(Long id) {
-        ContactInfo contactInfo = contactInfoDao.getContactInfoById(id).orElseThrow(ContactInfoNotFoundException::new);
+        ContactInfo contactInfo =
+                contactInfoRepository.findById(id)
+                        .orElseThrow(ContactInfoNotFoundException::new);
         log.info("Полученный контакт: {}", contactInfo);
         return contactInfoMapper.toDto(contactInfo);
     }
@@ -57,7 +67,7 @@ public class ContactInfoServiceImpl implements ContactInfoService {
     @Override
     public HttpStatus deleteContactInfoById(Long id) {
         getContactInfoById(id);
-        contactInfoDao.deleteContactInfo(id);
+        contactInfoRepository.deleteById(id);
         log.info("Удаленный контакт: {}", id);
         return HttpStatus.OK;
     }

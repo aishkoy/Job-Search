@@ -1,6 +1,5 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.UserDao;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.EditUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
@@ -8,13 +7,13 @@ import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
-import kg.attractor.job_search.model.User;
+import kg.attractor.job_search.entity.User;
+import kg.attractor.job_search.repository.UserRepository;
 import kg.attractor.job_search.service.RoleService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +33,14 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
 
     @Override
     public List<UserDto> getUsers() {
-        List<UserDto> users = userDao.getUsers()
+        List<UserDto> users = userRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
@@ -51,24 +50,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getEntityById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("Не существует пользователя с таким id!"));
+        log.info("Получен пользователь по id: {}", user.getId());
+        return user;
+    }
+
+
+    @Override
     public UserDto getUserById(Long userId) {
-        User user = userDao.getUserById(userId).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким id!"));
-        log.info("Получено резюме по id: {}", user.getId());
-        return userMapper.toDto(user);
+        return userMapper.toDto(getEntityById(userId));
     }
 
     @Override
     public UserDto getUserByPhone(String phoneNumber) {
         String phone = phoneNumber.trim().toLowerCase();
-        User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким номером телефона!"));
-        log.info("Получен пользователь по имени: {}", user.getId());
+        User user = userRepository.findByPhoneNumber(phone)
+                .orElseThrow(() ->
+                        new UserNotFoundException("Не существует пользователя с таким номером телефона!"));
+        log.info("Получен пользователь по номеру: {}", phone);
         return userMapper.toDto(user);
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
         String userEmail = email.trim().toLowerCase();
-        User user = userDao.getUserByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким email!"));
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() ->
+                        new UserNotFoundException("Не существует пользователя с таким email!"));
         log.info("Получен пользователь по email : {}", userEmail);
         return userMapper.toDto(user);
     }
@@ -77,7 +88,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getUsersByName(String userName) {
         String name = userName.trim().toLowerCase();
         name = StringUtils.capitalize(name);
-        List<UserDto> users = userDao.getUsersByName(name)
+        List<UserDto> users = userRepository.findAllByName(name)
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
@@ -88,13 +99,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long registerUser(CreateUserDto userDto) {
-        roleService.getRoleId(userDto.getRoleId());
+        roleService.getRoleById(userDto.getRole().getId());
         normalizeUserData(userDto);
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 
-        Long id = userDao.registerUser(userMapper.toEntity(userDto)) ;
-        log.info("Зарегистрирован пользователь: {}", id);
-        return id;
+        User user = userMapper.toEntity(userDto);
+        userRepository.save(user);
+        log.info("Зарегистрирован пользователь: {}", user.getId());
+        return user.getId();
     }
 
     private void normalizeUserData(CreateUserDto dto) {
@@ -115,38 +127,37 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long updateUser(Long userId, EditUserDto userDto) {
-        getUserById(userId);
-
-        if(!userId.equals(userDto.getId())) {
+        if (!userId.equals(userDto.getId())) {
             throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
         }
 
-        userDto.setName(normalizeField(userDto.getName(), true));
-        userDto.setSurname(normalizeField(userDto.getSurname(), true));
-        userDto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
+        UserDto dto = getUserById(userId);
+        dto.setName(normalizeField(userDto.getName(), true));
+        dto.setSurname(normalizeField(userDto.getSurname(), true));
+        dto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
 
-        User user = userMapper.toEntity(userDto);
-        Long id = userDao.updateUser(user);
+        User user = userMapper.toEntity(dto);
+        userRepository.save(user);
 
-        log.info("Обновлена информация о пользователе: {}", id);
+        log.info("Обновлена информация о пользователе: {}", user.getId());
 
-        return id;
+        return user.getId();
     }
 
     @Override
     public HttpStatus deleteUser(Long userId, Long authId) {
         getUserById(userId);
-        if(!userId.equals(authId)) {
+        if (!userId.equals(authId)) {
             throw new AccessDeniedException("Вы не имеете права удалять чужжой профиль!");
         }
-        userDao.deleteUser(userId);
+        userRepository.deleteById(userId);
         log.info("Удален пользователь: {}", userId);
         return HttpStatus.OK;
     }
 
     @Override
     public List<UserDto> getEmployers() {
-        List<UserDto> employers = userDao.getEmployers()
+        List<UserDto> employers = userRepository.findEmployers()
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
@@ -157,13 +168,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getEmployerById(Long userId) {
-        User user = userDao.getEmployerById(userId).orElseThrow(() -> new EmployerNotFoundException("Не существует работодателя с таким id!"));
+        User user = userRepository.findEmployerById(userId).
+                orElseThrow(() ->
+                        new EmployerNotFoundException("Не существует работодателя с таким id!"));
         return userMapper.toDto(user);
     }
 
     @Override
     public List<UserDto> getApplicants() {
-        List<UserDto> applicants = userDao.getApplicants()
+        List<UserDto> applicants = userRepository.findApplicants()
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
@@ -174,7 +187,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getApplicantById(Long userId) {
-        User user = userDao.getApplicantById(userId).orElseThrow(() -> new ApplicantNotFoundException("Не существует соискателя с таким id!"));
+        User user = userRepository.findApplicantById(userId)
+                .orElseThrow(() ->
+                        new ApplicantNotFoundException("Не существует соискателя с таким id!"));
         return userMapper.toDto(user);
     }
 
@@ -185,13 +200,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Только файлы JPEG и PNG разрешены для загрузки");
         }
 
-        userDao.updateUserAvatar(authId, saveImage(file));
+        userRepository.updateUserAvatar(authId, saveImage(file));
         return file;
     }
 
     @Override
     public MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId) {
-        if(!userId.equals(authId)) {
+        if (!userId.equals(authId)) {
             throw new AccessDeniedException("Вы не имеете права на загрузку аватара другому профилю!");
         }
         return uploadAvatar(file, authId);
@@ -199,10 +214,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
-        List<UserDto> applications = userDao.getApplicantsByVacancyId(vacancyId)
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
+        List<UserDto> applications =
+                userRepository.findApplicantsByVacancyId(vacancyId)
+                        .stream()
+                        .map(userMapper::toDto)
+                        .toList();
 
         validateUsersList(applications, "Нет соискателей, откликнувшихся на данную вакансию");
         return applications;
@@ -211,7 +227,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean existsUser(String email) {
         String userEmail = email.trim().toLowerCase();
-        return userDao.existsUserByEmail(userEmail);
+        return userRepository.existsByEmail(userEmail);
     }
 
     @Override
@@ -232,6 +248,7 @@ public class UserServiceImpl implements UserService {
     public String saveImage(MultipartFile file) {
         return FileUtil.saveUploadFile(file, "images/");
     }
+
     private void validateUsersList(List<UserDto> users, String errorMessage) {
         if (users.isEmpty()) {
             log.warn(errorMessage);
@@ -241,7 +258,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getAuthUser(){
+    public UserDto getAuthUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Auth object: {}", authentication);
         if (authentication != null) {
@@ -267,21 +284,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EditUserDto mapToEditUser(UserDto userDto){
+    public EditUserDto mapToEditUser(UserDto userDto) {
         return userMapper.toEditUserDto(userDto);
     }
 
     @Override
-    public Long getAuthId(){
+    public Long getAuthId() {
         return getAuthUser().getId();
     }
 
-    @Override
-    public String getUserName(Long userId) {
-        try {
-            return userDao.getUserName(userId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException("Пользователь с таким id не существует!");
-        }
-    }
 }

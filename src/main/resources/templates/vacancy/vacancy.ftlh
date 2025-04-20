@@ -6,7 +6,7 @@
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold">${vacancy.name}</h1>
                 <div class="flex space-x-3">
-                    <#if currentUser?? && currentUser.id == vacancy.authorId>
+                    <#if currentUser?? && currentUser.id == vacancy.employer.id>
                         <a href="/vacancies/${vacancy.id}/edit"
                            class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition font-medium">
                             <i class="fas fa-edit mr-2"></i>Редактировать
@@ -22,7 +22,7 @@
             <div class="p-6 border-b">
                 <div class="flex flex-col md:flex-row justify-between">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">${vacancy.authorName!'Компания'}</h2>
+                        <h2 class="text-xl font-bold text-gray-800">${vacancy.employer.name!'Компания'}</h2>
                         <div class="mt-2 text-lg font-medium text-blue-600">
                             <#if vacancy.salary?? && vacancy.salary gt 0>
                                 ${vacancy.salary?string(",##0")} ₽
@@ -38,6 +38,10 @@
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">Вакансия закрыта</span>
                             </#if>
 
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                    <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
+                            </span>
+
                             <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
                                 Опыт: ${vacancy.expFrom} - ${vacancy.expTo} ${getPluralForm(vacancy.expTo, "год", "года", "лет")}
                             </span>
@@ -46,10 +50,10 @@
 
                     <div class="mt-4 md:mt-0 text-right">
                         <div class="text-sm text-gray-500">
-                            <#if vacancy.updateTime??>
-                                Обновлено: ${vacancy.updateTime?datetime?string("dd.MM.yyyy")}
-                            <#elseif vacancy.createdDate??>
-                                Создано: ${vacancy.createdDate?datetime?string("dd.MM.yyyy")}
+                            <#if vacancy.updatedAt??>
+                                Обновлено: ${vacancy.updatedAt?datetime?string("dd.MM.yyyy")}
+                            <#elseif vacancy.createdAt??>
+                                Создано: ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
                             </#if>
                         </div>
                     </div>
@@ -96,7 +100,7 @@
                         </div>
                     </div>
                     <div>
-                        <h4 class="font-medium text-gray-800">${vacancy.authorName!'Компания'}</h4>
+                        <h4 class="font-medium text-gray-800">${vacancy.employer.name!'Компания'}</h4>
                         <p class="text-gray-600 mt-1">Работодатель</p>
                     </div>
                 </div>
@@ -114,10 +118,11 @@
                     </div>
 
                     <#if !currentUser??>
-                        <a href="/auth/login" class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium">
+                        <a href="/auth/login"
+                           class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium">
                             <i class="fas fa-sign-in-alt mr-2"></i>Войти, чтобы откликнуться
                         </a>
-                    <#elseif currentUser.roleId == 2>
+                    <#elseif currentUser.role.id == 2>
                         <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium">
                             <i class="fas fa-paper-plane mr-2"></i>Откликнуться на вакансию
                         </button>

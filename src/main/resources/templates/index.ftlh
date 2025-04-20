@@ -1,9 +1,6 @@
 <#import "layout.ftlh" as main>
 
 <@main.layout>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/ru.min.js"></script>
-
     <div class="container mx-auto px-4 py-8">
         <section class="bg-white rounded-lg shadow-lg overflow-hidden mb-12">
             <div class="flex flex-col md:flex-row">
@@ -23,7 +20,6 @@
                     </div>
                 </div>
 
-                <#--                TODO-->
                 <div class="md:w-1/2 bg-blue-600 p-8 md:p-12 text-white">
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                         <h2 class="text-xl font-semibold mb-4">Быстрый поиск</h2>
@@ -50,10 +46,9 @@
         </section>
 
         <section class="mb-12">
-<#--            TODO-->
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Популярные категории</h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a href="/vacancies?category=it"
+                <a href="/vacancies/categories?category=it"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-laptop-code text-blue-600 text-xl"></i>
@@ -61,7 +56,7 @@
                     <h3 class="font-medium text-gray-800">IT и разработка</h3>
                     <p class="text-sm text-gray-500 mt-1">1,234 вакансий</p>
                 </a>
-                <a href="/vacancies?category=finance"
+                <a href="/vacancies/categories?category=finance"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-chart-line text-blue-600 text-xl"></i>
@@ -69,7 +64,7 @@
                     <h3 class="font-medium text-gray-800">Финансы</h3>
                     <p class="text-sm text-gray-500 mt-1">876 вакансий</p>
                 </a>
-                <a href="/vacancies?category=marketing"
+                <a href="/vacancies/categories?category=marketing"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-bullhorn text-blue-600 text-xl"></i>
@@ -77,7 +72,7 @@
                     <h3 class="font-medium text-gray-800">Маркетинг</h3>
                     <p class="text-sm text-gray-500 mt-1">543 вакансий</p>
                 </a>
-                <a href="/vacancies?category=medical"
+                <a href="/vacancies/categories?category=medical"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
                         <i class="fas fa-stethoscope text-blue-600 text-xl"></i>
@@ -89,7 +84,6 @@
         </section>
 
         <section class="mb-12">
-
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Новые вакансии</h2>
                 <a href="/vacancies" class="text-blue-600 hover:text-blue-800 font-medium">
@@ -103,29 +97,26 @@
                             <div class="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 class="font-bold text-lg text-gray-800">${vacancy.name}</h3>
-                                    <p class="text-gray-600">${vacancy.authorName}</p>
+                                    <p class="text-gray-600">${vacancy.employer.name}</p>
                                 </div>
                                 <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Полная занятость</span>
                             </div>
                             <div class="flex items-center text-gray-500 text-sm mb-4">
-                                <#--                                TODO-->
                                 <i class="fas fa-map-marker-alt mr-2"></i>
                                 <span>Бишкек</span>
                                 <span class="mx-2">•</span>
                                 <i class="fas fa-dollar-sign mr-2"></i>
-                                <span>${vacancy.salary/85}$</span>
+                                <span>${vacancy.salary} с</span>
                             </div>
                             <p class="text-gray-600 mb-4 line-clamp-2">${vacancy.description}</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                <#--                                TODO-->
                                 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Java</span>
                                 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Spring</span>
                                 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">PostgreSQL</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500 date-from-now"
-                                      data-timestamp="${vacancy.createdDate?long?c}">
-                                Опубликовано ${vacancy.createdDate?datetime}
+                                <span class="text-sm text-gray-500">
+                                    Опубликовано ${vacancy.createdAt?string("dd.MM.yyyy")}
                                 </span>
                                 <a href="/vacancies/${vacancy.id}"
                                    class="text-blue-600 hover:text-blue-800 font-medium">
@@ -213,14 +204,15 @@
         </section>
 
         <section class="bg-blue-600 rounded-lg shadow-lg overflow-hidden">
-<#--            TODO-->
             <div class="p-8 text-white text-center">
                 <h2 class="text-2xl font-bold mb-4">Получайте новые вакансии на почту</h2>
                 <p class="mb-6 max-w-2xl mx-auto">Подпишитесь на нашу рассылку и получайте уведомления о новых
                     вакансиях, соответствующих вашим навыкам и интересам</p>
                 <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                    <input type="email" placeholder="Ваш email"
-                           class="px-4 py-2 rounded-md border border-white/30 bg-white/20 placeholder-white/60 text-white flex-grow focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <label>
+                        <input type="email" placeholder="Ваш email"
+                               class="px-4 py-2 rounded-md border border-white/30 bg-white/20 placeholder-white/60 text-white flex-grow focus:outline-none focus:ring-2 focus:ring-white/50">
+                    </label>
                     <button type="submit"
                             class="bg-white text-blue-600 hover:bg-blue-50 font-medium py-2 px-6 rounded-md transition duration-200 whitespace-nowrap">
                         Подписаться
@@ -229,15 +221,4 @@
             </div>
         </section>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            moment.locale('ru');
-
-            document.querySelectorAll('.date-from-now').forEach(element => {
-                const timestamp = parseInt(element.getAttribute('data-timestamp'));
-                element.textContent = 'Опубликовано ' + moment(timestamp).fromNow();
-            });
-        });
-    </script>
 </@main.layout>

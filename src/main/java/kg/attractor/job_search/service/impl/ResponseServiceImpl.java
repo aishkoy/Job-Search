@@ -1,10 +1,11 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dao.RespondedApplicantsDao;
-import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
+import kg.attractor.job_search.entity.RespondedApplicant;
+import kg.attractor.job_search.entity.Resume;
+import kg.attractor.job_search.entity.Vacancy;
 import kg.attractor.job_search.exception.AlreadyRespondedException;
 import kg.attractor.job_search.exception.IncorrectCategoryException;
+import kg.attractor.job_search.repository.RespondedApplicantRepository;
 import kg.attractor.job_search.service.ResponseService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.VacancyService;
@@ -14,23 +15,30 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ResponseServiceImpl implements ResponseService {
-    private final RespondedApplicantsDao dao;
     private final VacancyService vacancyService;
     private final ResumeService resumeService;
+    private final RespondedApplicantRepository responseRepository;
 
     @Override
     public Long applyVacancy(Long vacancyId, Long resumeId, Long applicantId) {
-        VacancyDto vacancy = vacancyService.getVacancyById(vacancyId);
-        ResumeDto resume = resumeService.getResumeById(resumeId, applicantId);
+        Vacancy vacancy = vacancyService.getVacancyById(vacancyId);
+        Resume resume = resumeService.getResumeById(resumeId, applicantId);
 
-        if(dao.hasResponded(resumeId, vacancyId)) {
-           throw new AlreadyRespondedException("Вы уже откликались на эту вакансию!");
+        if (responseRepository.existsByResumeIdAndVacancyId(resumeId, vacancyId)) {
+            throw new AlreadyRespondedException("Вы уже откликались на эту вакансию!");
         }
 
-        if(!vacancy.getCategoryId().equals(resume.getCategoryId())) {
+        if (!vacancy.getCategory().getId().equals(resume.getCategory().getId())) {
             throw new IncorrectCategoryException("Вы не можете откликнуться на вакансию с другой категорией, чем ваше резюме");
         }
 
-        return dao.respond(resumeId, vacancyId);
+        RespondedApplicant respondedApplicant = RespondedApplicant.builder()
+                .vacancy(vacancy)
+                .resume(resume)
+                .isConfirmed(false)
+                .build();
+
+        responseRepository.save(respondedApplicant);
+        return respondedApplicant.getId();
     }
 }

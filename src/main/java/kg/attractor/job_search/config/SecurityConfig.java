@@ -70,11 +70,10 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/resumes/{id}").hasAnyRole("APPLICANT", "EMPLOYER")
 
-                                .requestMatchers(HttpMethod.GET, "/resumes").hasRole("EMPLOYER")
+                                .requestMatchers(HttpMethod.GET, "/resumes", "/users/responded/**", "/users/applicants/**").hasRole("EMPLOYER")
                                 .requestMatchers(HttpMethod.POST, "/vacancies/**").hasRole("EMPLOYER")
                                 .requestMatchers(HttpMethod.PUT, "/vacancies/**").hasRole("EMPLOYER")
                                 .requestMatchers(HttpMethod.DELETE, "/vacancies/**").hasRole("EMPLOYER")
-                                .requestMatchers(HttpMethod.GET, "/users/responded/**", "/users/applicants/**").hasRole("EMPLOYER")
 
                                 .requestMatchers(HttpMethod.DELETE, "/users/{id}").authenticated()
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}").authenticated()

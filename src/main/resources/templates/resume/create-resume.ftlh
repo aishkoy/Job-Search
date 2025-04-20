@@ -7,7 +7,7 @@
         <h2 class="text-center text-3xl font-extrabold text-gray-900">Создать резюме</h2>
 
         <form action="/resumes/create" method="post" class="space-y-6">
-            <@spring.formHiddenInput "resumeForm.applicantId"/>
+            <@spring.formHiddenInput "resumeForm.applicant.id"/>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -19,14 +19,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="categoryId" class="block text-sm font-medium text-gray-700">ID категории</label>
+                    <label for="category.id" class="block text-sm font-medium text-gray-700">Категория</label>
+                    <#assign categoryMap = {}>
+                    <#list categories as category>
+                        <#assign categoryMap = categoryMap + {category.id?string: category.name}>
+                    </#list>
+
                     <@spring.formSingleSelect
-                    "resumeForm.categoryId",
-                    {
-                    "1": "IT",
-                    "2": "Разработка",
-                    "3": "Тестирование"
-                    },
+                    "resumeForm.category.id",
+                    categoryMap,
                     'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
@@ -43,37 +44,37 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-6">Опыт работы</h3>
 
                 <#if resumeForm.workExperiences?? && resumeForm.workExperiences?has_content>
-                <#list resumeForm.workExperiences as workExperience>
-                    <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Компания</label>
-                                <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].companyName", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                    <#list resumeForm.workExperiences as workExperience>
+                        <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Компания</label>
+                                    <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].companyName", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Должность</label>
+                                    <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].position", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Должность</label>
-                                <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].position", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Стаж работы (лет)</label>
+                                    <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].years", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "number"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Обязанности</label>
+                                    <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].responsibilities", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Стаж работы (лет)</label>
-                                <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].years", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "number"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Обязанности</label>
-                                <@spring.formInput "resumeForm.workExperiences[${workExperience?index}].responsibilities", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
-                            </div>
-                        </div>
-                    </div>
-                </#list>
+                    </#list>
                 </#if>
 
                 <div class="flex justify-end">
@@ -93,45 +94,44 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-6">Образование</h3>
 
                 <#if resumeForm.educations?? && resumeForm.educations?has_content>
-                <#list resumeForm.educations as education>
-                    <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Учебное заведение</label>
-                                <@spring.formInput "resumeForm.educations[${education?index}].institution", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                    <#list resumeForm.educations as education>
+                        <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Учебное заведение</label>
+                                    <@spring.formInput "resumeForm.educations[${education?index}].institution", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Программа обучения</label>
+                                    <@spring.formInput "resumeForm.educations[${education?index}].program", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Дата начала</label>
+                                    <@spring.formInput "resumeForm.educations[${education?index}].startDate", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "date"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Дата окончания</label>
+                                    <@spring.formInput "resumeForm.educations[${education?index}].endDate", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "date"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Программа обучения</label>
-                                <@spring.formInput "resumeForm.educations[${education?index}].program", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                <label class="block text-sm font-medium text-gray-700">Степень</label>
+                                <@spring.formInput "resumeForm.educations[${education?index}].degree", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
                                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
                         </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Дата начала</label>
-                                <@spring.formInput "resumeForm.educations[${education?index}].startDate", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "date"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Дата окончания</label>
-                                <@spring.formInput "resumeForm.educations[${education?index}].endDate", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "date"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Степень</label>
-                            <@spring.formInput "resumeForm.educations[${education?index}].degree", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                            <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
-                        </div>
-                    </div>
-                </#list>
+                    </#list>
                 </#if>
-
 
                 <div class="flex justify-end">
                     <button
@@ -150,32 +150,31 @@
                 <h3 class="text-xl font-semibold text-gray-900 mb-6">Контакты</h3>
 
                 <#if resumeForm.contacts?? && resumeForm.contacts?has_content>
-                <#list resumeForm.contacts as contact>
-                    <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Тип контакта</label>
-                                <@spring.formSingleSelect
-                                "resumeForm.contacts[${contact?index}].typeId",
-                                {
-                                "1": "email",
-                                "2": "телефон",
-                                "3": "telegram",
-                                "4": "facebook",
-                                "5": "linkedin"
-                                },
-                                'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
-                                />
-                            </div>
+                    <#list resumeForm.contacts as contact>
+                        <div class="space-y-4 border-b border-gray-200 pb-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Тип контакта</label>
+                                    <#assign contactTypeMap = {}>
+                                    <#list contactTypes as contactType>
+                                        <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.type}>
+                                    </#list>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Контакт</label>
-                                <@spring.formInput "resumeForm.contacts[${contact?index}].contactValue", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
-                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                    <@spring.formSingleSelect
+                                    "resumeForm.contacts[${contact?index}].contactType.id",
+                                    contactTypeMap,
+                                    'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
+                                    />
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Контакт</label>
+                                    <@spring.formInput "resumeForm.contacts[${contact?index}].contactValue", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </#list>
+                    </#list>
                 </#if>
 
                 <div class="flex justify-end">

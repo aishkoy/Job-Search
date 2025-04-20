@@ -6,7 +6,7 @@
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-bold">${resume.name}</h1>
                 <div class="flex space-x-3">
-                    <#if currentUser?? && currentUser.roleId == 2>
+                    <#if currentUser?? && currentUser.role.id == 2>
                         <a href="/resumes/${resume.id}/edit"
                            class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition font-medium">
                             <i class="fas fa-edit mr-2"></i>Редактировать
@@ -22,7 +22,7 @@
             <div class="p-6 border-b">
                 <div class="flex flex-col md:flex-row justify-between">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">${resume.applicantName!'Соискатель'}</h2>
+                        <h2 class="text-xl font-bold text-gray-800">${resume.applicant.name!'Соискатель'}</h2>
                         <div class="mt-2 text-lg font-medium text-blue-600">
                             <#if resume.salary?? && resume.salary gt 0>
                                 ${resume.salary?string(",##0")} ₽
@@ -32,17 +32,19 @@
                         </div>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-                            <#if categories?? && categories[resume.categoryId?string]??>
                                 <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
-                                ${categories[resume.categoryId?string]}
+                                ${resume.category.name}
                             </span>
-                            </#if>
 
                             <#if resume.isActive?? && resume.isActive>
                                 <span class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full">Активно ищет работу</span>
                             <#else>
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">Не ищет работу</span>
                             </#if>
+
+                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                    <i class="fas fa-tags mr-1"></i>${resume.category.name}
+                            </span>
 
                             <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
                                 <#assign totalYears = 0>
@@ -62,10 +64,10 @@
 
                     <div class="mt-4 md:mt-0 text-right">
                         <div class="text-sm text-gray-500">
-                            <#if resume.updateTime??>
-                                Обновлено: ${resume.updateTime?datetime?string("dd.MM.yyyy")}
-                            <#elseif resume.createdDate??>
-                                Создано: ${resume.createdDate?datetime?string("dd.MM.yyyy")}
+                            <#if resume.updatedAt??>
+                                Обновлено: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
+                            <#elseif resume.createdAt??>
+                                Создано: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
                             </#if>
                         </div>
 
@@ -75,13 +77,13 @@
                                 <ul class="space-y-1">
                                     <#list resume.contacts as contact>
                                         <li class="flex items-center justify-end">
-                                            <#if contact.typeId == 1>
+                                            <#if contact.contactType.id == 1>
                                                 <i class="fas fa-envelope text-gray-500 mr-2"></i>
-                                            <#elseif contact.typeId == 2>
+                                            <#elseif contact.contactType.id == 2>
                                                 <i class="fas fa-phone text-gray-500 mr-2"></i>
-                                            <#elseif contact.typeId == 3>
+                                            <#elseif contact.contactType.id == 3>
                                                 <i class="fab fa-telegram text-gray-500 mr-2"></i>
-                                            <#elseif contact.typeId == 4>
+                                            <#elseif contact.contactType.id == 4>
                                                 <i class="fa-brands fa-facebook text-gray-500 mr-2"></i>
                                             <#else>
                                                 <i class="fa-brands fa-linkedin text-gray-500 mr-2"></i>
@@ -160,7 +162,7 @@
                         </button>
                     </div>
 
-                    <#if currentUser?? && currentUser.roleId == 1>
+                    <#if currentUser?? && currentUser.role.id == 1>
                         <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium">
                             <i class="fas fa-paper-plane mr-2"></i>Пригласить на собеседование
                         </button>

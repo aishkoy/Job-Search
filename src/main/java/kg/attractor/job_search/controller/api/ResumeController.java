@@ -27,13 +27,13 @@ public class ResumeController {
 
     @PostMapping
     public ResponseEntity<Long> createResume(@RequestBody @Valid ResumeFormDto resumeDto) {
-        resumeDto.setApplicantId(adapter.getAuthId());
+        resumeDto.setApplicant(adapter.getAuthUser());
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody @Valid ResumeFormDto resumeDto) {
-        resumeDto.setApplicantId(adapter.getAuthId());
+        resumeDto.setApplicant(adapter.getAuthUser());
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
     }
 
@@ -42,14 +42,9 @@ public class ResumeController {
         return resumeService.deleteResume(resumeId, adapter.getAuthId());
     }
 
-    @PutMapping("{id}/active")
-    public ResponseEntity<Long> changeActiveStatus(@PathVariable("id") Long resumeId) {
-        return ResponseEntity.ofNullable(resumeService.changeActiveStatus(resumeId, adapter.getAuthId()));
-    }
-
     @GetMapping("{id}")
     public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
-        return ResponseEntity.ofNullable(resumeService.getResumeById(id, adapter.getAuthId()));
+        return ResponseEntity.ofNullable(resumeService.getResumeDtoById(id, adapter.getAuthId()));
     }
 
     @GetMapping("active")

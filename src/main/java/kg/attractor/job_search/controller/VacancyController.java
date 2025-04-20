@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
+import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class VacancyController {
     private final VacancyService vacancyService;
+    private final CategoryService categoryService;
     private final UserService userService;
 
     @GetMapping
@@ -30,8 +32,7 @@ public class VacancyController {
         UserDto userDto = null;
         try {
             userDto = userService.getAuthUser();
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
         model.addAttribute("currentUser", userDto);
         model.addAttribute("vacancy", vacancyService.getVacancyById(id));
         return "vacancy/vacancy";
@@ -41,6 +42,7 @@ public class VacancyController {
     public String create(Model model) {
         model.addAttribute("user", userService.getAuthUser());
         model.addAttribute("vacancyForm", new VacancyFormDto());
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "vacancy/create-vacancy";
     }
 
@@ -50,6 +52,7 @@ public class VacancyController {
                          Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("user", userService.getAuthUser());
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "vacancy/create-vacancy";
         }
 
@@ -59,10 +62,11 @@ public class VacancyController {
 
     @GetMapping("{id}/edit")
     public String edit(@PathVariable("id") Long vacancyId, Model model) {
-        VacancyDto dto = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+        VacancyDto dto = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
         VacancyFormDto formDto = vacancyService.convertToFormDto(dto);
         model.addAttribute("vacancy", dto);
         model.addAttribute("vacancyForm", formDto);
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "vacancy/edit-vacancy";
     }
 
@@ -72,8 +76,9 @@ public class VacancyController {
                        BindingResult bindingResult,
                        Model model) {
         if (bindingResult.hasErrors()) {
-            VacancyDto vacancy = vacancyService.getVacancyByIdAndAuthor(vacancyId, userService.getAuthId());
+            VacancyDto vacancy = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
             model.addAttribute("vacancy", vacancy);
+            model.addAttribute("categories", categoryService.getAllCategories());
             return "vacancy/edit-vacancy";
         }
         vacancyService.updateVacancy(vacancyId, vacancyDto);

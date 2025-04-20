@@ -1,7 +1,7 @@
 package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.model.ContactInfo;
+import kg.attractor.job_search.entity.ContactInfo;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
