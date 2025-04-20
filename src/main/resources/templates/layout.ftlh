@@ -18,6 +18,7 @@
         <#assign
         user = SPRING_SECURITY_CONTEXT.authentication.principal
         name = user.getUsername()
+        roles = user.authorities
         >
     </#if>
 
@@ -34,18 +35,40 @@
             </div>
 
             <#if user??>
+                <#if roles??>
+                    <#list roles as role>
+                        <#if role.authority == 'ROLE_EMPLOYER'>
+                            <div class="flex items-center space-x-4">
+                                <a href="/resumes" class="text-white hover:text-blue-200 flex items-center">
+                                    <i class="fas fa-briefcase mr-2"></i> Резюме
+                                </a>
+                            </div>
+                        </#if>
+                        <#if role.authority == 'ROLE_APPLICANT'>
+                            <div class="flex items-center space-x-4">
+                                <a href="/vacancies" class="text-white hover:text-blue-200 flex items-center">
+                                    <i class="fas fa-search mr-2"></i> Вакансии
+                                </a>
+                            </div>
+                        </#if>
+                    </#list>
+                </#if>
+
                 <div class="flex items-center space-x-4">
-                    <a href="/profile" class="text-white hover:text-blue-200">
-                        <i class="fas fa-user"></i>
+                    <a href="/profile" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-user mr-2"></i>
+                    </a>
+                    <a href="/logout" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
                     </a>
                 </div>
             <#else>
                 <div class="flex items-center space-x-4">
-                    <a href="/auth/login" class="text-white hover:text-blue-200">
-                        <i class="fa-solid fa-right-to-bracket"></i>
+                    <a href="/auth/login" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Войти
                     </a>
-                    <a href="/auth/register" class="text-white hover:text-blue-200">
-                        <i class="fa-solid fa-user-plus"></i>
+                    <a href="/auth/register" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-user-plus mr-2"></i> Регистрация
                     </a>
                 </div>
             </#if>

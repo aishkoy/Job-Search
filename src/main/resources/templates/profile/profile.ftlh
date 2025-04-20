@@ -1,244 +1,316 @@
 <#import "../layout.ftlh" as main>
 <@main.layout>
-<div class="bg-white shadow">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex flex-col md:flex-row items-center">
-
-            <div class="md:w-1/4 flex justify-center mb-6 md:mb-0">
-                <img src="/api/users/${user.id}/avatar" alt="Фото профиля"
-                     class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg">
+    <#assign role = user.role.id />
+    <!-- Информация о пользователе -->
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="bg-blue-600 text-white p-4">
+                <h1 class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-user-circle mr-2"></i>Личный кабинет
+                </h1>
             </div>
 
-            <div class="md:w-3/4 md:pl-8">
-                <h1 class="text-3xl font-bold text-gray-800">${user.name} ${user.surname!''}</h1>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="flex flex-col items-center">
+                    <div class="relative">
+                        <img src="/api/users/${user.id}/avatar" alt="Фото профиля"
+                             class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                        <div class="absolute bottom-0 right-0">
+                            <form method="POST" action="/profile/avatar" enctype="multipart/form-data">
+                                <label for="avatar-upload"
+                                       class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input id="avatar-upload" name="file" type="file" accept="image/jpeg, image/png"
+                                       class="hidden"
+                                       onchange="this.form.submit()">
+                            </form>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 text-center">Нажмите на иконку,<br>чтобы обновить фото</p>
+                </div>
 
-                <#if user.role.id == 2>
-                    <p class="text-gray-600 mt-2">Возраст: ${user.age!'Возраст не указан'}</p>
+                <!-- Информация о пользователе занимает 3 колонки сетки -->
+                <div class="md:col-span-3">
+                    <div class="flex flex-col md:flex-row justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">${user.name} ${user.surname!''}</h2>
+                            <p class="text-blue-600 font-medium mt-1">
+
+                                <#if role == 2>
+                                    <i class="fas fa-user mr-1"></i> Соискатель
+                                <#else>
+                                    <i class="fas fa-building mr-1"></i> Работодатель
+                                </#if>
+                            </p>
+                        </div>
+
+                        <a href="/profile/edit"
+                           class="mt-2 md:mt-0 bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition flex items-center">
+                            <i class="fas fa-edit mr-2"></i>Редактировать профиль
+                        </a>
+                    </div>
+
+                    <!-- Контактные данные с фиксированной шириной карточек -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <#if role == 2>
+                            <div class="bg-gray-50 rounded-lg p-3 flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
+                                    <i class="fas fa-birthday-cake"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs text-gray-500">Возраст</div>
+                                    <div class="text-gray-800 font-medium truncate">${user.age!'Не указан'}</div>
+                                </div>
+                            </div>
+                        </#if>
+
+                        <div class="bg-gray-50 rounded-lg p-3 flex items-center">
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs text-gray-500">Email</div>
+                                <div class="text-gray-800 font-medium truncate">${user.email}</div>
+                            </div>
+                        </div>
+
+
+                        <div class="bg-gray-50 rounded-lg p-3 flex items-center">
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs text-gray-500">Телефон</div>
+                                <div class="text-gray-800 font-medium truncate">${user.phoneNumber}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Резюме или вакансии с улучшенной сеткой карточек -->
+        <div class="mb-6">
+            <#if role == 2>
+                <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-file-alt text-blue-600 mr-2"></i>Мои резюме
+                    </h2>
+                    <a href="/resumes/create" class="text-blue-600 hover:text-blue-800 flex items-center">
+                        <i class="fas fa-plus mr-1"></i>Создать новое
+                    </a>
+                </div>
+
+                <#if resumes?? && resumes?size gt 0>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <#list resumes as resume>
+                            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${resume.isActive?string('', 'opacity-70')}">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-lg font-semibold text-gray-800 truncate"
+                                            title="${resume.name}">${resume.name}</h3>
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium ${resume.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
+                                            ${resume.isActive?string('Активно', 'Не активно')}
+                                        </span>
+                                    </div>
+
+                                    <div class="space-y-2 mb-3">
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-money-bill-wave text-blue-500 mr-2 w-5"></i>
+                                            <#if resume.salary?? && resume.salary gt 0>
+                                                ${resume.salary?string(",##0")} ₽
+                                            <#else>
+                                                <span class="text-gray-500">Зарплата не указана</span>
+                                            </#if>
+                                        </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-tag text-blue-500 mr-2 w-5"></i>
+                                            <span class="truncate"
+                                                  title="${resume.category.name}">${resume.category.name}</span>
+                                        </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-clock text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                Создано: ${resume.createdAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                        <a href="/resumes/${resume.id}"
+                                           class="text-blue-600 hover:text-blue-800 font-medium">
+                                            <i class="fas fa-eye mr-1"></i>Просмотр
+                                        </a>
+
+                                        <div class="flex gap-3">
+                                            <a href="/resumes/${resume.id}/edit"
+                                               class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/resumes/delete/${resume.id}"
+                                               class="text-red-600 hover:text-red-800" title="Удалить"
+                                               onclick="return confirm('Вы уверены, что хотите удалить это резюме?')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </#list>
+                    </div>
+                <#else>
+                    <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-file-alt text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">У вас пока нет резюме</h3>
+                        <p class="text-gray-600 mb-4">Создайте ваше первое резюме, чтобы найти работу</p>
+                        <a href="/resumes/create"
+                           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
+                            <i class="fas fa-plus mr-2"></i>Создать резюме
+                        </a>
+                    </div>
                 </#if>
-
-                <div class="flex flex-wrap gap-4 mt-4">
-                    <#if user.email??>
-                        <div class="flex items-center text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            ${user.email}
-                        </div>
-                    </#if>
-                    <#if user.phoneNumber??>
-                        <div class="flex items-center text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                            </svg>
-                            ${user.phoneNumber}
-                        </div>
-                    </#if>
+            <#else>
+                <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-briefcase text-blue-600 mr-2"></i>Мои вакансии
+                    </h2>
+                    <a href="/vacancies/create" class="text-blue-600 hover:text-blue-800 flex items-center">
+                        <i class="fas fa-plus mr-1"></i>Создать новую
+                    </a>
                 </div>
 
-                <div class="mt-6 flex flex-wrap gap-4">
-                    <a href="/profile/edit"
-                       class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Редактировать профиль
-                    </a>
+                <#if vacancies?? && vacancies?size gt 0>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <#list vacancies as vacancy>
+                            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${vacancy.isActive?string('', 'opacity-70')}">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-lg font-semibold text-gray-800 truncate"
+                                            title="${vacancy.name}">${vacancy.name}</h3>
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium ${vacancy.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
+                                            ${vacancy.isActive?string('Активна', 'Не активна')}
+                                        </span>
+                                    </div>
 
-                    <a href="/vacancies"
-                       class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                        Все вакансии
-                    </a>
-                    <#if user.role.id == 2>
-                        <a href="resumes/create"
-                           class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                            Создать резюме
-                        </a>
-                    <#else>
-                        <a href="vacancies/create"
-                           class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                            Создать вакансию
-                        </a>
+                                    <div class="space-y-2 mb-3">
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-money-bill-wave text-blue-500 mr-2 w-5"></i>
+                                            <#if vacancy.salary?? && vacancy.salary gt 0>
+                                                ${vacancy.salary?string(",##0")} ₽
+                                            <#else>
+                                                <span class="text-gray-500">Зарплата не указана</span>
+                                            </#if>
+                                        </p>
 
-                        <a href="/resumes"
-                           class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            Все резюме
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-briefcase text-blue-500 mr-2 w-5"></i>
+                                            <span>Опыт: ${vacancy.expFrom} - ${vacancy.expTo} ${getPluralForm(vacancy.expTo, "год", "года", "лет")}</span>
+                                        </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-clock text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                Создана: ${vacancy.createdAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                        <a href="/vacancies/${vacancy.id}"
+                                           class="text-blue-600 hover:text-blue-800 font-medium">
+                                            <i class="fas fa-eye mr-1"></i>Просмотр
+                                        </a>
+
+                                        <div class="flex gap-3">
+                                            <a href="/vacancies/${vacancy.id}/edit"
+                                               class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/vacancies/delete/${vacancy.id}"
+                                               class="text-red-600 hover:text-red-800" title="Удалить"
+                                               onclick="return confirm('Вы уверены, что хотите удалить эту вакансию?')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </#list>
+                    </div>
+                <#else>
+                    <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-briefcase text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">У вас пока нет вакансий</h3>
+                        <p class="text-gray-600 mb-4">Создайте вашу первую вакансию, чтобы найти сотрудников</p>
+                        <a href="/vacancies/create"
+                           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
+                            <i class="fas fa-plus mr-2"></i>Создать вакансию
                         </a>
-                    </#if>
+                    </div>
+                </#if>
+            </#if>
+        </div>
+
+        <!-- Дополнительные блоки информации -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-line text-blue-600 mr-2"></i>Статистика
+            </h3>
+
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-3">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <span class="text-gray-700">Просмотры профиля</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">0</span>
                 </div>
 
+                <#if role == 2>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fas fa-envelope-open"></i>
+                            </div>
+                            <span class="text-gray-700">Приглашения</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">0</span>
+                    </div>
+                <#else>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <span class="text-gray-700">Отклики на вакансии</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">0</span>
+                    </div>
+                </#if>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container mx-auto px-4 py-8">
-    <#if user.role.id == 2>
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Мои резюме</h2>
+    <#function getPluralForm number singular dual plural>
+        <#assign mod10 = number % 10 />
+        <#assign mod100 = number % 100 />
 
-        <#if resumes?? && resumes?size gt 0>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <#list resumes as resume>
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition transform hover:-translate-y-1 ${resume.isActive?string('', 'opacity-60')}">
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-xl font-semibold text-gray-800">${resume.name}</h3>
-                                <span class="px-2 py-1 rounded-full text-xs font-medium ${resume.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
-                                        ${resume.isActive?string('Активно', 'Не активно')}
-                                    </span>
-                            </div>
-
-                            <p class="text-gray-600 flex items-center mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <#if resume.salary??>
-                                    ${resume.salary} руб.
-                                <#else>
-                                    Зарплата не указана
-                                </#if>
-                            </p>
-
-                            <p class="text-sm text-gray-500">
-                                Создано: ${resume.createdAt?string("dd.MM.yyyy")}
-                            </p>
-
-                            <div class="mt-4 flex justify-between">
-                                <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 font-medium">Подробнее</a>
-
-                                <div class="flex gap-2">
-                                    <a href="/resumes/${resume.id}/edit"
-                                       class="text-yellow-600 hover:text-yellow-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                    </a>
-                                    <a href="/resumes/delete/${resume.id}" class="text-red-600 hover:text-red-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </#list>
-            </div>
+        <#if mod10 == 1 && mod100 != 11>
+            <#return singular />
+        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
+            <#return dual />
         <#else>
-            <div class="bg-white rounded-lg shadow p-6 text-center">
-                <p class="text-gray-600 mb-4">У вас пока нет резюме.</p>
-                <a href="/resumes/create"
-                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Создать резюме</a>
-            </div>
+            <#return plural />
         </#if>
-    <#else>
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Мои вакансии</h2>
-
-        <#if vacancies?? && vacancies?size gt 0>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <#list vacancies as vacancy>
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition transform hover:-translate-y-1 ${vacancy.isActive?string('', 'opacity-60')}">
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-xl font-semibold text-gray-800">${vacancy.name}</h3>
-                                <span class="px-2 py-1 rounded-full text-xs font-medium ${vacancy.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
-                                        ${vacancy.isActive?string('Активно', 'Не активно')}
-                                    </span>
-                            </div>
-
-                            <p class="text-gray-600 flex items-center mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <#if vacancy.salary??>
-                                    ${vacancy.salary} руб.
-                                <#else>
-                                    Зарплата не указана
-                                </#if>
-                            </p>
-
-                            <p class="text-gray-600 flex items-center mb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                Опыт в годах:
-                                <#if vacancy.expFrom?? && vacancy.expTo??>
-                                    от ${vacancy.expFrom} до ${vacancy.expTo}
-                                </#if>
-                            </p>
-
-                            <p class="text-sm text-gray-500">
-                                Создано: ${vacancy.createdAt?string("dd.MM.yyyy")}
-                            </p>
-
-                            <div class="mt-4 flex justify-between">
-                                <a href="/vacancies/${vacancy.id}" class="text-blue-600 hover:text-blue-800 font-medium">Подробнее</a>
-
-                                <div class="flex gap-2">
-                                    <a href="/vacancies/${vacancy.id}/edit"
-                                       class="text-yellow-600 hover:text-yellow-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                    </a>
-                                    <a href="/vacancies/delete/${vacancy.id}" class="text-red-600 hover:text-red-800">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                             viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </#list>
-            </div>
-        <#else>
-            <div class="bg-white rounded-lg shadow p-6 text-center">
-                <p class="text-gray-600 mb-4">У вас пока нет вакансий.</p>
-                <a href="/vacancy/create"
-                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Создать вакансию</a>
-            </div>
-        </#if>
-    </#if>
-</div>
+    </#function>
 </@main.layout>

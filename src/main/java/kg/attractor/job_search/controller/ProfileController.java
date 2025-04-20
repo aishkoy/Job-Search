@@ -37,7 +37,7 @@ public class ProfileController {
     @PostMapping("avatar")
     public String uploadAvatar(@RequestParam("file") MultipartFile file) {
         userService.uploadAvatar(file, userService.getAuthId());
-        return "redirect:/profile/edit";
+        return "redirect:/profile";
     }
 
     @PostMapping("edit")
