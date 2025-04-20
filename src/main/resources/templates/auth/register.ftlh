@@ -26,8 +26,8 @@
                 "<br>",
                 "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"
                 />
-                <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
             </div>
+            <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
         </div>
 
         <div>
