@@ -1,6 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.ContactInfoDto;
+import kg.attractor.job_search.entity.Resume;
 import kg.attractor.job_search.exception.ContactInfoNotFoundException;
 import kg.attractor.job_search.mapper.ContactInfoMapper;
 import kg.attractor.job_search.entity.ContactInfo;
@@ -23,33 +24,19 @@ public class ContactInfoServiceImpl implements ContactInfoService {
     private final ContactInfoMapper contactInfoMapper;
 
     @Override
-    public List<ContactInfoDto> getContactInfoByResumeId(Long resumeId) {
-        List<ContactInfoDto> contacts =
-                contactInfoRepository.findAllByResumeId(resumeId)
-                        .stream()
-                        .map(contactInfoMapper::toDto)
-                        .toList();
-        log.info("Получено {} контактов", contacts.size());
-        return contacts;
-    }
-
-    @Override
     public Long createContactInfo(ContactInfoDto contactInfoDto) {
         contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().getId());
         ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
+        contactInfo.setResume(Resume.builder().id(contactInfoDto.getResumeId()).build());
         contactInfoRepository.save(contactInfo);
         log.info("Создан новый контакт: {}", contactInfoDto);
         return contactInfo.getId();
     }
 
     @Override
-    public Long updateContactInfo(Long id, ContactInfoDto contactInfoDto) {
-        if (!contactInfoDto.getResume().getId().equals(id)) {
-            throw new ContactInfoNotFoundException();
-        }
-        getContactInfoById(id);
-
+    public Long updateContactInfo(ContactInfoDto contactInfoDto) {
         ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
+        contactInfo.setResume(Resume.builder().id(contactInfoDto.getResumeId()).build());
         log.info("Обновление контакта: {}", contactInfoDto);
         contactInfoRepository.save(contactInfo);
         return contactInfo.getId();
