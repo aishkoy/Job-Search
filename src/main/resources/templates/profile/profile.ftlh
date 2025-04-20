@@ -103,9 +103,9 @@
                     </a>
                 </div>
 
-                <#if resumes?? && resumes?size gt 0>
+                <#if user.resumes?? && user.resumes?size gt 0>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <#list resumes as resume>
+                        <#list user.resumes as resume>
                             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${resume.isActive?string('', 'opacity-70')}">
                                 <div class="p-5">
                                     <div class="flex justify-between items-start mb-3">
@@ -185,9 +185,9 @@
                     </a>
                 </div>
 
-                <#if vacancies?? && vacancies?size gt 0>
+                <#if user.vacancies?? && user.vacancies?size gt 0>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <#list vacancies as vacancy>
+                        <#list user.vacancies as vacancy>
                             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${vacancy.isActive?string('', 'opacity-70')}">
                                 <div class="p-5">
                                     <div class="flex justify-between items-start mb-3">

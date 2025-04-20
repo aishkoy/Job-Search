@@ -33,6 +33,7 @@
         </div>
 
         <form method="POST" action="/profile/edit" class="space-y-6">
+            <input type="hidden" name="role.id" value="${userDto.role.id}">
             <input type="hidden" name="id" value="${userDto.id}">
 
             <div>
@@ -52,6 +53,14 @@
                 <@spring.formInput "userDto.phoneNumber", 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "tel"/>
                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
             </div>
+
+            <#if currentUser.role.role == 'APPLICANT'>
+                <div>
+                <label for="age" class="block text-sm font-medium text-gray-700">Возраст</label>
+                <@spring.formInput "userDto.age", 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "number"/>
+                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                </div>
+            </#if>
 
             <div class="flex items-center justify-between pt-4">
                 <a href="/profile"
