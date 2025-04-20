@@ -1,7 +1,7 @@
 package kg.attractor.job_search.dto.vacancy;
 
 import kg.attractor.job_search.dto.CategoryDto;
-import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,7 +22,7 @@ public class VacancyDto {
     Integer expFrom;
     Integer expTo;
     Boolean isActive;
-    UserDto employer;
+    SimpleUserDto employer;
     Timestamp createdAt;
     Timestamp updatedAt;
 }

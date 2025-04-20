@@ -3,7 +3,6 @@ package kg.attractor.job_search.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.validation.ValidDateRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +21,7 @@ public class EducationInfoDto {
 
     Long id;
 
-    ResumeDto resume;
+    Long resumeId;
 
     @NotBlank
     String institution;
