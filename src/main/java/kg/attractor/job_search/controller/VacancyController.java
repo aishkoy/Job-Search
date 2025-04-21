@@ -8,6 +8,7 @@ import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,8 +23,21 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
-    public String vacancies(Model model) {
-        model.addAttribute("vacancies", vacancyService.getVacancies());
+    public String vacancies(@RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "5") int size,
+                            @RequestParam(required = false) Long categoryId,
+                            Model model) {
+
+        Page<VacancyDto> vacanciesPage;
+        if (categoryId != null) {
+            vacanciesPage = vacancyService.getVacanciesPageByCategoryId(page, size, categoryId);
+            model.addAttribute("categoryId", categoryId);
+        } else {
+            vacanciesPage = vacancyService.getActiveVacanciesPage(page, size);
+        }
+
+        model.addAttribute("vacancies", vacanciesPage);
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "vacancy/vacancies";
     }
 
@@ -32,7 +46,8 @@ public class VacancyController {
         UserDto userDto = null;
         try {
             userDto = userService.getAuthUser();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         model.addAttribute("currentUser", userDto);
         model.addAttribute("vacancy", vacancyService.getVacancyById(id));
         return "vacancy/vacancy";

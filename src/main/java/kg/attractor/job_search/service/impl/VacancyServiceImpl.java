@@ -11,6 +11,9 @@ import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -123,6 +126,67 @@ public class VacancyServiceImpl implements VacancyService {
                 .orElseThrow(() -> new VacancyNotFoundException("Это не ваша вакансия"));
         return mapAndEnrich(vacancy);
     }
+
+
+    @Override
+    public Page<VacancyDto> getVacanciesPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAll(pageable),
+                "Список вакансий пуст!");
+    }
+
+
+    @Override
+    public Page<VacancyDto> getActiveVacanciesPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByIsActiveTrue(pageable),
+                "Активных вакансий не найдено!");
+    }
+
+    @Override
+    public Page<VacancyDto> getVacanciesPageByEmployer(int page, int size, Long employerId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByEmployerId(employerId, pageable),
+                "У работодателя нет опубликованных вакансий!");
+    }
+
+    @Override
+    public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
+                "Вакансии по указанной категории не найдены!");
+    }
+
+    @Override
+    public Page<VacancyDto> getVacanciesPageByCategoryName(int page, int size, String categoryName) {
+        String name = categoryName.trim().toLowerCase();
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByCategoryName(name, pageable),
+                "Вакансии по указанной категории не найдены!");
+    }
+
+    @Override
+    public Page<VacancyDto> getVacanciesPageByAppliedUser(int page, int size, Long applicantId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findVacanciesAppliedByUserId(applicantId, pageable),
+                "Пользователь не откликался на вакансии!");
+    }
+
+    private Page<VacancyDto> getVacancyDtoPage(Supplier<Page<Vacancy>> supplier, String notFoundMessage) {
+        Page<Vacancy> vacancyPage = supplier.get();
+        if (vacancyPage.isEmpty()) {
+            throw new VacancyNotFoundException(notFoundMessage);
+        }
+        log.info("Получено {} вакансий на странице", vacancyPage.getSize());
+        return vacancyPage.map(this::mapAndEnrich);
+    }
+
 
     @Override
     public VacancyFormDto convertToFormDto(VacancyDto dto) {
