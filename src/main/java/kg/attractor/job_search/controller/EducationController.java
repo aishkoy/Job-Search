@@ -1,0 +1,104 @@
+package kg.attractor.job_search.controller;
+
+import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.EducationInfoDto;
+import kg.attractor.job_search.service.EducationInfoService;
+import kg.attractor.job_search.service.ResumeService;
+import kg.attractor.job_search.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller("mvcEducation")
+@RequestMapping("/resumes/{resumeId}/educations")
+@RequiredArgsConstructor
+public class EducationController {
+    private final EducationInfoService educationInfoService;
+    private final UserService userService;
+    private final ResumeService resumeService;
+
+    @GetMapping("/create")
+    public String showCreateEducationModal(@PathVariable Long resumeId,
+                                           Model model) {
+        resumeService.getResumeById(resumeId, userService.getAuthId());
+
+        EducationInfoDto educationDto = new EducationInfoDto();
+        educationDto.setResumeId(resumeId);
+
+        model.addAttribute("mode", "create");
+        model.addAttribute("educationDto", educationDto);
+        model.addAttribute("action", "/resumes/" + resumeId + "/educations");
+
+        return "info/education";
+    }
+
+    @PostMapping
+    public String createEducation(@PathVariable Long resumeId,
+                                  @ModelAttribute("educationDto") @Valid EducationInfoDto educationDto,
+                                  BindingResult bindingResult,
+                                  Model model) {
+        resumeService.getResumeById(resumeId, userService.getAuthId());
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "create");
+            model.addAttribute("action", "/resumes/" + resumeId + "/educations");
+            return "info/education";
+        }
+
+        // Создаем образование
+        educationInfoService.createEducationInfo(educationDto);
+
+        return "redirect:/resumes/" + resumeId + "/edit";
+    }
+
+    @GetMapping("/{educationId}/edit")
+    public String showEditEducationModal(@PathVariable Long resumeId,
+                                         @PathVariable Long educationId,
+                                         Model model) {
+        resumeService.getResumeById(resumeId, userService.getAuthId());
+
+        EducationInfoDto educationDto = educationInfoService.getEducationInfoById(educationId);
+        educationDto.setResumeId(resumeId);
+
+        model.addAttribute("mode", "edit");
+        model.addAttribute("educationDto", educationDto);
+        model.addAttribute("action", "/resumes/" + resumeId + "/educations/" + educationId + "/edit");
+
+        return "info/education";
+    }
+
+    @PostMapping("/{educationId}/edit")
+    public String editEducation(@PathVariable Long resumeId,
+                                @PathVariable Long educationId,
+                                @ModelAttribute("educationDto") @Valid EducationInfoDto educationDto,
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        resumeService.getResumeById(resumeId, userService.getAuthId());
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("mode", "edit");
+            model.addAttribute("action", "/resumes/" + resumeId + "/educations/" + educationId + "/edit");
+            return "info/education";
+        }
+
+        educationInfoService.updateEducationInfo(educationDto);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Образование успешно обновлено");
+        return "redirect:/resumes/" + resumeId + "/edit";
+    }
+
+    @PostMapping("/{educationId}/delete")
+    public String deleteEducation(@PathVariable Long resumeId,
+                                  @PathVariable Long educationId,
+                                  RedirectAttributes redirectAttributes) {
+        resumeService.getResumeById(resumeId, userService.getAuthId());
+        educationInfoService.deleteEducationInfo(educationId);
+
+        redirectAttributes.addFlashAttribute("successMessage", "Образование успешно удалено");
+        return "redirect:/resumes/" + resumeId + "/edit";
+    }
+}
