@@ -1,7 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.user.CreateUserDto;
-import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long updateUser(Long userId, EditUserDto userDto) {
+    public Long updateUser(Long userId, SimpleUserDto userDto) {
         if (!userId.equals(userDto.getId())) {
             throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
         }
@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
         dto.setName(normalizeField(userDto.getName(), true));
         dto.setSurname(normalizeField(userDto.getSurname(), true));
         dto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
+        dto.setAge(userDto.getAge());
 
         User user = userMapper.toEntity(dto);
         userRepository.save(user);
@@ -284,8 +285,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EditUserDto mapToEditUser(UserDto userDto) {
-        return userMapper.toEditUserDto(userDto);
+    public SimpleUserDto mapToEditUser(UserDto userDto) {
+        return userMapper.toSimpleUserDto(userDto);
     }
 
     @Override
