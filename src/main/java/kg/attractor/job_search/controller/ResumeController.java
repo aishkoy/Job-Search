@@ -1,12 +1,10 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
+import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeFormDto;
-import kg.attractor.job_search.service.CategoryService;
-import kg.attractor.job_search.service.ContactTypeService;
-import kg.attractor.job_search.service.ResumeService;
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ResumeController {
     private final ResumeService resumeService;
+    private final ContactInfoService contactInfoService;
     private final UserService userService;
     private final CategoryService categoryService;
     private final ContactTypeService contactTypeService;
@@ -80,6 +79,8 @@ public class ResumeController {
         model.addAttribute("resume", resume);
         model.addAttribute("resumeForm", formDto);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
+        model.addAttribute("contactInfo", new ContactInfoDto());
 
         return "resume/edit-resume";
     }
@@ -87,7 +88,6 @@ public class ResumeController {
     @PostMapping("{id}/edit")
     public String updateResume(@ModelAttribute("resumeForm") @Valid ResumeFormDto resumeForm,
                                BindingResult bindingResult,
-                               @RequestParam(required = false) String action,
                                Model model,
                                @PathVariable("id") Long resumeId) {
 
@@ -95,6 +95,7 @@ public class ResumeController {
         model.addAttribute("currentUser", userService.getAuthUser());
         model.addAttribute("resumeForm", resumeForm);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
         model.addAttribute("resume", resumeService.getResumeById(resumeId, userService.getAuthId()));
 
         if (bindingResult.hasErrors()) {
@@ -104,4 +105,5 @@ public class ResumeController {
         resumeService.updateResume(resumeId, resumeForm);
         return "redirect:/profile";
     }
+
 }

@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -33,9 +30,6 @@ public class ResumeServiceImpl implements ResumeService {
     private final ResumeMapper resumeMapper;
     private final UserService userService;
     private final CategoryService categoryService;
-    private final EducationInfoService educationInfoService;
-    private final WorkExperienceInfoService workExperienceInfoService;
-    private final ContactInfoService contactInfoService;
 
     @Override
     public List<ResumeDto> getResumes() {
@@ -44,7 +38,6 @@ public class ResumeServiceImpl implements ResumeService {
                         .stream()
                         .map(resumeMapper::toDto)
                         .toList();
-        enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме не найдены");
         return resumes;
     }
@@ -56,7 +49,6 @@ public class ResumeServiceImpl implements ResumeService {
                         .stream()
                         .map(resumeMapper::toDto)
                         .toList();
-        enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Активные резюме не найдены");
         return resumes;
     }
@@ -69,7 +61,6 @@ public class ResumeServiceImpl implements ResumeService {
                         .stream()
                         .map(resumeMapper::toDto)
                         .toList();
-        enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с ID: " + userId + " не найдены");
         return resumes;
     }
@@ -86,7 +77,6 @@ public class ResumeServiceImpl implements ResumeService {
                         .stream()
                         .map(resumeMapper::toDto)
                         .toList();
-        enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для пользователя с именем: " + userName + " не найдены");
         return resumes;
     }
@@ -101,30 +91,20 @@ public class ResumeServiceImpl implements ResumeService {
         categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
 
         Resume resume = resumeMapper.toEntity(resumeDto);
-        resumeRepository.save(resume);
 
-        ResumeDto dto = resumeMapper.toDto(resume);
+        final Resume finalResume = resume;
 
-        processResumeItems(
-                resumeDto.getEducations(),
-                dto,
-                EducationInfoDto::setResume,
-                educationInfoService::createEducationInfo
-        );
+        if (resume.getContacts() != null) {
+            resume.getContacts().forEach(contact -> contact.setResume(finalResume));
+        }
+        if (resume.getEducations() != null) {
+            resume.getEducations().forEach(education -> education.setResume(finalResume));
+        }
+        if (resume.getWorkExperiences() != null) {
+            resume.getWorkExperiences().forEach(work -> work.setResume(finalResume));
+        }
 
-        processResumeItems(
-                resumeDto.getWorkExperiences(),
-                dto,
-                WorkExperienceInfoDto::setResume,
-                workExperienceInfoService::createWorkExperience
-        );
-
-        processResumeItems(
-                resumeDto.getContacts(),
-                dto,
-                ContactInfoDto::setResume,
-                contactInfoService::createContactInfo
-        );
+        resume = resumeRepository.save(resume);
 
         log.info("Созданное резюме: {}", resumeDto);
         return resume.getId();
@@ -173,9 +153,7 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
 
-        ResumeDto resumeDto = resumeMapper.toDto(resume);
-        enrichResumeWithAdditionalData(resumeDto);
-        return resumeDto;
+        return resumeMapper.toDto(resume);
     }
 
     @Override
@@ -193,39 +171,6 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setCreatedAt(existing.getCreatedAt());
         resume.setIsActive(resumeForm.getIsActive());
         resumeRepository.save(resume);
-
-        if (resumeForm.getEducations() != null) {
-            for (EducationInfoDto education : resumeForm.getEducations()) {
-                education.setResume(existing);
-                if (education.getId() == null) {
-                    educationInfoService.createEducationInfo(education);
-                } else {
-                    educationInfoService.updateEducationInfo(education.getId(), education);
-                }
-            }
-        }
-
-        if (resumeForm.getWorkExperiences() != null) {
-            for (WorkExperienceInfoDto workExperience : resumeForm.getWorkExperiences()) {
-                workExperience.setResume(existing);
-                if (workExperience.getId() == null) {
-                    workExperienceInfoService.createWorkExperience(workExperience);
-                } else {
-                    workExperienceInfoService.updateWorkExperienceInfo(workExperience.getId(), workExperience);
-                }
-            }
-        }
-
-        if (resumeForm.getContacts() != null) {
-            for (ContactInfoDto contact : resumeForm.getContacts()) {
-                contact.setResume(existing);
-                if (contact.getId() == null) {
-                    contactInfoService.createContactInfo(contact);
-                } else {
-                    contactInfoService.updateContactInfo(contact.getId(), contact);
-                }
-            }
-        }
 
         log.info("Обновлено резюме: {}", resumeId);
         return resumeId;
@@ -275,7 +220,6 @@ public class ResumeServiceImpl implements ResumeService {
                 .map(resumeMapper::toDto)
                 .toList();
 
-        enrichResumesWithAdditionalData(resumes);
         validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
         return resumes;
     }
@@ -285,32 +229,8 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeMapper.toFormDto(dto);
     }
 
-    private <T> void processResumeItems(Collection<T> items, ResumeDto resumeDto,
-                                        BiConsumer<T, ResumeDto> setResumeFunc,
-                                        Function<T, ?> createFunction) {
-        if (items != null && !items.isEmpty()) {
-            for (T item : items) {
-                setResumeFunc.accept(item, resumeDto);
-                createFunction.apply(item);
-            }
-        }
-    }
-
     public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
         return resumeRepository.existsByIdAndApplicantId(resumeId, applicantId);
-    }
-
-    private void enrichResumesWithAdditionalData(List<ResumeDto> resumes) {
-        for (ResumeDto resume : resumes) {
-            enrichResumeWithAdditionalData(resume);
-        }
-    }
-
-    private void enrichResumeWithAdditionalData(ResumeDto resume) {
-        resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
-        resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
-        resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
-        resume.setApplicant(userService.getUserById(resume.getApplicant().getId()));
     }
 
     private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {
