@@ -6,6 +6,7 @@ import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,8 +24,21 @@ public class ResumeController {
     private final ContactTypeService contactTypeService;
 
     @GetMapping
-    public String getResumes(Model model) {
-        model.addAttribute("resumes", resumeService.getResumes());
+    public String getResumes(@RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "5") int size,
+                             @RequestParam(required = false) Long categoryId,
+                             Model model) {
+        Page<ResumeDto> resumePage;
+
+        if (categoryId != null) {
+            resumePage = resumeService.getResumesPageByCategoryId(page, size, categoryId);
+            model.addAttribute("categoryId", categoryId);
+        } else {
+            resumePage = resumeService.getActiveResumesPage(page, size);
+        }
+
+        model.addAttribute("resumes", resumePage);
+        model.addAttribute("categories", categoryService.getAllCategories());
         return "resume/resumes";
     }
 
