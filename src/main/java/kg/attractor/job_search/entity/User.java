@@ -55,7 +55,7 @@ public class User {
     @Builder.Default
     Boolean enabled = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id",
             nullable = false)
     Role role;
