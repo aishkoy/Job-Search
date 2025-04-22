@@ -1,6 +1,12 @@
 <#import "../layout.ftlh" as main>
 <@main.layout>
     <#assign role = user.role.id />
+    <#assign known = SPRING_SECURITY_CONTEXT?? >
+    <#if known>
+        <#assign
+        currentUserId = SPRING_SECURITY_CONTEXT.authentication.principal.getUserId()
+        >
+    </#if>
     <!-- Информация о пользователе -->
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
@@ -16,7 +22,7 @@
                         <img src="/api/users/${user.id}/avatar" alt="Фото профиля"
                              class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
                         <div class="absolute bottom-0 right-0">
-                            <form method="POST" action="/profile/avatar" enctype="multipart/form-data">
+                            <form method="POST" action="${url}/${user.id}/avatar" enctype="multipart/form-data">
                                 <label for="avatar-upload"
                                        class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
                                     <i class="fas fa-camera"></i>
@@ -45,10 +51,12 @@
                             </p>
                         </div>
 
-                        <a href="/profile/edit"
-                           class="mt-2 md:mt-0 bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition flex items-center">
-                            <i class="fas fa-edit mr-2"></i>Редактировать профиль
-                        </a>
+                        <#if currentUserId?? && currentUserId == user.id>
+                            <a href="/${url}/${user.id}/edit"
+                               class="mt-2 md:mt-0 bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition flex items-center">
+                                <i class="fas fa-edit mr-2"></i>Редактировать профиль
+                            </a>
+                        </#if>
                     </div>
 
                     <!-- Контактные данные с фиксированной шириной карточек -->
@@ -96,11 +104,15 @@
             <#if role == 2>
                 <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-file-alt text-blue-600 mr-2"></i>Мои резюме
+                        <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                        <#if currentUserId?? && currentUserId == user.id>Мои резюме
                     </h2>
                     <a href="/resumes/create" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="fas fa-plus mr-1"></i>Создать новое
                     </a>
+                    </#if>
+                    Резюме
+                    </h2>
                 </div>
 
                 <#if resumesPage?? && resumesPage.content?size gt 0>
@@ -146,17 +158,19 @@
                                             <i class="fas fa-eye mr-1"></i>Просмотр
                                         </a>
 
-                                        <div class="flex gap-3">
-                                            <a href="/resumes/${resume.id}/edit"
-                                               class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="/resumes/delete/${resume.id}"
-                                               class="text-red-600 hover:text-red-800" title="Удалить"
-                                               onclick="return confirm('Вы уверены, что хотите удалить это резюме?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
-                                        </div>
+                                        <#if  currentUserId?? && currentUserId == user.id>
+                                            <div class="flex gap-3">
+                                                <a href="/resumes/${resume.id}/edit"
+                                                   class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/resumes/${resume.id}/delete"
+                                                   class="text-red-600 hover:text-red-800" title="Удалить"
+                                                   onclick="return confirm('Вы уверены, что хотите удалить это резюме?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </div>
+                                        </#if>
                                     </div>
                                 </div>
                             </div>
@@ -233,22 +247,33 @@
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-file-alt text-2xl"></i>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-800 mb-2">У вас пока нет резюме</h3>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">
+                            <#if currentUserId?? && currentUserId == user.id>
+                            У вас пока нет резюме</h3>
                         <p class="text-gray-600 mb-4">Создайте ваше первое резюме, чтобы найти работу</p>
+
                         <a href="/resumes/create"
                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
                             <i class="fas fa-plus mr-2"></i>Создать резюме
                         </a>
+                        </#if>
+                        Пока нет резюме
+                        </h3>
                     </div>
                 </#if>
             <#else>
                 <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <#if currentUserId?? && currentUserId == user.id>
                         <i class="fas fa-briefcase text-blue-600 mr-2"></i>Мои вакансии
                     </h2>
+
                     <a href="/vacancies/create" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="fas fa-plus mr-1"></i>Создать новую
                     </a>
+                    </#if>
+                    Вакансии
+                    </h2>
                 </div>
 
                 <#if vacanciesPage?? && vacanciesPage.content?size gt 0>
@@ -293,17 +318,19 @@
                                             <i class="fas fa-eye mr-1"></i>Просмотр
                                         </a>
 
-                                        <div class="flex gap-3">
-                                            <a href="/vacancies/${vacancy.id}/edit"
-                                               class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="/vacancies/delete/${vacancy.id}"
-                                               class="text-red-600 hover:text-red-800" title="Удалить"
-                                               onclick="return confirm('Вы уверены, что хотите удалить эту вакансию?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
-                                        </div>
+                                        <#if currentUserId?? && currentUserId == user.id>
+                                            <div class="flex gap-3">
+                                                <a href="/vacancies/${vacancy.id}/edit"
+                                                   class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/vacancies/${vacancy.id}/delete"
+                                                   class="text-red-600 hover:text-red-800" title="Удалить"
+                                                   onclick="return confirm('Вы уверены, что хотите удалить эту вакансию?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </div>
+                                        </#if>
                                     </div>
                                 </div>
                             </div>
@@ -380,12 +407,17 @@
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-briefcase text-2xl"></i>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-800 mb-2">У вас пока нет вакансий</h3>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">
+                            <#if currentUserId?? && currentUserId == user.id>
+                            У вас пока нет вакансий</h3>
                         <p class="text-gray-600 mb-4">Создайте вашу первую вакансию, чтобы найти сотрудников</p>
                         <a href="/vacancies/create"
                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
                             <i class="fas fa-plus mr-2"></i>Создать вакансию
                         </a>
+                        </#if>
+                        Пока нет вакансий
+                        </h3>
                     </div>
                 </#if>
             </#if>
@@ -398,16 +430,7 @@
             </h3>
 
             <div class="space-y-4">
-                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-3">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <span class="text-gray-700">Просмотры профиля</span>
-                    </div>
-                    <span class="text-xl font-bold text-gray-800">0</span>
-                </div>
-
+                <#--                TODO мб когда-нибудь сделаю -->
                 <#if role == 2>
                     <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                         <div class="flex items-center">

@@ -7,14 +7,12 @@
             <form action="#" method="get">
                 <div class="flex items-center bg-white rounded-full p-2 shadow-md">
                     <i class="fas fa-search text-gray-500 ml-3 mr-2"></i>
-                    <label>
-                        <input
-                                type="text"
-                                name="query"
-                                placeholder="Поиск резюме, специалистов..."
-                                class="flex-1 outline-none text-gray-800 py-2 px-1"
-                        >
-                    </label>
+                    <input
+                            type="text"
+                            name="query"
+                            placeholder="Поиск резюме, специалистов..."
+                            class="flex-1 outline-none text-gray-800 py-2 px-1"
+                    >
                     <button type="submit" class="bg-gray-100 text-gray-600 p-2 rounded-full mr-1">
                         <i class="fas fa-filter"></i>
                     </button>
@@ -111,7 +109,8 @@
                         </#if>
 
                         <div class="flex justify-between items-center mt-4">
-                            <a href="/resumes/${resume.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
+                            <a href="/resumes/${resume.id}"
+                               class="text-blue-600 hover:text-blue-800 text-sm font-medium">Подробнее</a>
                         </div>
                     </div>
                 </#list>

@@ -251,8 +251,8 @@
                 <!-- Кнопки действий -->
                 <div class="p-6 bg-gray-50 flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
                     <div class="flex items-center space-x-2">
-                        <a href="/profile" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i>Вернуться в профиль
+                        <a href="/" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Отмена
                         </a>
                     </div>
 

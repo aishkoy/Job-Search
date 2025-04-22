@@ -120,9 +120,6 @@
                         <a href="/vacancies/${vacancy.id}" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
                             <i class="fas fa-arrow-left mr-2"></i>Вернуться к просмотру
                         </a>
-                        <a href="/profile" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
-                            <i class="fas fa-user mr-2"></i>В профиль
-                        </a>
                     </div>
 
                     <div class="flex space-x-3">
