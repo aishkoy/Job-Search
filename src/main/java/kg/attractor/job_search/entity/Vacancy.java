@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -62,4 +63,7 @@ public class Vacancy {
     @Column(name = "updated_at")
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+
+    @OneToMany(mappedBy = "vacancy",  cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    List<RespondedApplicant> responses;
 }

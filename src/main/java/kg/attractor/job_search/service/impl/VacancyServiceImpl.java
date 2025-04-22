@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -136,13 +137,41 @@ public class VacancyServiceImpl implements VacancyService {
                 "Список вакансий пуст!");
     }
 
+    @Override
+    public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = createPageableWithSort(page, size, sortBy, direction);
+
+        return categoryId != null
+                ? getVacanciesPageByCategoryId(page, size, categoryId, sortBy, sortDirection)
+                : getVacancyDtoPage(
+                () -> vacancyRepository.findAllByIsActiveTrue(pageable),
+                "Активных вакансий не найдено!"
+        );
+    }
+
+    private Pageable createPageableWithSort(int page, int size, String sortBy, Sort.Direction direction) {
+        return switch (sortBy) {
+            case "responses" -> PageRequest.of(page - 1, size, direction, "responses");
+            default -> PageRequest.of(page - 1, size, direction, "createdAt");
+        };
+    }
 
     @Override
-    public Page<VacancyDto> getActiveVacanciesPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = createPageableWithSort(page, size, sortBy, direction);
+
         return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByIsActiveTrue(pageable),
-                "Активных вакансий не найдено!");
+                () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
+                "Вакансии по указанной категории не найдены!"
+        );
     }
 
     @Override

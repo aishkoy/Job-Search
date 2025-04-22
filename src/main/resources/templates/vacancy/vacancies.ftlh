@@ -1,5 +1,5 @@
 <#import "../layout.ftlh" as main>
-
+<#import "/spring.ftl" as spring>
 <@main.layout>
 
     <div class="bg-blue-600 text-white pb-6">
@@ -22,9 +22,50 @@
         </div>
     </div>
     <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-2">
+                <form action="/vacancies" method="get" class="flex items-center space-x-2">
+                    <#if categoryId??>
+                        <input type="hidden" name="categoryId" value="${categoryId}">
+                    </#if>
+                    <#if size??>
+                        <input type="hidden" name="size" value="${size}">
+                    </#if>
+
+                    <label>
+                        <select
+                                name="sortBy"
+                                class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="createdAt" <#if (sortBy!'createdAt') == 'createdAt'>selected</#if>>
+                                По дате создания
+                            </option>
+                            <option value="responses" <#if sortBy == 'responses'>selected</#if>>
+                                По количеству откликов
+                            </option>
+                        </select>
+                    </label>
+
+                    <button
+                            type="submit"
+                            name="sortDirection"
+                            value="<#if (sortDirection!'desc') == 'desc'>asc<#else>desc</#if>"
+                            class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                        <#if (sortDirection!'desc') == 'desc'>
+                            <i class="fas fa-sort-amount-down text-gray-600"></i>
+                        <#else>
+                            <i class="fas fa-sort-amount-up text-gray-600"></i>
+                        </#if>
+                    </button>
+                </form>
+            </div>
+
+            <div class="text-gray-500 text-sm">Найдено вакансий: ${vacancies.totalElements}</div>
+        </div>
+
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold">Найденные вакансии</h2>
-            <div class="text-gray-500 text-sm">Найдено вакансий: ${vacancies.totalElements}</div>
         </div>
 
         <#if categories?? && categories?size gt 0>
@@ -59,12 +100,11 @@
                                 </div>
                             </div>
                             <div class="flex flex-col items-end justify-between">
-                            <span class="text-xs text-gray-400 mt-4">
-                                    <#if vacancy.createdAt??>
+                                <span class="text-xs text-gray-400 mt-4">
                                         ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
-                                    <#else>
-                                        Дата не указана
-                                    </#if>
+                                </span>
+                                <span class="text-xs text-gray-400 mt-4">
+                                        Откликов: ${vacancy.responses?size!'0'}
                                 </span>
                             </div>
                         </div>
@@ -133,19 +173,21 @@
                         </#if>
 
                         <#list startPage..endPage as i>
-                        <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
-                           class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
-                            </#list>
+                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                               class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
+                                ${i + 1}
+                            </a>
+                        </#list>
 
-                            <#if endPage lt vacancies.totalPages - 1>
-                                <#if endPage lt vacancies.totalPages - 2>
-                                    <span class="px-2 py-2">...</span>
-                                </#if>
-                                <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
-                                   class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
-                                    ${vacancies.totalPages}
-                                </a>
+                        <#if endPage lt vacancies.totalPages - 1>
+                            <#if endPage lt vacancies.totalPages - 2>
+                                <span class="px-2 py-2">...</span>
                             </#if>
+                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                ${vacancies.totalPages}
+                            </a>
+                        </#if>
                     </div>
 
                     <!-- Кнопка "Следующая страница" -->

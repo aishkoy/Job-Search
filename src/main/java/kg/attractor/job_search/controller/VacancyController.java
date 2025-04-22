@@ -26,18 +26,21 @@ public class VacancyController {
     public String vacancies(@RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "5") int size,
                             @RequestParam(required = false) Long categoryId,
+                            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                            @RequestParam(required = false, defaultValue = "desc") String sortDirection,
                             Model model) {
 
-        Page<VacancyDto> vacanciesPage;
-        if (categoryId != null) {
-            vacanciesPage = vacancyService.getVacanciesPageByCategoryId(page, size, categoryId);
-            model.addAttribute("categoryId", categoryId);
-        } else {
-            vacanciesPage = vacancyService.getActiveVacanciesPage(page, size);
-        }
+        Page<VacancyDto> vacanciesPage = vacancyService.getActiveVacanciesPage(
+                page, size, categoryId, sortBy, sortDirection
+        );
 
+        model.addAttribute("size", size);
         model.addAttribute("vacancies", vacanciesPage);
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDirection", sortDirection);
+
         return "vacancy/vacancies";
     }
 

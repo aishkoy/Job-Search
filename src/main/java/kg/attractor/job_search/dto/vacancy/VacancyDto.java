@@ -1,11 +1,13 @@
 package kg.attractor.job_search.dto.vacancy;
 
 import kg.attractor.job_search.dto.CategoryDto;
+import kg.attractor.job_search.dto.RespondedApplicantDto;
 import kg.attractor.job_search.dto.user.SimpleUserDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +27,5 @@ public class VacancyDto {
     SimpleUserDto employer;
     Timestamp createdAt;
     Timestamp updatedAt;
+    List<RespondedApplicantDto> responses;
 }
