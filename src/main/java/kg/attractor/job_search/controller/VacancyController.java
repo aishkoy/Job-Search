@@ -74,8 +74,8 @@ public class VacancyController {
             return "vacancy/create-vacancy";
         }
 
-        vacancyService.createVacancy(vacancyFormDto);
-        return "redirect:/profile";
+        Long vacancyId = vacancyService.createVacancy(vacancyFormDto);
+        return "redirect:/vacancies/" + vacancyId;
     }
 
     @GetMapping("{id}/edit")
@@ -106,6 +106,6 @@ public class VacancyController {
             return "vacancy/edit-vacancy";
         }
         vacancyService.updateVacancy(vacancyId, vacancyDto);
-        return "redirect:/profile";
+        return "redirect:/vacancies/" + vacancyId;
     }
 }

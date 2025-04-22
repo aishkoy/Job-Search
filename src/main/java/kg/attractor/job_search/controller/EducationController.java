@@ -48,7 +48,6 @@ public class EducationController {
             return "info/education";
         }
 
-        // Создаем образование
         educationInfoService.createEducationInfo(educationDto);
 
         return "redirect:/resumes/" + resumeId + "/edit";

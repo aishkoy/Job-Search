@@ -73,8 +73,8 @@ public class ResumeController {
                 if (bindingResult.hasErrors()) {
                     break;
                 }
-                resumeService.createResume(resumeForm);
-                return "redirect:/profile";
+                Long resumeId =  resumeService.createResume(resumeForm);
+                return "redirect:/resumes/" + resumeId;
             }
         }
 
@@ -122,7 +122,7 @@ public class ResumeController {
         }
 
         resumeService.updateResume(resumeId, resumeForm);
-        return "redirect:/profile";
+        return "redirect:/resumes/" + resumeId;
     }
 
 }
