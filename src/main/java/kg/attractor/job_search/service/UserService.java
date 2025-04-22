@@ -51,6 +51,10 @@ public interface UserService {
 
     ResponseEntity<?> getUserAvatar(Long userId);
 
+    Page<UserDto> getApplicantPage(int page, int size);
+
+    Page<UserDto> getEmployersPage(int page, int size);
+
     UserDto getAuthUser();
 
     SimpleUserDto mapToEditUser(UserDto userDto);

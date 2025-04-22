@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
@@ -278,6 +279,29 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(errorMessage);
         }
         log.info("Получено {} пользователей", users.size());
+    }
+
+    @Override
+    public Page<UserDto> getApplicantPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getUserDtoPage(() -> userRepository.findAllApplicantsPage(pageable),
+                "Не было найдено соискателей!");
+    }
+
+    @Override
+    public Page<UserDto> getEmployersPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getUserDtoPage(() -> userRepository.findAllEmployersPage(pageable),
+                "Не было найдено компаний!");
+    }
+
+    private Page<UserDto> getUserDtoPage(Supplier<Page<User>> supplier, String notFoundMessage) {
+        Page<User> userPage = supplier.get();
+        if (userPage.isEmpty()) {
+            throw new UserNotFoundException(notFoundMessage);
+        }
+        log.info("Получено {} вакансий на странице", userPage.getSize());
+        return userPage.map(userMapper::toDto);
     }
 
     private <T> Page<T> toPage(List<T> list, Pageable pageable) {

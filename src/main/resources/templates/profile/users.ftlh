@@ -21,20 +21,21 @@
     </div>
 
     <main class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <div class="text-gray-500 text-sm">Найдено пользователей: ${users.totalElements}</div>
+        </div>
+
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold">
-                <#if users?? && users?size gt 0>
-                    <#if users[0].role.role == 'EMPLOYER'>Работодатели<#else>Соискатели</#if>
+                <#if users.content?size gt 0>
+                    <#if users.content[0].role.role == 'EMPLOYER'>Работодатели<#else>Соискатели</#if>
                 </#if>
             </h2>
-            <div class="text-gray-500 text-sm">
-                Найдено пользователей: ${users?size}
-            </div>
         </div>
 
         <div class="space-y-4">
-            <#if users?? && users?size gt 0>
-                <#list users as user>
+            <#if users.content?? && users.content?size gt 0>
+                <#list users.content as user>
                     <div class="bg-white rounded-lg shadow p-4 border border-gray-200 hover:shadow-md transition-shadow">
                         <div class="flex justify-between items-start">
                             <div class="flex items-center space-x-4">
@@ -89,6 +90,70 @@
                         </div>
                     </div>
                 </#list>
+
+                <!-- Пагинация -->
+                <div class="flex justify-center items-center mt-6 gap-2">
+                    <!-- Информация о пагинации -->
+                    <div class="text-gray-500 text-sm mr-4">
+                        Страница ${users.number + 1} из ${users.totalPages}
+                    </div>
+
+                    <!-- Кнопка "Предыдущая страница" -->
+                    <#if users.number gt 0>
+                        <a href="?page=${users.number}<#if size??>&size=${users.size}</#if>"
+                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-chevron-left mr-1"></i> Назад
+                        </a>
+                    <#else>
+                        <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                            <i class="fas fa-chevron-left mr-1"></i> Назад
+                        </span>
+                    </#if>
+
+                    <!-- Номера страниц -->
+                    <div class="flex space-x-1">
+                        <#assign startPage = ((users.number - 2) gt 0)?then(users.number - 2, 0)>
+                        <#assign endPage = ((startPage + 4) lt users.totalPages)?then(startPage + 4, users.totalPages - 1)>
+                        <#if startPage gt 0>
+                            <a href="?page=1<#if size??>&size=${users.size}</#if>"
+                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                1
+                            </a>
+                            <#if startPage gt 1>
+                                <span class="px-2 py-2">...</span>
+                            </#if>
+                        </#if>
+
+                        <#list startPage..endPage as i>
+                            <a href="?page=${i + 1}<#if size??>&size=${users.size}</#if>"
+                               class="px-3 py-2 rounded ${(i == users.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
+                                ${i + 1}
+                            </a>
+                        </#list>
+
+                        <#if endPage lt users.totalPages - 1>
+                            <#if endPage lt users.totalPages - 2>
+                                <span class="px-2 py-2">...</span>
+                            </#if>
+                            <a href="?page=${users.totalPages}<#if size??>&size=${users.size}</#if>"
+                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                ${users.totalPages}
+                            </a>
+                        </#if>
+                    </div>
+
+                    <!-- Кнопка "Следующая страница" -->
+                    <#if users.number lt users.totalPages - 1>
+                        <a href="?page=${users.number + 2}<#if size??>&size=${users.size}</#if>"
+                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                            Вперед <i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                    <#else>
+                        <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                            Вперед <i class="fas fa-chevron-right ml-1"></i>
+                        </span>
+                    </#if>
+                </div>
             <#else>
                 <div class="bg-white rounded-lg shadow p-6 text-center">
                     <i class="fas fa-users-slash text-gray-400 text-4xl mb-4"></i>

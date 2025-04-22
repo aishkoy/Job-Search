@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller("mvcApplicant")
 @RequestMapping("applicants")
@@ -16,9 +17,12 @@ public class ApplicantController extends UserController {
     }
 
     @GetMapping
-    public String getApplicants(Model model) {
+    public String getApplicants(@RequestParam(defaultValue = "1") int page,
+                                @RequestParam(defaultValue = "5") int size,
+                                Model model) {
         model.addAttribute("url", getUrl());
-        model.addAttribute("users", userService.getApplicants());
+        model.addAttribute("size", size);
+        model.addAttribute("users", userService.getApplicantPage(page, size));
         return "profile/users";
     }
 
