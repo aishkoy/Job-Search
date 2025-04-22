@@ -53,12 +53,12 @@ public class Resume {
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     List<ContactInfo> contacts;
 
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     List<EducationInfo> educations;
 
-    @OneToMany(mappedBy = "resume", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     List<WorkExperienceInfo> workExperiences;
 }
