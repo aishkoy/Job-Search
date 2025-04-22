@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ResumeController {
     private final ResumeService resumeService;
-    private final ContactInfoService contactInfoService;
     private final UserService userService;
     private final CategoryService categoryService;
     private final ContactTypeService contactTypeService;
@@ -97,6 +96,12 @@ public class ResumeController {
         model.addAttribute("contactInfo", new ContactInfoDto());
 
         return "resume/edit-resume";
+    }
+
+    @GetMapping("{id}/delete")
+    public String deleteResume(@PathVariable("id") Long resumeId) {
+        resumeService.deleteResume(resumeId, userService.getAuthId());
+        return "redirect:/";
     }
 
     @PostMapping("{id}/edit")

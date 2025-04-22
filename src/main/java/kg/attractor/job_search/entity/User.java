@@ -60,9 +60,9 @@ public class User {
             nullable = false)
     Role role;
 
-    @OneToMany(mappedBy = "employer", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "employer")
     List<Vacancy> vacancies;
 
-    @OneToMany(mappedBy = "applicant", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "applicant")
     List<Resume> resumes;
 }

@@ -64,6 +64,6 @@ public class Vacancy {
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 
-    @OneToMany(mappedBy = "vacancy",  cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "vacancy", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<RespondedApplicant> responses;
 }

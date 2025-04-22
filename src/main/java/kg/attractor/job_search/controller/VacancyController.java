@@ -88,6 +88,12 @@ public class VacancyController {
         return "vacancy/edit-vacancy";
     }
 
+    @GetMapping("{id}/delete")
+    public String delete(@PathVariable("id") Long vacancyId) {
+        vacancyService.deleteVacancy(vacancyId, userService.getAuthId());
+        return "redirect:/";
+    }
+
     @PostMapping("{id}/edit")
     public String edit(@PathVariable("id") Long vacancyId,
                        @ModelAttribute("vacancyForm") @Valid VacancyFormDto vacancyDto,
