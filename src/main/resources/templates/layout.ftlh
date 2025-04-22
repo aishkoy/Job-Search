@@ -40,6 +40,9 @@
                                     <a href="/resumes" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-briefcase mr-2"></i> Резюме
                                     </a>
+                                    <a href="/applicants" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-users mr-2"></i> Соискатели
+                                    </a>
                                 </div>
                                 <div class="flex items-center space-x-4">
                                     <a href="/employers/${currentUserId}"
@@ -52,6 +55,9 @@
                                 <div class="flex items-center space-x-4">
                                     <a href="/vacancies" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-search mr-2"></i> Вакансии
+                                    </a>
+                                    <a href="/employers" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-users mr-2"></i> Работодатели
                                     </a>
                                 </div>
                                 <div class="flex items-center space-x-4">

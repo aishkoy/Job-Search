@@ -34,23 +34,24 @@
                         <div>
                             <div class="mb-4">
                                 <label class="block text-sm font-semibold text-gray-700">Название резюме *</label>
-                                <input type="text"
-                                       name="name"
-                                       value="${resume.name!''}"
-                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-                                       placeholder="Введите название резюме"/>
+                                <@spring.formInput  "resumeForm.name", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Например: Frontend-разработчик"', "text"/>
+                                <p class="text-xs text-gray-500 mt-1">Это название будет отображаться в результатах поиска</p>
+                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
 
                             <div class="mb-4">
                                 <label class="block text-sm font-semibold text-gray-700">Категория *</label>
-                                <select name="category.id" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    <#list categories as category>
-                                        <option value="${category.id}"
-                                                <#if resume.category.id == category.id>selected</#if>>
-                                            ${category.name}
-                                        </option>
-                                    </#list>
-                                </select>
+                                <#assign categoryMap = {}>
+                                <#list categories as category>
+                                    <#assign categoryMap = categoryMap + {category.id?string: category.name}>
+                                </#list>
+
+                                <@spring.formSingleSelect
+                                "resumeForm.category.id",
+                                categoryMap,
+                                'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
+                                />
+                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
                         </div>
 
@@ -60,38 +61,21 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Статус резюме</label>
                                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                     <div class="flex space-x-4">
-                                        <label class="inline-flex items-center">
-                                            <input type="radio"
-                                                   name="isActive"
-                                                   value="true"
-                                                   class="form-radio"
-                                                   <#if resume.isActive>checked</#if>/>
-                                            <span class="ml-2">Активная</span>
-                                        </label>
-                                        <label class="inline-flex items-center">
-                                            <input type="radio"
-                                                   name="isActive"
-                                                   value="false"
-                                                   class="form-radio"
-                                                   <#if !resume.isActive>checked</#if>/>
-                                            <span class="ml-2">Неактивная</span>
-                                        </label>
+                                        <@spring.formRadioButtons
+                                        "resumeForm.isActive",
+                                        {"true":"Активная", "false":"Неактивная"},
+                                        "<br>",
+                                        "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"
+                                        />
+                                        <@spring.showErrors "<br>", "text-red-500 text-xs mt-1"/>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mb-4">
                                 <label  class="block text-sm font-semibold text-gray-700">Желаемая зарплата (₽)</label>
-                                <input type="number"
-                                       name="salary"
-                                       value="${resume.salary!''}"
-                                       min="0"
-                                       step="0.01"
-                                       class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-                                       placeholder="Укажите желаемую зарплату"/>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    Оставьте поле пустым, если не хотите указывать зарплату
-                                </p>
+                                <@spring.formInput "resumeForm.salary", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Укажите желаемую зарплату" type="number" min="0"', "number"/>
+                                <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
                         </div>
                     </div>

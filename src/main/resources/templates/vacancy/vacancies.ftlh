@@ -70,12 +70,12 @@
 
         <#if categories?? && categories?size gt 0>
             <div class="flex flex-wrap gap-2 mb-4">
-                <a href="/vacancies"
+                <a href="/vacancies<#if sortBy?? || sortDirection??>?sortBy=${sortBy!'createdAt'}&sortDirection=${sortDirection!'desc'}</#if>"
                    class="px-3 py-1 rounded-full ${(categoryId??)?then('bg-gray-100 text-gray-700', 'bg-blue-600 text-white')}">
                     Все
                 </a>
                 <#list categories as category>
-                    <a href="/vacancies?categoryId=${category.id}"
+                    <a href="/vacancies?categoryId=${category.id}<#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                        class="px-3 py-1 rounded-full ${(categoryId?? && categoryId == category.id)?then('bg-blue-600 text-white', 'bg-gray-100 text-gray-700')}">
                         ${category.name}
                     </a>
@@ -148,7 +148,7 @@
 
                     <!-- Кнопка "Предыдущая страница" -->
                     <#if vacancies.number gt 0>
-                        <a href="?page=${vacancies.number}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                        <a href="?page=${vacancies.number}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                             <i class="fas fa-chevron-left mr-1"></i> Назад
                         </a>
@@ -163,7 +163,7 @@
                         <#assign startPage = ((vacancies.number - 2) gt 0)?then(vacancies.number - 2, 0)>
                         <#assign endPage = ((startPage + 4) lt vacancies.totalPages)?then(startPage + 4, vacancies.totalPages - 1)>
                         <#if startPage gt 0>
-                            <a href="?page=1<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                            <a href="?page=1<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                                class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
                                 1
                             </a>
@@ -173,7 +173,7 @@
                         </#if>
 
                         <#list startPage..endPage as i>
-                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                                class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
                                 ${i + 1}
                             </a>
@@ -183,7 +183,7 @@
                             <#if endPage lt vacancies.totalPages - 2>
                                 <span class="px-2 py-2">...</span>
                             </#if>
-                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                                class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
                                 ${vacancies.totalPages}
                             </a>
@@ -192,7 +192,7 @@
 
                     <!-- Кнопка "Следующая страница" -->
                     <#if vacancies.number lt vacancies.totalPages - 1>
-                        <a href="?page=${vacancies.number + 2}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if>"
+                        <a href="?page=${vacancies.number + 2}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                             Вперед <i class="fas fa-chevron-right ml-1"></i>
                         </a>
