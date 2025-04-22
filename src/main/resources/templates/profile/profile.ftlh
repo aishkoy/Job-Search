@@ -103,9 +103,9 @@
                     </a>
                 </div>
 
-                <#if user.resumes?? && user.resumes?size gt 0>
+                <#if resumesPage?? && resumesPage.content?size gt 0>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <#list user.resumes as resume>
+                        <#list resumesPage.content as resume>
                             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${resume.isActive?string('', 'opacity-70')}">
                                 <div class="p-5">
                                     <div class="flex justify-between items-start mb-3">
@@ -162,6 +162,72 @@
                             </div>
                         </#list>
                     </div>
+
+                    <!-- Пагинация для резюме -->
+                    <#if resumesPage.totalPages gt 1>
+                        <div class="flex justify-center items-center mt-6 gap-2">
+                            <!-- Информация о пагинации -->
+                            <div class="text-gray-500 text-sm mr-4">
+                                Страница ${resumesPage.number + 1} из ${resumesPage.totalPages}
+                            </div>
+
+                            <!-- Кнопка "Предыдущая страница" -->
+                            <#if resumesPage.number gt 0>
+                                <a href="?page=${resumesPage.number}<#if size??>&size=${size}</#if>"
+                                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                </a>
+                            <#else>
+                                <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                </span>
+                            </#if>
+
+                            <!-- Номера страниц -->
+                            <div class="flex space-x-1">
+                                <#assign startPage = ((resumesPage.number - 2) gt 0)?then(resumesPage.number - 2, 0)>
+                                <#assign endPage = ((startPage + 4) lt resumesPage.totalPages)?then(startPage + 4, resumesPage.totalPages - 1)>
+                                <#if startPage gt 0>
+                                    <a href="?page=1<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                        1
+                                    </a>
+                                    <#if startPage gt 1>
+                                        <span class="px-2 py-2">...</span>
+                                    </#if>
+                                </#if>
+
+                                <#list startPage..endPage as i>
+                                    <a href="?page=${i + 1}<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded ${(i == resumesPage.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
+                                        ${i + 1}
+                                    </a>
+                                </#list>
+
+                                <#if endPage lt resumesPage.totalPages - 1>
+                                    <#if endPage lt resumesPage.totalPages - 2>
+                                        <span class="px-2 py-2">...</span>
+                                    </#if>
+                                    <a href="?page=${resumesPage.totalPages}<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                        ${resumesPage.totalPages}
+                                    </a>
+                                </#if>
+                            </div>
+
+                            <!-- Кнопка "Следующая страница" -->
+                            <#if resumesPage.number lt resumesPage.totalPages - 1>
+                                <a href="?page=${resumesPage.number + 2}<#if size??>&size=${size}</#if>"
+                                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                </a>
+                            <#else>
+                                <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                </span>
+                            </#if>
+                        </div>
+                    </#if>
                 <#else>
                     <div class="bg-white rounded-lg shadow-sm p-6 text-center">
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -185,9 +251,9 @@
                     </a>
                 </div>
 
-                <#if user.vacancies?? && user.vacancies?size gt 0>
+                <#if vacanciesPage?? && vacanciesPage.content?size gt 0>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <#list user.vacancies as vacancy>
+                        <#list vacanciesPage.content as vacancy>
                             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition ${vacancy.isActive?string('', 'opacity-70')}">
                                 <div class="p-5">
                                     <div class="flex justify-between items-start mb-3">
@@ -243,6 +309,72 @@
                             </div>
                         </#list>
                     </div>
+
+                    <!-- Пагинация для вакансий -->
+                    <#if vacanciesPage.totalPages gt 1>
+                        <div class="flex justify-center items-center mt-6 gap-2">
+                            <!-- Информация о пагинации -->
+                            <div class="text-gray-500 text-sm mr-4">
+                                Страница ${vacanciesPage.number + 1} из ${vacanciesPage.totalPages}
+                            </div>
+
+                            <!-- Кнопка "Предыдущая страница" -->
+                            <#if vacanciesPage.number gt 0>
+                                <a href="?page=${vacanciesPage.number}<#if size??>&size=${size}</#if>"
+                                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                </a>
+                            <#else>
+                                <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                </span>
+                            </#if>
+
+                            <!-- Номера страниц -->
+                            <div class="flex space-x-1">
+                                <#assign startPage = ((vacanciesPage.number - 2) gt 0)?then(vacanciesPage.number - 2, 0)>
+                                <#assign endPage = ((startPage + 4) lt vacanciesPage.totalPages)?then(startPage + 4, vacanciesPage.totalPages - 1)>
+                                <#if startPage gt 0>
+                                    <a href="?page=1<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                        1
+                                    </a>
+                                    <#if startPage gt 1>
+                                        <span class="px-2 py-2">...</span>
+                                    </#if>
+                                </#if>
+
+                                <#list startPage..endPage as i>
+                                    <a href="?page=${i + 1}<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded ${(i == vacanciesPage.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
+                                        ${i + 1}
+                                    </a>
+                                </#list>
+
+                                <#if endPage lt vacanciesPage.totalPages - 1>
+                                    <#if endPage lt vacanciesPage.totalPages - 2>
+                                        <span class="px-2 py-2">...</span>
+                                    </#if>
+                                    <a href="?page=${vacanciesPage.totalPages}<#if size??>&size=${size}</#if>"
+                                       class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                                        ${vacanciesPage.totalPages}
+                                    </a>
+                                </#if>
+                            </div>
+
+                            <!-- Кнопка "Следующая страница" -->
+                            <#if vacanciesPage.number lt vacanciesPage.totalPages - 1>
+                                <a href="?page=${vacanciesPage.number + 2}<#if size??>&size=${size}</#if>"
+                                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                </a>
+                            <#else>
+                                <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
+                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                </span>
+                            </#if>
+                        </div>
+                    </#if>
                 <#else>
                     <div class="bg-white rounded-lg shadow-sm p-6 text-center">
                         <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
