@@ -39,7 +39,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 @Slf4j
-@Service
+@Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -313,6 +313,22 @@ public class UserServiceImpl implements UserService {
                 pageable,
                 list.size()
         );
+    }
+
+    @Override
+    public boolean isCurrentUser(Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            Long currentUserId = ((CustomUserDetails) principal).getUserId();
+            return userId.equals(currentUserId);
+        }
+
+        return false;
     }
 
     @Override

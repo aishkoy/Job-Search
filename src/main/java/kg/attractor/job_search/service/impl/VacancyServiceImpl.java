@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Slf4j
-@Service
+@Service("vacancyService")
 @RequiredArgsConstructor
 public class VacancyServiceImpl implements VacancyService {
     private final VacancyMapper vacancyMapper;
@@ -216,6 +216,10 @@ public class VacancyServiceImpl implements VacancyService {
         return vacancyPage.map(this::mapAndEnrich);
     }
 
+    public boolean isAuthorOfVacancy(Long vacancyId, Long userId) {
+        Vacancy vacancy = getVacancyById(vacancyId);
+        return vacancy.getEmployer().getId().equals(userId);
+    }
 
     @Override
     public VacancyFormDto convertToFormDto(VacancyDto dto) {

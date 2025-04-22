@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Slf4j
-@Service
+@Service("resumeService")
 @RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
     private final ResumeRepository resumeRepository;
@@ -202,6 +202,10 @@ public class ResumeServiceImpl implements ResumeService {
         return resumePage.map(resumeMapper::toDto);
     }
 
+    public boolean isAuthorOfResume(Long resumeId, Long userId) {
+        Resume resume = getResumeById(resumeId);
+        return resume.getApplicant().getId().equals(userId);
+    }
 
     private List<ResumeDto> findAndMapResumes(Supplier<List<Resume>> supplier, String errorMessage) {
         List<ResumeDto> resumes = supplier.get()

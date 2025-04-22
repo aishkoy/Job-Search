@@ -55,6 +55,8 @@ public interface UserService {
 
     Page<UserDto> getEmployersPage(int page, int size);
 
+    boolean isCurrentUser(Long userId);
+
     UserDto getAuthUser();
 
     SimpleUserDto mapToEditUser(UserDto userDto);
