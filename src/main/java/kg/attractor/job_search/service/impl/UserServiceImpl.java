@@ -1,8 +1,10 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
@@ -14,6 +16,10 @@ import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +32,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -37,6 +45,20 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
+
+    @Override
+    public Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user) {
+        Map<String, Page<?>> template = new HashMap<>();
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<ResumeDto> resumes = toPage(user.getResumes(), pageable);
+        Page<VacancyDto> vacancies = toPage(user.getVacancies(), pageable);
+
+        template.put("resumesPage", resumes);
+        template.put("vacanciesPage", vacancies);
+        return template;
+    }
 
     @Override
     public List<UserDto> getUsers() {
@@ -256,6 +278,17 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(errorMessage);
         }
         log.info("Получено {} пользователей", users.size());
+    }
+
+    private <T> Page<T> toPage(List<T> list, Pageable pageable) {
+        return new PageImpl<>(
+                list.stream()
+                        .skip(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .toList(),
+                pageable,
+                list.size()
+        );
     }
 
     @Override

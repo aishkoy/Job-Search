@@ -4,13 +4,17 @@ import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.entity.User;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
+    Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user);
+
     List<UserDto> getUsers();
 
     User getEntityById(Long userId);
