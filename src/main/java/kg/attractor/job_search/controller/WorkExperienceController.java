@@ -6,6 +6,7 @@ import kg.attractor.job_search.service.WorkExperienceInfoService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller("mvcWorkExperience")
 @RequestMapping("/resumes/{resumeId}/experiences")
+@PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
 @RequiredArgsConstructor
 public class WorkExperienceController {
     private final WorkExperienceInfoService workExperienceInfoService;
@@ -21,7 +23,7 @@ public class WorkExperienceController {
     private final ResumeService resumeService;
 
     @GetMapping("/create")
-    public String showCreateExperienceModal(@PathVariable Long resumeId,
+    public String showCreateExperienceModal(@PathVariable("resumeId") Long resumeId,
                                             Model model
     ) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
@@ -37,7 +39,7 @@ public class WorkExperienceController {
     }
 
     @PostMapping
-    public String createExperience(@PathVariable Long resumeId,
+    public String createExperience(@PathVariable("resumeId") Long resumeId,
                                    @ModelAttribute("experienceDto") @Valid WorkExperienceInfoDto experienceDto,
                                    BindingResult bindingResult,
                                    Model model
@@ -56,8 +58,8 @@ public class WorkExperienceController {
     }
 
     @GetMapping("/{experienceId}/edit")
-    public String showEditExperienceModal(@PathVariable Long resumeId,
-                                          @PathVariable Long experienceId,
+    public String showEditExperienceModal(@PathVariable("resumeId") Long resumeId,
+                                          @PathVariable("experienceId") Long experienceId,
                                           Model model
     ) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
@@ -73,8 +75,8 @@ public class WorkExperienceController {
     }
 
     @PostMapping("/{experienceId}/edit")
-    public String editExperience(@PathVariable Long resumeId,
-                                 @PathVariable Long experienceId,
+    public String editExperience(@PathVariable("resumeId") Long resumeId,
+                                 @PathVariable("experienceId") Long experienceId,
                                  @ModelAttribute("experienceDto") @Valid WorkExperienceInfoDto experienceDto,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes,
@@ -95,8 +97,8 @@ public class WorkExperienceController {
     }
 
     @PostMapping("/{experienceId}/delete")
-    public String deleteExperience(@PathVariable Long resumeId,
-                                   @PathVariable Long experienceId,
+    public String deleteExperience(@PathVariable("resumeId") Long resumeId,
+                                   @PathVariable("experienceId") Long experienceId,
                                    RedirectAttributes redirectAttributes
     ) {
         resumeService.getResumeById(resumeId, userService.getAuthId());

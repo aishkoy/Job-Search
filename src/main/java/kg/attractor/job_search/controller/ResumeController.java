@@ -7,6 +7,7 @@ import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ public class ResumeController {
     private final ContactTypeService contactTypeService;
 
     @GetMapping
+    @PreAuthorize("hasRole('EMPLOYER')")
     public String getResumes(@RequestParam(defaultValue = "1") int page,
                              @RequestParam(defaultValue = "5") int size,
                              @RequestParam(required = false) Long categoryId,
@@ -41,14 +43,16 @@ public class ResumeController {
         return "resume/resumes";
     }
 
-    @GetMapping("{id}")
-    public String getResume(@PathVariable("id") Long resumeId, Model model) {
+    @GetMapping("{resumeId}")
+    @PreAuthorize("hasRole('EMPLOYER') or (hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId))")
+    public String getResume(@PathVariable("resumeId") Long resumeId, Model model) {
         model.addAttribute("currentUser", userService.getAuthUser());
         model.addAttribute("resume", resumeService.getResumeDtoById(resumeId, userService.getAuthId()));
         return "resume/resume";
     }
 
     @GetMapping("create")
+    @PreAuthorize("hasRole('APPLICANT')")
     public String createResume(Model model) {
         ResumeFormDto resumeFormDto = new ResumeFormDto();
         resumeFormDto.setApplicant(userService.getAuthUser());
@@ -60,6 +64,7 @@ public class ResumeController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('APPLICANT')")
     public String createResume(@ModelAttribute("resumeForm") @Valid ResumeFormDto resumeForm,
                                BindingResult bindingResult,
                                @RequestParam(required = false) String action,
@@ -83,8 +88,9 @@ public class ResumeController {
         return "resume/create-resume";
     }
 
-    @GetMapping("{id}/edit")
-    public String editResume(@PathVariable("id") Long resumeId, Model model) {
+    @GetMapping("{resumeId}/edit")
+    @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
+    public String editResume(@PathVariable("resumeId") Long resumeId, Model model) {
         ResumeDto resume = resumeService.getResumeDtoById(resumeId, userService.getAuthId());
         ResumeFormDto formDto = resumeService.convertToFormDto(resume);
 
@@ -98,17 +104,19 @@ public class ResumeController {
         return "resume/edit-resume";
     }
 
-    @GetMapping("{id}/delete")
-    public String deleteResume(@PathVariable("id") Long resumeId) {
+    @GetMapping("{resumeId}/delete")
+    @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
+    public String deleteResume(@PathVariable("resumeId") Long resumeId) {
         resumeService.deleteResume(resumeId, userService.getAuthId());
         return "redirect:/";
     }
 
-    @PostMapping("{id}/edit")
+    @PostMapping("{resumeId}/edit")
+    @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
     public String updateResume(@ModelAttribute("resumeForm") @Valid ResumeFormDto resumeForm,
                                BindingResult bindingResult,
                                Model model,
-                               @PathVariable("id") Long resumeId) {
+                               @PathVariable("resumeId") Long resumeId) {
 
 
         model.addAttribute("currentUser", userService.getAuthUser());

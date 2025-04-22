@@ -6,6 +6,7 @@ import kg.attractor.job_search.service.EducationInfoService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller("mvcEducation")
 @RequestMapping("/resumes/{resumeId}/educations")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
 public class EducationController {
     private final EducationInfoService educationInfoService;
     private final UserService userService;
