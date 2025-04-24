@@ -22,7 +22,7 @@
                 >
             </div>
 
-            <form method="POST" action="/profile/avatar" enctype="multipart/form-data" class="mt-4">
+            <form method="POST" action="/${url}/${userDto.id}/avatar" enctype="multipart/form-data" class="mt-4">
                 <label for="avatar-upload"
                        class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Изменить фото
@@ -32,7 +32,9 @@
             </form>
         </div>
 
-        <form method="POST" action="/profile/edit" class="space-y-6">
+        <form method="POST" action="/${url}/${userDto.id}/edit" class="space-y-6">
+            <input type="hidden" name="role.id" value="${userDto.role.id}">
+            <input type="hidden" name="role.role" value="${userDto.role.role}">
             <input type="hidden" name="id" value="${userDto.id}">
 
             <div>
@@ -53,8 +55,16 @@
                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
             </div>
 
+            <#if userDto.role.role == 'APPLICANT'>
+                <div>
+                    <label for="age" class="block text-sm font-medium text-gray-700">Возраст</label>
+                    <@spring.formInput "userDto.age", 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "number"/>
+                    <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
+                </div>
+            </#if>
+
             <div class="flex items-center justify-between pt-4">
-                <a href="/profile"
+                <a href="/${url}/${userDto.id}"
                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     Отмена
                 </a>

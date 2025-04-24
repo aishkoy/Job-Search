@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -51,4 +52,13 @@ public class Resume {
     @Column(name = "updated_at")
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    List<ContactInfo> contacts;
+
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    List<EducationInfo> educations;
+
+    @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    List<WorkExperienceInfo> workExperiences;
 }

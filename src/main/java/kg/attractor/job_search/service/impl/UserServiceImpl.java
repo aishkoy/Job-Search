@@ -1,8 +1,10 @@
 package kg.attractor.job_search.service.impl;
 
+import kg.attractor.job_search.dto.resume.ResumeDto;
 import kg.attractor.job_search.dto.user.CreateUserDto;
-import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.dto.vacancy.VacancyDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;
@@ -14,6 +16,10 @@ import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +32,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 @Slf4j
-@Service
+@Service("userService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
+
+    @Override
+    public Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user) {
+        Map<String, Page<?>> template = new HashMap<>();
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Page<ResumeDto> resumes = toPage(user.getResumes(), pageable);
+        Page<VacancyDto> vacancies = toPage(user.getVacancies(), pageable);
+
+        template.put("resumesPage", resumes);
+        template.put("vacanciesPage", vacancies);
+        return template;
+    }
 
     @Override
     public List<UserDto> getUsers() {
@@ -126,7 +149,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long updateUser(Long userId, EditUserDto userDto) {
+    public Long updateUser(Long userId, SimpleUserDto userDto) {
         if (!userId.equals(userDto.getId())) {
             throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
         }
@@ -135,6 +158,7 @@ public class UserServiceImpl implements UserService {
         dto.setName(normalizeField(userDto.getName(), true));
         dto.setSurname(normalizeField(userDto.getSurname(), true));
         dto.setPhoneNumber(normalizeField(userDto.getPhoneNumber(), false));
+        dto.setAge(userDto.getAge());
 
         User user = userMapper.toEntity(dto);
         userRepository.save(user);
@@ -258,6 +282,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserDto> getApplicantPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getUserDtoPage(() -> userRepository.findAllApplicantsPage(pageable),
+                "Не было найдено соискателей!");
+    }
+
+    @Override
+    public Page<UserDto> getEmployersPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getUserDtoPage(() -> userRepository.findAllEmployersPage(pageable),
+                "Не было найдено компаний!");
+    }
+
+    private Page<UserDto> getUserDtoPage(Supplier<Page<User>> supplier, String notFoundMessage) {
+        Page<User> userPage = supplier.get();
+        if (userPage.isEmpty()) {
+            throw new UserNotFoundException(notFoundMessage);
+        }
+        log.info("Получено {} вакансий на странице", userPage.getSize());
+        return userPage.map(userMapper::toDto);
+    }
+
+    private <T> Page<T> toPage(List<T> list, Pageable pageable) {
+        return new PageImpl<>(
+                list.stream()
+                        .skip(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .toList(),
+                pageable,
+                list.size()
+        );
+    }
+
+    @Override
+    public boolean isCurrentUser(Long userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            Long currentUserId = ((CustomUserDetails) principal).getUserId();
+            return userId.equals(currentUserId);
+        }
+
+        return false;
+    }
+
+    @Override
     public UserDto getAuthUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Auth object: {}", authentication);
@@ -284,8 +358,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EditUserDto mapToEditUser(UserDto userDto) {
-        return userMapper.toEditUserDto(userDto);
+    public SimpleUserDto mapToEditUser(UserDto userDto) {
+        return userMapper.toSimpleUserDto(userDto);
     }
 
     @Override

@@ -18,4 +18,5 @@ public class MainController {
         model.addAttribute("vacancies", vacancyService.getLast3Vacancies());
         return "index";
     }
+
 }

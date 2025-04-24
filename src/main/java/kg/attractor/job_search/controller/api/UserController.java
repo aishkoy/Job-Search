@@ -1,7 +1,7 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid EditUserDto userDto) {
+    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid SimpleUserDto userDto) {
         userDto.setId(adapter.getAuthId());
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }

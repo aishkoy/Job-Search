@@ -1,6 +1,5 @@
 <#import "/spring.ftl" as spring>
 <#macro layout>
-
     <!DOCTYPE html>
     <html lang="ru">
     <head>
@@ -12,15 +11,14 @@
     </head>
 
     <body class="bg-gray-100 min-h-screen">
-
     <#assign known = SPRING_SECURITY_CONTEXT?? >
     <#if known>
         <#assign
         user = SPRING_SECURITY_CONTEXT.authentication.principal
-        name = user.getUsername()
+        currentUserId = user.getUserId()
+        roles = user.authorities
         >
     </#if>
-
 
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
@@ -34,18 +32,54 @@
             </div>
 
             <#if user??>
-                <div class="flex items-center space-x-4">
-                    <a href="/profile" class="text-white hover:text-blue-200">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </div>
+                <#if roles??>
+                    <div class="flex items-center space-x-4">
+                        <#list roles as role>
+                            <#if role.authority == 'ROLE_EMPLOYER'>
+                                <div class="flex items-center space-x-4">
+                                    <a href="/resumes" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-briefcase mr-2"></i> Резюме
+                                    </a>
+                                    <a href="/applicants" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-users mr-2"></i> Соискатели
+                                    </a>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <a href="/employers/${currentUserId}"
+                                       class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-user mr-2"></i>
+                                    </a>
+                                </div>
+                            </#if>
+                            <#if role.authority == 'ROLE_APPLICANT'>
+                                <div class="flex items-center space-x-4">
+                                    <a href="/vacancies" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-search mr-2"></i> Вакансии
+                                    </a>
+                                    <a href="/employers" class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-users mr-2"></i> Работодатели
+                                    </a>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <a href="/applicants/${currentUserId}"
+                                       class="text-white hover:text-blue-200 flex items-center">
+                                        <i class="fas fa-user mr-2"></i>
+                                    </a>
+                                </div>
+                            </#if>
+                        </#list>
+                        <a href="/logout" class="text-white hover:text-blue-200 flex items-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                        </a>
+                    </div>
+                </#if>
             <#else>
                 <div class="flex items-center space-x-4">
-                    <a href="/auth/login" class="text-white hover:text-blue-200">
-                        <i class="fa-solid fa-right-to-bracket"></i>
+                    <a href="/auth/login" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Войти
                     </a>
-                    <a href="/auth/register" class="text-white hover:text-blue-200">
-                        <i class="fa-solid fa-user-plus"></i>
+                    <a href="/auth/register" class="text-white hover:text-blue-200 flex items-center">
+                        <i class="fas fa-user-plus mr-2"></i> Регистрация
                     </a>
                 </div>
             </#if>

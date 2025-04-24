@@ -1,6 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
+import kg.attractor.job_search.entity.Resume;
 import kg.attractor.job_search.exception.WorkExperienceNotFoundException;
 import kg.attractor.job_search.mapper.WorkExperienceMapper;
 import kg.attractor.job_search.entity.WorkExperienceInfo;
@@ -23,28 +24,16 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
     @Override
     public Long createWorkExperience(WorkExperienceInfoDto createWorkExperienceInfoDto) {
         WorkExperienceInfo workExperienceInfo = workExperienceMapper.toEntity(createWorkExperienceInfoDto);
+        workExperienceInfo.setResume(Resume.builder().id(createWorkExperienceInfoDto.getResumeId()).build());
         workExperienceRepository.save(workExperienceInfo);
-        log.info("Создан опыт работы для резюме с id {}", createWorkExperienceInfoDto.getResume().getId());
+        log.info("Создан опыт работы для резюме с id {}", createWorkExperienceInfoDto.getResumeId());
         return workExperienceInfo.getId();
     }
 
     @Override
-    public List<WorkExperienceInfoDto> getWorkExperienceInfoByResumeId(Long resumeId) {
-        List<WorkExperienceInfoDto> workExperiences = workExperienceRepository.findAllByResumeId(resumeId)
-                .stream()
-                .map(workExperienceMapper::toDto)
-                .toList();
-        log.info("Получено опытов работы: {}", workExperiences.size());
-        return workExperiences;
-    }
-
-    @Override
-    public Long updateWorkExperienceInfo(Long id, WorkExperienceInfoDto workExperienceInfoDto) {
-        if (!workExperienceInfoDto.getResume().getId().equals(id)) {
-            throw new WorkExperienceNotFoundException("Не существует опыта работы с таким id");
-        }
-
+    public Long updateWorkExperienceInfo(WorkExperienceInfoDto workExperienceInfoDto) {
         WorkExperienceInfo workExperienceInfo = workExperienceMapper.toEntity(workExperienceInfoDto);
+        workExperienceInfo.setResume(Resume.builder().id(workExperienceInfoDto.getResumeId()).build());
         workExperienceRepository.save(workExperienceInfo);
 
         log.info("Обновлена информация о опыте работы {}", workExperienceInfoDto.getId());

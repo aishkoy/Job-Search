@@ -1,6 +1,8 @@
 package kg.attractor.job_search.repository;
 
 import kg.attractor.job_search.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -40,4 +42,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findApplicantsByVacancyId(@Param("vacancyId")  Long vacancyId);
 
     boolean existsByEmail(String email);
+
+
+    @Query("select u from User u where u.role.role = 'EMPLOYER'")
+    Page<User> findAllEmployersPage(Pageable pageable);
+
+
+    @Query("select u from User u where u.role.role = 'APPLICANT'")
+    Page<User> findAllApplicantsPage(Pageable pageable);
+
 }

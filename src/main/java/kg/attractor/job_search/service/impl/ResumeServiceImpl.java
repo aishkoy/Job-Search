@@ -14,270 +14,163 @@ import kg.attractor.job_search.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
-@Service
+@Service("resumeService")
 @RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
     private final ResumeRepository resumeRepository;
     private final ResumeMapper resumeMapper;
     private final UserService userService;
     private final CategoryService categoryService;
-    private final EducationInfoService educationInfoService;
-    private final WorkExperienceInfoService workExperienceInfoService;
-    private final ContactInfoService contactInfoService;
 
     @Override
-    public List<ResumeDto> getResumes() {
-        List<ResumeDto> resumes =
-                resumeRepository.findAll()
-                        .stream()
-                        .map(resumeMapper::toDto)
-                        .toList();
-        enrichResumesWithAdditionalData(resumes);
-        validateResumesList(resumes, "Резюме не найдены");
-        return resumes;
-    }
-
-    @Override
-    public List<ResumeDto> getActiveResumes() {
-        List<ResumeDto> resumes =
-                resumeRepository.findAllByIsActiveTrue()
-                        .stream()
-                        .map(resumeMapper::toDto)
-                        .toList();
-        enrichResumesWithAdditionalData(resumes);
-        validateResumesList(resumes, "Активные резюме не найдены");
-        return resumes;
-    }
-
-    @Override
-    public List<ResumeDto> getResumesByApplicantId(Long userId) {
-        userService.getApplicantById(userId);
-        List<ResumeDto> resumes =
-                resumeRepository.findAllByApplicantId(userId)
-                        .stream()
-                        .map(resumeMapper::toDto)
-                        .toList();
-        enrichResumesWithAdditionalData(resumes);
-        validateResumesList(resumes, "Резюме для пользователя с ID: " + userId + " не найдены");
-        return resumes;
-    }
-
-    @Override
-    public List<ResumeDto> getResumesByApplicantName(String name) {
-        String userName = name.trim().toLowerCase();
-        userName = StringUtils.capitalize(userName);
-
-        userService.getUsersByName(userName);
-
-        List<ResumeDto> resumes =
-                resumeRepository.findAllByApplicantName(userName)
-                        .stream()
-                        .map(resumeMapper::toDto)
-                        .toList();
-        enrichResumesWithAdditionalData(resumes);
-        validateResumesList(resumes, "Резюме для пользователя с именем: " + userName + " не найдены");
-        return resumes;
-    }
-
-    @Override
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional
     public Long createResume(ResumeFormDto resumeDto) {
-        if (resumeDto.getApplicant() == null) {
-            throw new ApplicantNotFoundException();
-        }
-
+        if (resumeDto.getApplicant() == null) throw new ApplicantNotFoundException();
         categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
 
         Resume resume = resumeMapper.toEntity(resumeDto);
-        resumeRepository.save(resume);
-
-        ResumeDto dto = resumeMapper.toDto(resume);
-
-        processResumeItems(
-                resumeDto.getEducations(),
-                dto,
-                EducationInfoDto::setResume,
-                educationInfoService::createEducationInfo
-        );
-
-        processResumeItems(
-                resumeDto.getWorkExperiences(),
-                dto,
-                WorkExperienceInfoDto::setResume,
-                workExperienceInfoService::createWorkExperience
-        );
-
-        processResumeItems(
-                resumeDto.getContacts(),
-                dto,
-                ContactInfoDto::setResume,
-                contactInfoService::createContactInfo
-        );
+        linkResumeChildren(resume);
+        Resume saved = resumeRepository.save(resume);
 
         log.info("Созданное резюме: {}", resumeDto);
-        return resume.getId();
+        return saved.getId();
     }
 
     @Override
-    public Resume getResumeById(Long resumeId, Long userId) {
-        Resume resume = getResumeById(resumeId);
-        try {
-            userService.getEmployerById(userId);
-            return resume;
-        } catch (EmployerNotFoundException ignore) {
-            if (isResumeOwnedByApplicant(resumeId, userId)) {
-                return resume;
-            }
-            throw new AccessDeniedException("Это не ваше резюме");
-        }
-    }
-
-    @Override
-    public Resume getResumeById(Long resumeId) {
-        Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
-
-        log.info("Получено резюме {}", resumeId);
-        return resume;
-    }
-
-
-    @Override
-    public ResumeDto getResumeDtoById(Long resumeId, Long userId) {
-        ResumeDto resume = getResumeDtoById(resumeId);
-        try {
-            userService.getEmployerById(userId);
-            return resume;
-        } catch (EmployerNotFoundException ignore) {
-            if (isResumeOwnedByApplicant(resumeId, userId)) {
-                return resume;
-            }
-            throw new AccessDeniedException("Это не ваше резюме");
-        }
-    }
-
-    @Override
-    public ResumeDto getResumeDtoById(Long resumeId) {
-        Resume resume = resumeRepository.findById(resumeId)
-                .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
-
-        ResumeDto resumeDto = resumeMapper.toDto(resume);
-        enrichResumeWithAdditionalData(resumeDto);
-        return resumeDto;
-    }
-
-    @Override
-    @Transactional(rollbackFor = {Exception.class})
-    public Long updateResume(Long resumeId, ResumeFormDto resumeForm) {
+    @Transactional
+    public Long updateResume(Long resumeId, ResumeFormDto form) {
         ResumeDto existing = getResumeDtoById(resumeId);
-        categoryService.getCategoryIfPresent(resumeForm.getCategory().getId());
+        categoryService.getCategoryIfPresent(form.getCategory().getId());
 
-        if (!isResumeOwnedByApplicant(resumeId, resumeForm.getApplicant().getId())) {
+        if (!isResumeOwnedByApplicant(resumeId, form.getApplicant().getId()))
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
-        }
 
-        Resume resume = resumeMapper.toEntity(resumeForm);
+        Resume resume = resumeMapper.toEntity(form);
         resume.setId(resumeId);
         resume.setCreatedAt(existing.getCreatedAt());
-        resume.setIsActive(resumeForm.getIsActive());
+        resume.setIsActive(form.getIsActive());
+
         resumeRepository.save(resume);
-
-        if (resumeForm.getEducations() != null) {
-            for (EducationInfoDto education : resumeForm.getEducations()) {
-                education.setResume(existing);
-                if (education.getId() == null) {
-                    educationInfoService.createEducationInfo(education);
-                } else {
-                    educationInfoService.updateEducationInfo(education.getId(), education);
-                }
-            }
-        }
-
-        if (resumeForm.getWorkExperiences() != null) {
-            for (WorkExperienceInfoDto workExperience : resumeForm.getWorkExperiences()) {
-                workExperience.setResume(existing);
-                if (workExperience.getId() == null) {
-                    workExperienceInfoService.createWorkExperience(workExperience);
-                } else {
-                    workExperienceInfoService.updateWorkExperienceInfo(workExperience.getId(), workExperience);
-                }
-            }
-        }
-
-        if (resumeForm.getContacts() != null) {
-            for (ContactInfoDto contact : resumeForm.getContacts()) {
-                contact.setResume(existing);
-                if (contact.getId() == null) {
-                    contactInfoService.createContactInfo(contact);
-                } else {
-                    contactInfoService.updateContactInfo(contact.getId(), contact);
-                }
-            }
-        }
-
         log.info("Обновлено резюме: {}", resumeId);
         return resumeId;
     }
 
     @Override
-    public void addExperience(ResumeFormDto resumeForm) {
-        if (resumeForm.getWorkExperiences() == null) {
-            resumeForm.setWorkExperiences(new ArrayList<>());
-        }
-        resumeForm.getWorkExperiences().add(new WorkExperienceInfoDto());
-    }
-
-    @Override
-    public void addEducation(ResumeFormDto resumeForm) {
-        if (resumeForm.getEducations() == null) {
-            resumeForm.setEducations(new ArrayList<>());
-        }
-        resumeForm.getEducations().add(new EducationInfoDto());
-    }
-
-    @Override
-    public void addContact(ResumeFormDto resumeForm) {
-        if (resumeForm.getContacts() == null) {
-            resumeForm.setContacts(new ArrayList<>());
-        }
-        resumeForm.getContacts().add(new ContactInfoDto());
-    }
-
-    @Override
     public HttpStatus deleteResume(Long resumeId, Long userId) {
         getResumeDtoById(resumeId);
-        if (!isResumeOwnedByApplicant(resumeId, userId)) {
+        if (!isResumeOwnedByApplicant(resumeId, userId))
             throw new AccessDeniedException("У вас нет прав на удаление этого резюме!");
-        }
         resumeRepository.deleteById(resumeId);
         log.info("Удалено резюме: {}", resumeId);
         return HttpStatus.OK;
     }
 
     @Override
+    public List<ResumeDto> getResumes() {
+        return findAndMapResumes(resumeRepository::findAll, "Резюме не найдены");
+    }
+
+    @Override
+    public List<ResumeDto> getActiveResumes() {
+        return findAndMapResumes(resumeRepository::findAllByIsActiveTrue, "Активные резюме не найдены");
+    }
+
+    @Override
+    public List<ResumeDto> getResumesByApplicantId(Long userId) {
+        userService.getApplicantById(userId);
+        return findAndMapResumes(() -> resumeRepository.findAllByApplicantId(userId),
+                "Резюме для пользователя с ID: " + userId + " не найдены");
+    }
+
+    @Override
+    public List<ResumeDto> getResumesByApplicantName(String name) {
+        String formattedName = StringUtils.capitalize(name.trim().toLowerCase());
+        userService.getUsersByName(formattedName);
+        return findAndMapResumes(() -> resumeRepository.findAllByApplicantName(formattedName),
+                "Резюме для пользователя с именем: " + formattedName + " не найдены");
+    }
+
+    @Override
+    public Resume getResumeById(Long resumeId, Long userId) {
+        Resume resume = getResumeById(resumeId);
+        if (isUserAuthorizedForResume(userId, resumeId)) return resume;
+        throw new AccessDeniedException("Это не ваше резюме");
+    }
+
+    @Override
+    public Resume getResumeById(Long resumeId) {
+        return resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new ResumeNotFoundException("Не существует резюме с таким id!"));
+    }
+
+    @Override
+    public ResumeDto getResumeDtoById(Long resumeId, Long userId) {
+        ResumeDto resume = getResumeDtoById(resumeId);
+        if (isUserAuthorizedForResume(userId, resumeId)) return resume;
+        throw new AccessDeniedException("Это не ваше резюме");
+    }
+
+    @Override
+    public ResumeDto getResumeDtoById(Long resumeId) {
+        return resumeMapper.toDto(getResumeById(resumeId));
+    }
+
+    @Override
     public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
         categoryService.getCategoryIfPresent(categoryId);
+        return findAndMapResumes(() -> resumeRepository.findAllByCategoryId(categoryId),
+                "Резюме для категории с ID: " + categoryId + " не найдены");
+    }
 
-        List<ResumeDto> resumes = resumeRepository.findAllByCategoryId(categoryId)
-                .stream()
-                .map(resumeMapper::toDto)
-                .toList();
+    @Override
+    public Page<ResumeDto> getResumesPage(int page, int size){
+        Pageable pageable = PageRequest.of(page-1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAll(pageable),
+                "Страница с резюме не найдена!");
+    }
 
-        enrichResumesWithAdditionalData(resumes);
-        validateResumesList(resumes, "Резюме для категории с ID: " + categoryId + " не найдены");
-        return resumes;
+    @Override
+    public Page<ResumeDto> getActiveResumesPage(int page, int size){
+        Pageable pageable = PageRequest.of(page-1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable),
+                "Страница с активными резюме не найдена!");
+    }
+
+    @Override
+    public Page<ResumeDto> getResumesPageByApplicantId(int page, int size, Long applicantId){
+        Pageable pageable = PageRequest.of(page-1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAllByApplicantId(applicantId, pageable),
+                "Страница с резюме пользователя не была найдена!");
+    }
+
+    @Override
+    public Page<ResumeDto> getResumesPageByApplicantName(int page, int size, String applicantName){
+        String formattedName = StringUtils.capitalize(applicantName.trim().toLowerCase());
+        userService.getUsersByName(formattedName);
+        Pageable pageable = PageRequest.of(page-1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAllByApplicantName(formattedName, pageable),
+                "Страница с резюме пользователя не была найдена!");
+    }
+
+    @Override
+    public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId){
+        Pageable pageable = PageRequest.of(page-1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryId(categoryId, pageable),
+                "Страница с резюме пользователя не была найдена!");
     }
 
     @Override
@@ -285,39 +178,72 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeMapper.toFormDto(dto);
     }
 
-    private <T> void processResumeItems(Collection<T> items, ResumeDto resumeDto,
-                                        BiConsumer<T, ResumeDto> setResumeFunc,
-                                        Function<T, ?> createFunction) {
-        if (items != null && !items.isEmpty()) {
-            for (T item : items) {
-                setResumeFunc.accept(item, resumeDto);
-                createFunction.apply(item);
-            }
+    @Override
+    public void addExperience(ResumeFormDto form) {
+        addItemToList(form.getWorkExperiences(), WorkExperienceInfoDto::new, form::setWorkExperiences);
+    }
+
+    @Override
+    public void addEducation(ResumeFormDto form) {
+        addItemToList(form.getEducations(), EducationInfoDto::new, form::setEducations);
+    }
+
+    @Override
+    public void addContact(ResumeFormDto form) {
+        addItemToList(form.getContacts(), ContactInfoDto::new, form::setContacts);
+    }
+
+    private Page<ResumeDto> getResumeDtoPage(Supplier<Page<Resume>> supplier, String notFoundMessage) {
+        Page<Resume> resumePage = supplier.get();
+        if (resumePage.isEmpty()) {
+            throw new VacancyNotFoundException(notFoundMessage);
         }
+        log.info("Получено {} вакансий на странице", resumePage.getSize());
+        return resumePage.map(resumeMapper::toDto);
+    }
+
+    public boolean isAuthorOfResume(Long resumeId, Long userId) {
+        Resume resume = getResumeById(resumeId);
+        return resume.getApplicant().getId().equals(userId);
+    }
+
+    private List<ResumeDto> findAndMapResumes(Supplier<List<Resume>> supplier, String errorMessage) {
+        List<ResumeDto> resumes = supplier.get()
+                .stream()
+                .map(resumeMapper::toDto)
+                .toList();
+
+        if (resumes.isEmpty()) {
+            log.warn(errorMessage);
+            throw new ResumeNotFoundException(errorMessage);
+        }
+
+        log.info("Получено {} резюме", resumes.size());
+        return resumes;
+    }
+
+    private void linkResumeChildren(Resume resume) {
+        resume.getContacts().forEach(c -> c.setResume(resume));
+        resume.getEducations().forEach(e -> e.setResume(resume));
+        resume.getWorkExperiences().forEach(w -> w.setResume(resume));
+    }
+
+    private <T> void addItemToList(List<T> list, Supplier<T> creator, Consumer<List<T>> setter) {
+        if (list == null) list = new ArrayList<>();
+        list.add(creator.get());
+        setter.accept(list);
     }
 
     public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
         return resumeRepository.existsByIdAndApplicantId(resumeId, applicantId);
     }
 
-    private void enrichResumesWithAdditionalData(List<ResumeDto> resumes) {
-        for (ResumeDto resume : resumes) {
-            enrichResumeWithAdditionalData(resume);
+    private boolean isUserAuthorizedForResume(Long userId, Long resumeId) {
+        try {
+            userService.getEmployerById(userId);
+            return true;
+        } catch (EmployerNotFoundException e) {
+            return isResumeOwnedByApplicant(resumeId, userId);
         }
-    }
-
-    private void enrichResumeWithAdditionalData(ResumeDto resume) {
-        resume.setWorkExperiences(workExperienceInfoService.getWorkExperienceInfoByResumeId(resume.getId()));
-        resume.setEducations(educationInfoService.getEducationInfoByResumeId(resume.getId()));
-        resume.setContacts(contactInfoService.getContactInfoByResumeId(resume.getId()));
-        resume.setApplicant(userService.getUserById(resume.getApplicant().getId()));
-    }
-
-    private void validateResumesList(List<ResumeDto> resumes, String errorMessage) {
-        if (resumes.isEmpty()) {
-            log.warn(errorMessage);
-            throw new ResumeNotFoundException(errorMessage);
-        }
-        log.info("Получено {} резюме", resumes.size());
     }
 }

@@ -1,18 +1,19 @@
 package kg.attractor.job_search.mapper;
 
 import kg.attractor.job_search.dto.user.CreateUserDto;
-import kg.attractor.job_search.dto.user.EditUserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.entity.User;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper (componentModel = "spring")
+@Mapper(componentModel = "spring",
+        uses = {VacancyMapper.class, ResumeMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 
 public interface UserMapper {
     UserDto toDto(User user);
-
-    UserDto toDto(CreateUserDto createUserDto);
 
     User toEntity(UserDto userDto);
 
@@ -25,7 +26,7 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "avatar", ignore = true)
-    User toEntity(EditUserDto editUserDto);
+    User toEntity(SimpleUserDto simpleUserDto);
 
-    EditUserDto toEditUserDto(UserDto user);
+    SimpleUserDto toSimpleUserDto(UserDto user);
 }

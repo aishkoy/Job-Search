@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -53,8 +55,14 @@ public class User {
     @Builder.Default
     Boolean enabled = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id",
             nullable = false)
     Role role;
+
+    @OneToMany(mappedBy = "employer")
+    List<Vacancy> vacancies;
+
+    @OneToMany(mappedBy = "applicant")
+    List<Resume> resumes;
 }

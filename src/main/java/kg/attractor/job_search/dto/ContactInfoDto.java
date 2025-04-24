@@ -2,8 +2,6 @@ package kg.attractor.job_search.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.entity.ContactType;
 import kg.attractor.job_search.validation.ValidContactValue;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,10 +17,10 @@ import lombok.experimental.FieldDefaults;
 public class ContactInfoDto {
     Long id;
 
-    ResumeDto resume;
+    Long resumeId;
 
     @NotNull
-    ContactType contactType;
+    ContactTypeDto contactType;
 
     @NotBlank
     String contactValue;

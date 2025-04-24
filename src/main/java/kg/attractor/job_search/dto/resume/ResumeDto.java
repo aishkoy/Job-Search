@@ -4,7 +4,7 @@ import kg.attractor.job_search.dto.CategoryDto;
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
-import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.dto.user.SimpleUserDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class ResumeDto {
      Long id;
-     UserDto applicant;
+     SimpleUserDto applicant;
      String name;
      CategoryDto category;
      Float salary;
