@@ -68,9 +68,20 @@
                                 </div>
                             </#if>
                         </#list>
-                        <a href="/logout" class="text-white hover:text-blue-200 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                        </a>
+
+                        <#if _csrf??>
+                            <form action="/logout" method="post">
+                                <input type="hidden" name="${(_csrf.parameterName)!'csrf'}"
+                                       value="${(_csrf.token)!'--no-token--'}"/>
+                                <button type="submit" class="text-white hover:text-blue-200 flex items-center" id="logout">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>
+                                </button>
+                            </form>
+                        <#else>
+                            <a href="/logout" class="text-white hover:text-blue-200 flex items-center">
+                                <i class="fas fa-sign-out-alt mr-2"></i>
+                            </a>
+                        </#if>
                     </div>
                 </#if>
             <#else>
@@ -153,4 +164,11 @@
     </footer>
     </body>
     </html>
+</#macro>
+
+<#macro csrf>
+    <#if _csrf??>
+        <input type="hidden" name="${(_csrf.parameterName)!'csrf-param-name'}"
+               value="${(_csrf.token)!'csrf-token'}"/>
+    </#if>
 </#macro>

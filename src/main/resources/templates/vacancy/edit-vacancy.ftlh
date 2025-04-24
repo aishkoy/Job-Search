@@ -21,6 +21,7 @@
             </div>
 
             <form action="/vacancies/${vacancy.id}/edit" method="post" class="space-y-6">
+                <@main.csrf/>
                 <input type="hidden" name="id" value="${vacancy.id}"/>
                 <input type="hidden" name="employer.id" value="${vacancyForm.employer.id}"/>
 

@@ -1,3 +1,5 @@
+<#import '../layout.ftlh' as main>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -23,6 +25,7 @@
             </div>
 
             <form method="POST" action="/${url}/${userDto.id}/avatar" enctype="multipart/form-data" class="mt-4">
+                <@main.csrf/>
                 <label for="avatar-upload"
                        class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Изменить фото
@@ -33,6 +36,7 @@
         </div>
 
         <form method="POST" action="/${url}/${userDto.id}/edit" class="space-y-6">
+            <@main.csrf/>
             <input type="hidden" name="role.id" value="${userDto.role.id}">
             <input type="hidden" name="role.role" value="${userDto.role.role}">
             <input type="hidden" name="id" value="${userDto.id}">

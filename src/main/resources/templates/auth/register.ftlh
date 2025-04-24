@@ -1,3 +1,5 @@
+<#import '../layout.ftlh' as main>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -12,6 +14,7 @@
 
     <#import "/spring.ftl" as spring>
     <form action="/auth/register" method="POST" class="space-y-6">
+        <@main.csrf/>
         <div class="mb-6">
             <p class="text-sm font-medium text-gray-700 mb-2">Выберите тип учетной записи:</p>
             <div class="flex space-x-4">

@@ -21,6 +21,7 @@
             </div>
 
             <form action="/resumes/${resume.id}/edit" method="post" class="space-y-6">
+                <@main.csrf/>
                 <input type="hidden" name="applicant.id" value="${resume.applicant.id}"/>
 
                 <!-- Основная информация -->

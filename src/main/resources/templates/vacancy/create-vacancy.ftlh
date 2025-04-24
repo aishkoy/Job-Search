@@ -17,6 +17,7 @@
             </div>
 
             <form action="/vacancies/create" method="post" class="space-y-6">
+                <@main.csrf/>
                 <input type="hidden" name="employer.id" value="${user.id}"/>
 
                 <!-- Основная информация -->
