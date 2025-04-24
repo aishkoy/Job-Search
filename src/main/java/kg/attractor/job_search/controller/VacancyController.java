@@ -93,7 +93,7 @@ public class VacancyController {
         return "vacancy/edit-vacancy";
     }
 
-    @GetMapping("{vacancyId}/delete")
+    @PostMapping("{vacancyId}/delete")
     @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String delete(@PathVariable("vacancyId") Long vacancyId) {
         vacancyService.deleteVacancy(vacancyId, userService.getAuthId());

@@ -104,7 +104,7 @@ public class ResumeController {
         return "resume/edit-resume";
     }
 
-    @GetMapping("{resumeId}/delete")
+    @PostMapping("{resumeId}/delete")
     @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
     public String deleteResume(@PathVariable("resumeId") Long resumeId) {
         resumeService.deleteResume(resumeId, userService.getAuthId());
