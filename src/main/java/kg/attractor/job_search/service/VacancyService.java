@@ -35,7 +35,7 @@ public interface VacancyService {
 
     List<VacancyDto> getVacanciesByCategoryName(String categoryName);
 
-    List<VacancyDto> getLast3Vacancies();
+    List<VacancyDto> getLastVacancies();
 
     Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection);
 

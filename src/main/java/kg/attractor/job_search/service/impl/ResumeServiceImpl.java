@@ -137,6 +137,14 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public List<ResumeDto> getLastResumes() {
+        return findAndMapResumes(() -> resumeRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .limit(4)
+                .toList(), "Новые резюме не были найдены!");
+    }
+
+    @Override
     public Page<ResumeDto> getResumesPage(int page, int size){
         Pageable pageable = PageRequest.of(page-1, size);
         return getResumeDtoPage(() -> resumeRepository.findAll(pageable),

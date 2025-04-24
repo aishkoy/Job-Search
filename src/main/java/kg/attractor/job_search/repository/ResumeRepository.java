@@ -14,6 +14,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     List<Resume> findAllByApplicantId(Long applicantId);
     List<Resume> findAllByApplicantName(String applicantName);
     List<Resume> findAllByCategoryId(Long categoryId);
+    List<Resume> findAllByOrderByCreatedAtDesc();
+
 
     boolean existsByIdAndApplicantId(Long resumeId, Long applicantId);
 

@@ -39,6 +39,8 @@ public interface ResumeService {
 
     List<ResumeDto> getResumesByCategoryId(Long categoryId);
 
+    List<ResumeDto> getLastResumes();
+
     Page<ResumeDto> getResumesPage(int page, int size);
 
     Page<ResumeDto> getActiveResumesPage(int page, int size);

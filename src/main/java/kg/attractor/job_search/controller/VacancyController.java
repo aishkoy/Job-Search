@@ -24,6 +24,7 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
+    @PreAuthorize("isAnonymous() or hasRole('APPLICANT')")
     public String vacancies(@RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "5") int size,
                             @RequestParam(required = false) Long categoryId,

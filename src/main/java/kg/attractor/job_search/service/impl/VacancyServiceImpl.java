@@ -104,8 +104,11 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getLast3Vacancies() {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc().stream().limit(3).toList(),
+    public List<VacancyDto> getLastVacancies() {
+        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc()
+                        .stream()
+                        .limit(4)
+                        .toList(),
                 "Новые вакансии не были найдены!");
     }
 
