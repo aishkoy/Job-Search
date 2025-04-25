@@ -1,7 +1,6 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.entity.Vacancy;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -9,13 +8,13 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 public interface VacancyService {
-    Long createVacancy(VacancyFormDto vacancyDto);
+    Long createVacancy(VacancyDto vacancyDto);
 
     List<VacancyDto> getVacancies();
 
     Page<VacancyDto> getVacanciesPage(int page, int size);
 
-    Long updateVacancy(Long vacancyId, VacancyFormDto vacancyDto);
+    Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId, Long authorId);
 
@@ -48,6 +47,4 @@ public interface VacancyService {
     Page<VacancyDto> getVacanciesPageByCategoryName(int page, int size, String categoryName);
 
     Page<VacancyDto> getVacanciesPageByAppliedUser(int page, int size, Long applicantId);
-
-    VacancyFormDto convertToFormDto(VacancyDto dto);
 }

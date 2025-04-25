@@ -10,7 +10,7 @@
                     <h1 class="text-2xl font-bold flex items-center">
                         <i class="fas fa-edit mr-2"></i>Редактирование вакансии
                     </h1>
-                    <a href="/vacancies/${vacancy.id}"
+                    <a href="/vacancies/${vacancyForm.id}"
                        class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-white/30 transition font-medium">
                         <i class="fas fa-eye mr-2"></i>Предпросмотр
                     </a>
@@ -20,9 +20,9 @@
                 </p>
             </div>
 
-            <form action="/vacancies/${vacancy.id}/edit" method="post" class="space-y-6">
+            <form action="/vacancies/${vacancyForm.id}/edit" method="post" class="space-y-6">
                 <@main.csrf/>
-                <input type="hidden" name="id" value="${vacancy.id}"/>
+                <input type="hidden" name="id" value="${vacancyForm.id}"/>
                 <input type="hidden" name="employer.id" value="${vacancyForm.employer.id}"/>
 
                 <!-- Основная информация -->
@@ -118,7 +118,7 @@
                 <!-- Кнопки действий -->
                 <div class="p-6 bg-gray-50 flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
                     <div class="flex items-center space-x-2">
-                        <a href="/vacancies/${vacancy.id}" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
+                        <a href="/vacancies/${vacancyForm.id}" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
                             <i class="fas fa-arrow-left mr-2"></i>Вернуться к просмотру
                         </a>
                     </div>

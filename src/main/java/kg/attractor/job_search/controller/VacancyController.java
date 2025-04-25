@@ -2,8 +2,7 @@ package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
-import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.service.CategoryService;
 import kg.attractor.job_search.service.UserService;
 import kg.attractor.job_search.service.VacancyService;
@@ -63,14 +62,14 @@ public class VacancyController {
     @PreAuthorize("hasRole('EMPLOYER')")
     public String create(Model model) {
         model.addAttribute("user", userService.getAuthUser());
-        model.addAttribute("vacancyForm", new VacancyFormDto());
+        model.addAttribute("vacancyForm", new VacancyDto());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "vacancy/create-vacancy";
     }
 
     @PostMapping("create")
     @PreAuthorize("hasRole('EMPLOYER')")
-    public String create(@ModelAttribute("vacancyForm") @Valid VacancyFormDto vacancyFormDto,
+    public String create(@ModelAttribute("vacancyForm") @Valid VacancyDto vacancyFormDto,
                          BindingResult bindingResult,
                          Model model) {
         if (bindingResult.hasErrors()) {
@@ -87,9 +86,7 @@ public class VacancyController {
     @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String edit(@PathVariable("vacancyId") Long vacancyId, Model model) {
         VacancyDto dto = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
-        VacancyFormDto formDto = vacancyService.convertToFormDto(dto);
-        model.addAttribute("vacancy", dto);
-        model.addAttribute("vacancyForm", formDto);
+        model.addAttribute("vacancyForm", dto);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "vacancy/edit-vacancy";
     }
@@ -104,12 +101,10 @@ public class VacancyController {
     @PostMapping("{vacancyId}/edit")
     @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String edit(@PathVariable("vacancyId") Long vacancyId,
-                       @ModelAttribute("vacancyForm") @Valid VacancyFormDto vacancyDto,
+                       @ModelAttribute("vacancyForm") @Valid VacancyDto vacancyDto,
                        BindingResult bindingResult,
                        Model model) {
         if (bindingResult.hasErrors()) {
-            VacancyDto vacancy = vacancyService.getVacancyDtoByIdAndAuthor(vacancyId, userService.getAuthId());
-            model.addAttribute("vacancy", vacancy);
             model.addAttribute("categories", categoryService.getAllCategories());
             return "vacancy/edit-vacancy";
         }
