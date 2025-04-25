@@ -131,7 +131,7 @@
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-money-bill-wave text-blue-500 mr-2 w-5"></i>
                                             <#if resume.salary?? && resume.salary gt 0>
-                                                ${resume.salary?string(",##0")} ₽
+                                                ${resume.salary?string(",##0")} с
                                             <#else>
                                                 <span class="text-gray-500">Зарплата не указана</span>
                                             </#if>
