@@ -53,15 +53,13 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public Long updateResume(Long resumeId, ResumeDto form) {
         ResumeDto existing = getResumeDtoById(resumeId);
+        form.setCreatedAt(existing.getCreatedAt());
         categoryService.getCategoryIfPresent(form.getCategory().getId());
 
         if (!isResumeOwnedByApplicant(resumeId, form.getApplicant().getId()))
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
 
         Resume resume = resumeMapper.toEntity(form);
-        resume.setId(resumeId);
-        resume.setCreatedAt(existing.getCreatedAt());
-        resume.setIsActive(form.getIsActive());
 
         resumeRepository.save(resume);
         log.info("Обновлено резюме: {}", resumeId);
