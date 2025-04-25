@@ -41,17 +41,14 @@ public class Resume {
 
     @Column(nullable = false,
             name = "is_active")
-    @Builder.Default
-    Boolean isActive = true;
+    Boolean isActive;
 
     @Column(nullable = false,
             name = "created_at")
-    @Builder.Default
-    Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    Timestamp createdAt;
 
     @Column(name = "updated_at")
-    @Builder.Default
-    Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+    Timestamp updatedAt;
 
     @OneToMany(mappedBy = "resume", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     List<ContactInfo> contacts;
