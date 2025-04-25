@@ -2,8 +2,7 @@ package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.dto.resume.ResumeFormDto;
-import kg.attractor.job_search.dto.resume.ResumeDto;
+import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +25,13 @@ public class ResumeController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createResume(@RequestBody @Valid ResumeFormDto resumeDto) {
+    public ResponseEntity<Long> createResume(@RequestBody @Valid ResumeDto resumeDto) {
         resumeDto.setApplicant(adapter.getAuthUser());
         return ResponseEntity.ofNullable(resumeService.createResume(resumeDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody @Valid ResumeFormDto resumeDto) {
+    public ResponseEntity<Long> updateResume(@PathVariable("id") Long resumeId, @RequestBody @Valid ResumeDto resumeDto) {
         resumeDto.setApplicant(adapter.getAuthUser());
         return ResponseEntity.ofNullable(resumeService.updateResume(resumeId, resumeDto));
     }

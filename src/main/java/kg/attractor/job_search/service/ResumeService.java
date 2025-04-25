@@ -1,7 +1,6 @@
 package kg.attractor.job_search.service;
 
-import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.dto.resume.ResumeFormDto;
+import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.entity.Resume;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,7 @@ public interface ResumeService {
 
     List<ResumeDto> getResumesByApplicantName(String name);
 
-    Long createResume(ResumeFormDto resumeDto);
+    Long createResume(ResumeDto resumeDto);
 
     Resume getResumeById(Long resumeId, Long userId);
 
@@ -27,13 +26,13 @@ public interface ResumeService {
 
     ResumeDto getResumeDtoById(Long resumeId);
 
-    Long updateResume(Long resumeId, ResumeFormDto resumeDto);
+    Long updateResume(Long resumeId, ResumeDto resumeDto);
 
-    void addExperience(ResumeFormDto resumeForm);
+    void addExperience(ResumeDto resumeForm);
 
-    void addEducation(ResumeFormDto resumeForm);
+    void addEducation(ResumeDto resumeForm);
 
-    void addContact(ResumeFormDto resumeForm);
+    void addContact(ResumeDto resumeForm);
 
     HttpStatus deleteResume(Long resumeId, Long userId);
 
@@ -50,6 +49,4 @@ public interface ResumeService {
     Page<ResumeDto> getResumesPageByApplicantName(int page, int size, String applicantName);
 
     Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId);
-
-    ResumeFormDto convertToFormDto(ResumeDto dto);
 }
