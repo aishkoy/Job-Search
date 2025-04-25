@@ -1,3 +1,5 @@
+<#import '../layout.ftlh' as main>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -23,6 +25,7 @@
             <h2 class="text-xl font-bold text-center mb-6">Вход в аккаунт</h2>
 
             <form action="/auth/login" method="post" class="space-y-4">
+                <@main.csrf/>
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-medium text-gray-700">
                         Электронная почта

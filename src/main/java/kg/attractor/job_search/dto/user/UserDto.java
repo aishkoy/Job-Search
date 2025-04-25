@@ -1,8 +1,8 @@
 package kg.attractor.job_search.dto.user;
 
 import kg.attractor.job_search.dto.RoleDto;
-import kg.attractor.job_search.dto.resume.ResumeDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
+import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;

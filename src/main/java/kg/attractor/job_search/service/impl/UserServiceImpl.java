@@ -1,10 +1,10 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dto.resume.ResumeDto;
+import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.UserNotFoundException;

@@ -1,34 +1,26 @@
 package kg.attractor.job_search.config;
 
-import kg.attractor.job_search.service.impl.CustomUserDetailsService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final CustomUserDetailsService customUserDetailsService;
-    private final PasswordEncoder encoder;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService)
-                .passwordEncoder(encoder);
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -44,11 +36,10 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers(HttpMethod.GET, "vacancies").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .anyRequest().authenticated()
                 );

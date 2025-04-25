@@ -17,6 +17,7 @@
             </div>
 
             <form action="/vacancies/create" method="post" class="space-y-6">
+                <@main.csrf/>
                 <input type="hidden" name="employer.id" value="${user.id}"/>
 
                 <!-- Основная информация -->
@@ -109,8 +110,8 @@
                 <!-- Кнопки действий -->
                 <div class="p-6 bg-gray-50 flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
                     <div class="flex items-center space-x-2">
-                        <a href="/vacancies" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i>Вернуться к списку вакансий
+                        <a href="/" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Отмена
                         </a>
                     </div>
 

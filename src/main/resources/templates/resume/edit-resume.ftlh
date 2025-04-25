@@ -10,7 +10,7 @@
                     <h1 class="text-2xl font-bold flex items-center">
                         <i class="fas fa-edit mr-2"></i>Редактирование резюме
                     </h1>
-                    <a href="/resumes/${resume.id}"
+                    <a href="/resumes/${resumeForm.id}"
                        class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-white/30 transition font-medium">
                         <i class="fas fa-eye mr-2"></i>Предпросмотр
                     </a>
@@ -20,8 +20,10 @@
                 </p>
             </div>
 
-            <form action="/resumes/${resume.id}/edit" method="post" class="space-y-6">
-                <input type="hidden" name="applicant.id" value="${resume.applicant.id}"/>
+            <form action="/resumes/${resumeForm.id}/edit" method="post" class="space-y-6">
+                <@main.csrf/>
+                <input type="hidden" name="id" value="${resumeForm.id}">
+                <input type="hidden" name="applicant.id" value="${resumeForm.applicant.id}"/>
 
                 <!-- Основная информация -->
                 <div class="p-6 border-b">
@@ -87,7 +89,7 @@
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-address-card text-blue-600 mr-2"></i>Контактная информация
                         </h3>
-                        <a href="/resumes/${resume.id}/contacts/create"
+                        <a href="/resumes/${resumeForm.id}/contacts/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                             <i class="fas fa-plus mr-2"></i> Добавить контакт
                         </a>
@@ -115,7 +117,7 @@
                                             <span class="font-medium">${contact.contactType.type}</span>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <a href="/resumes/${resume.id}/contacts/${contact.id}/edit"
+                                            <a href="/resumes/${resumeForm.id}/contacts/${contact.id}/edit"
                                                class="text-blue-500 hover:text-blue-600">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -138,7 +140,7 @@
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-briefcase text-blue-600 mr-2"></i>Опыт работы
                         </h3>
-                        <a href="/resumes/${resume.id}/experiences/create"
+                        <a href="/resumes/${resumeForm.id}/experiences/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                             <i class="fas fa-plus mr-2"></i> Добавить опыт работы
                         </a>
@@ -154,7 +156,7 @@
                                             <p class="text-gray-600">${exp.companyName}</p>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <a href="/resumes/${resume.id}/experiences/${exp.id}/edit"
+                                            <a href="/resumes/${resumeForm.id}/experiences/${exp.id}/edit"
                                                class="text-blue-500 hover:text-blue-600">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -182,7 +184,7 @@
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
                             <i class="fas fa-graduation-cap text-blue-600 mr-2"></i>Образование
                         </h3>
-                        <a href="/resumes/${resume.id}/educations/create"
+                        <a href="/resumes/${resumeForm.id}/educations/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                             <i class="fas fa-plus mr-2"></i> Добавить образование
                         </a>
@@ -199,7 +201,7 @@
                                             <p class="text-sm text-gray-500">${edu.degree}</p>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <a href="/resumes/${resume.id}/educations/${edu.id}/edit"
+                                            <a href="/resumes/${resumeForm.id}/educations/${edu.id}/edit"
                                                class="text-blue-500 hover:text-blue-600">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -220,7 +222,7 @@
 
                 <!-- Кнопки действий -->
                 <div class="p-6 bg-gray-50 flex justify-between items-center">
-                    <a href="/resumes/${resume.id}"
+                    <a href="/resumes/${resumeForm.id}"
                        class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
                         <i class="fas fa-arrow-left mr-2"></i>Вернуться к просмотру
                     </a>

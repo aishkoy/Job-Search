@@ -1,7 +1,6 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
-import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.entity.Vacancy;
 import kg.attractor.job_search.exception.VacancyNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;
@@ -32,7 +31,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final UserService userService;
 
     @Override
-    public Long createVacancy(VacancyFormDto dto) {
+    public Long createVacancy(VacancyDto dto) {
         userService.getEmployerById(dto.getEmployer().getId());
         categoryService.getCategoryIfPresent(dto.getCategory().getId());
 
@@ -43,15 +42,13 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Long updateVacancy(Long vacancyId, VacancyFormDto dto) {
+    public Long updateVacancy(Long vacancyId, VacancyDto dto) {
         Vacancy existing = getVacancyById(vacancyId);
+        dto.setCreatedAt(existing.getCreatedAt());
         validateOwnership(vacancyId, dto.getEmployer().getId());
         categoryService.getCategoryIfPresent(dto.getCategory().getId());
 
         Vacancy updated = vacancyMapper.toEntity(dto);
-        updated.setId(existing.getId());
-        updated.setCreatedAt(existing.getCreatedAt());
-        updated.setIsActive(dto.getIsActive());
 
         vacancyRepository.save(updated);
         log.info("Обновлена вакансия {}", vacancyId);
@@ -104,8 +101,11 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getLast3Vacancies() {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc().stream().limit(3).toList(),
+    public List<VacancyDto> getLastVacancies() {
+        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc()
+                        .stream()
+                        .limit(4)
+                        .toList(),
                 "Новые вакансии не были найдены!");
     }
 
@@ -219,11 +219,6 @@ public class VacancyServiceImpl implements VacancyService {
     public boolean isAuthorOfVacancy(Long vacancyId, Long userId) {
         Vacancy vacancy = getVacancyById(vacancyId);
         return vacancy.getEmployer().getId().equals(userId);
-    }
-
-    @Override
-    public VacancyFormDto convertToFormDto(VacancyDto dto) {
-        return vacancyMapper.toFormDto(dto);
     }
 
     private void validateOwnership(Long vacancyId, Long authorId) {

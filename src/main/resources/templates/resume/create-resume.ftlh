@@ -16,6 +16,7 @@
             </div>
 
             <form action="/resumes/create" method="post" class="space-y-6">
+                <@main.csrf/>
                 <@spring.formHiddenInput "resumeForm.applicant.id"/>
 
                 <div class="p-6 border-b">

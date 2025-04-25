@@ -2,9 +2,8 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.dto.EducationInfoDto;
-import kg.attractor.job_search.dto.resume.ResumeDto;
+import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
-import kg.attractor.job_search.dto.resume.ResumeFormDto;
 import kg.attractor.job_search.exception.*;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.mapper.ResumeMapper;
@@ -38,31 +37,29 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional
-    public Long createResume(ResumeFormDto resumeDto) {
+    public Long createResume(ResumeDto resumeDto) {
         if (resumeDto.getApplicant() == null) throw new ApplicantNotFoundException();
         categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
 
         Resume resume = resumeMapper.toEntity(resumeDto);
         linkResumeChildren(resume);
-        Resume saved = resumeRepository.save(resume);
+        resume = resumeRepository.save(resume);
 
-        log.info("Созданное резюме: {}", resumeDto);
-        return saved.getId();
+        log.info("Созданное резюме: {}", resume.getId());
+        return resume.getId();
     }
 
     @Override
     @Transactional
-    public Long updateResume(Long resumeId, ResumeFormDto form) {
+    public Long updateResume(Long resumeId, ResumeDto form) {
         ResumeDto existing = getResumeDtoById(resumeId);
+        form.setCreatedAt(existing.getCreatedAt());
         categoryService.getCategoryIfPresent(form.getCategory().getId());
 
         if (!isResumeOwnedByApplicant(resumeId, form.getApplicant().getId()))
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
 
         Resume resume = resumeMapper.toEntity(form);
-        resume.setId(resumeId);
-        resume.setCreatedAt(existing.getCreatedAt());
-        resume.setIsActive(form.getIsActive());
 
         resumeRepository.save(resume);
         log.info("Обновлено резюме: {}", resumeId);
@@ -137,6 +134,14 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public List<ResumeDto> getLastResumes() {
+        return findAndMapResumes(() -> resumeRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .limit(4)
+                .toList(), "Новые резюме не были найдены!");
+    }
+
+    @Override
     public Page<ResumeDto> getResumesPage(int page, int size){
         Pageable pageable = PageRequest.of(page-1, size);
         return getResumeDtoPage(() -> resumeRepository.findAll(pageable),
@@ -173,23 +178,19 @@ public class ResumeServiceImpl implements ResumeService {
                 "Страница с резюме пользователя не была найдена!");
     }
 
-    @Override
-    public ResumeFormDto convertToFormDto(ResumeDto dto) {
-        return resumeMapper.toFormDto(dto);
-    }
 
     @Override
-    public void addExperience(ResumeFormDto form) {
+    public void addExperience(ResumeDto form) {
         addItemToList(form.getWorkExperiences(), WorkExperienceInfoDto::new, form::setWorkExperiences);
     }
 
     @Override
-    public void addEducation(ResumeFormDto form) {
+    public void addEducation(ResumeDto form) {
         addItemToList(form.getEducations(), EducationInfoDto::new, form::setEducations);
     }
 
     @Override
-    public void addContact(ResumeFormDto form) {
+    public void addContact(ResumeDto form) {
         addItemToList(form.getContacts(), ContactInfoDto::new, form::setContacts);
     }
 

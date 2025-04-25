@@ -23,6 +23,7 @@
                              class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
                         <div class="absolute bottom-0 right-0">
                             <form method="POST" action="${url}/${user.id}/avatar" enctype="multipart/form-data">
+                                <@main.csrf/>
                                 <label for="avatar-upload"
                                        class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
                                     <i class="fas fa-camera"></i>
@@ -111,8 +112,6 @@
                         <i class="fas fa-plus mr-1"></i>Создать новое
                     </a>
                     </#if>
-                    Резюме
-                    </h2>
                 </div>
 
                 <#if resumesPage?? && resumesPage.content?size gt 0>
@@ -132,7 +131,7 @@
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-money-bill-wave text-blue-500 mr-2 w-5"></i>
                                             <#if resume.salary?? && resume.salary gt 0>
-                                                ${resume.salary?string(",##0")} ₽
+                                                ${resume.salary?string(",##0")} с
                                             <#else>
                                                 <span class="text-gray-500">Зарплата не указана</span>
                                             </#if>
@@ -164,11 +163,13 @@
                                                    class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="/resumes/${resume.id}/delete"
-                                                   class="text-red-600 hover:text-red-800" title="Удалить"
-                                                   onclick="return confirm('Вы уверены, что хотите удалить это резюме?')">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </a>
+
+                                                <form action="/resumes/${resume.id}/delete" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить это резюме?');" class="inline">
+                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Удалить">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </#if>
                                     </div>
@@ -257,8 +258,6 @@
                             <i class="fas fa-plus mr-2"></i>Создать резюме
                         </a>
                         </#if>
-                        Пока нет резюме
-                        </h3>
                     </div>
                 </#if>
             <#else>
@@ -272,8 +271,6 @@
                         <i class="fas fa-plus mr-1"></i>Создать новую
                     </a>
                     </#if>
-                    Вакансии
-                    </h2>
                 </div>
 
                 <#if vacanciesPage?? && vacanciesPage.content?size gt 0>
@@ -324,11 +321,12 @@
                                                    class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="/vacancies/${vacancy.id}/delete"
-                                                   class="text-red-600 hover:text-red-800" title="Удалить"
-                                                   onclick="return confirm('Вы уверены, что хотите удалить эту вакансию?')">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </a>
+                                                <form action="/vacancies/${vacancy.id}/delete" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить эту вакансию?');" class="inline">
+                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Удалить">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </#if>
                                     </div>
@@ -416,8 +414,6 @@
                             <i class="fas fa-plus mr-2"></i>Создать вакансию
                         </a>
                         </#if>
-                        Пока нет вакансий
-                        </h3>
                     </div>
                 </#if>
             </#if>

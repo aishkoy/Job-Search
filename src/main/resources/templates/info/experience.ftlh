@@ -12,6 +12,7 @@
             </div>
 
             <form action="${action}" method="post" class="p-6 space-y-6">
+                <@main.csrf/>
                 <input type="hidden" name="resumeId" value="${experienceDto.resumeId}"/>
                 <#if mode == 'edit'>
                     <input type="hidden" name="id" value="${experienceDto.id}"/>

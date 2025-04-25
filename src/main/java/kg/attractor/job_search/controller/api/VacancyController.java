@@ -2,8 +2,7 @@ package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
 import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.dto.vacancy.VacancyFormDto;
-import kg.attractor.job_search.dto.vacancy.VacancyDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,13 +49,13 @@ public class VacancyController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createVacancy(@RequestBody @Valid VacancyFormDto vacancyDto) {
+    public ResponseEntity<Long> createVacancy(@RequestBody @Valid VacancyDto vacancyDto) {
         vacancyDto.setEmployer(adapter.getAuthUser());
         return ResponseEntity.ofNullable(vacancyService.createVacancy(vacancyDto));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid VacancyFormDto vacancyDto) {
+    public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid VacancyDto vacancyDto) {
         vacancyDto.setEmployer(adapter.getAuthUser());
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
     }
