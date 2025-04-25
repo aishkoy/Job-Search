@@ -47,8 +47,7 @@ public class Vacancy {
 
     @Column(name = "is_active",
             nullable = false)
-    @Builder.Default
-    Boolean isActive = true;
+    Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
@@ -57,12 +56,10 @@ public class Vacancy {
 
     @Column(name = "created_at",
             nullable = false)
-    @Builder.Default
-    Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+    Timestamp createdAt;
 
     @Column(name = "updated_at")
-    @Builder.Default
-    Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
+    Timestamp updatedAt;
 
     @OneToMany(mappedBy = "vacancy", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<RespondedApplicant> responses;
