@@ -1,6 +1,5 @@
 package kg.attractor.job_search.dto.user;
 
-import kg.attractor.job_search.dto.RoleDto;
 import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.dto.VacancyDto;
 import lombok.*;
@@ -22,7 +21,6 @@ public class UserDto extends SimpleUserDto {
     String password;
     String avatar;
     Boolean enabled;
-    RoleDto role;
 
     @Builder.Default
     List<VacancyDto> vacancies = new ArrayList<>();

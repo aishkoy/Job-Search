@@ -30,6 +30,8 @@ public class SimpleUserDto {
 
     Integer age;
 
+    String resetPasswordToken;
+
     @NotBlank
     @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
     String phoneNumber;
