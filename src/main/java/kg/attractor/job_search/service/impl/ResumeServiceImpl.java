@@ -142,33 +142,10 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public Page<ResumeDto> getResumesPage(int page, int size){
-        Pageable pageable = PageRequest.of(page-1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAll(pageable),
-                "Страница с резюме не найдена!");
-    }
-
-    @Override
     public Page<ResumeDto> getActiveResumesPage(int page, int size){
         Pageable pageable = PageRequest.of(page-1, size);
         return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable),
                 "Страница с активными резюме не найдена!");
-    }
-
-    @Override
-    public Page<ResumeDto> getResumesPageByApplicantId(int page, int size, Long applicantId){
-        Pageable pageable = PageRequest.of(page-1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByApplicantId(applicantId, pageable),
-                "Страница с резюме пользователя не была найдена!");
-    }
-
-    @Override
-    public Page<ResumeDto> getResumesPageByApplicantName(int page, int size, String applicantName){
-        String formattedName = StringUtils.capitalize(applicantName.trim().toLowerCase());
-        userService.getUsersByName(formattedName);
-        Pageable pageable = PageRequest.of(page-1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByApplicantName(formattedName, pageable),
-                "Страница с резюме пользователя не была найдена!");
     }
 
     @Override

@@ -37,11 +37,7 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
 
     Page<Vacancy> findAllByIsActiveTrue(Pageable pageable);
 
-    Page<Vacancy> findAllByEmployerId(Long employerId, Pageable pageable);
-
     Page<Vacancy> findAllByCategoryId(Long categoryId, Pageable pageable);
-
-    Page<Vacancy> findAllByCategoryName(String categoryName, Pageable pageable);
 
     @Query("SELECT v FROM Vacancy v " +
             "JOIN RespondedApplicant ra ON ra.vacancy.id = v.id " +
