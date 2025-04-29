@@ -111,6 +111,8 @@
                     <a href="/resumes/create" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="fas fa-plus mr-1"></i>Создать новое
                     </a>
+                    <#else>Резюме
+                        </h2>
                     </#if>
                 </div>
 
@@ -164,9 +166,12 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
 
-                                                <form action="/resumes/${resume.id}/delete" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить это резюме?');" class="inline">
-                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Удалить">
+                                                <form action="/resumes/${resume.id}/delete" method="post"
+                                                      onsubmit="return confirm('Вы уверены, что хотите удалить это резюме?');"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-red-600 hover:text-red-800"
+                                                            title="Удалить">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -249,14 +254,14 @@
                             <i class="fas fa-file-alt text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-medium text-gray-800 mb-2">
-                            <#if currentUserId?? && currentUserId == user.id>
-                            У вас пока нет резюме</h3>
-                        <p class="text-gray-600 mb-4">Создайте ваше первое резюме, чтобы найти работу</p>
+                            Пока нет резюме</h3>
+                        <#if currentUserId?? && currentUserId == user.id>
+                            <p class="text-gray-600 mb-4">Создайте ваше первое резюме, чтобы найти работу</p>
 
-                        <a href="/resumes/create"
-                           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
-                            <i class="fas fa-plus mr-2"></i>Создать резюме
-                        </a>
+                            <a href="/resumes/create"
+                               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
+                                <i class="fas fa-plus mr-2"></i>Создать резюме
+                            </a>
                         </#if>
                     </div>
                 </#if>
@@ -270,6 +275,9 @@
                     <a href="/vacancies/create" class="text-blue-600 hover:text-blue-800 flex items-center">
                         <i class="fas fa-plus mr-1"></i>Создать новую
                     </a>
+                    <#else>
+                        Вакансии
+                        </h2>
                     </#if>
                 </div>
 
@@ -321,9 +329,12 @@
                                                    class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="/vacancies/${vacancy.id}/delete" method="post" onsubmit="return confirm('Вы уверены, что хотите удалить эту вакансию?');" class="inline">
-                                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                                                    <button type="submit" class="text-red-600 hover:text-red-800" title="Удалить">
+                                                <form action="/vacancies/${vacancy.id}/delete" method="post"
+                                                      onsubmit="return confirm('Вы уверены, что хотите удалить эту вакансию?');"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-red-600 hover:text-red-800"
+                                                            title="Удалить">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -406,13 +417,13 @@
                             <i class="fas fa-briefcase text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-medium text-gray-800 mb-2">
-                            <#if currentUserId?? && currentUserId == user.id>
-                            У вас пока нет вакансий</h3>
-                        <p class="text-gray-600 mb-4">Создайте вашу первую вакансию, чтобы найти сотрудников</p>
-                        <a href="/vacancies/create"
-                           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
-                            <i class="fas fa-plus mr-2"></i>Создать вакансию
-                        </a>
+                            Пока нет вакансий</h3>
+                        <#if currentUserId?? && currentUserId == user.id>
+                            <p class="text-gray-600 mb-4">Создайте вашу первую вакансию, чтобы найти сотрудников</p>
+                            <a href="/vacancies/create"
+                               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
+                                <i class="fas fa-plus mr-2"></i>Создать вакансию
+                            </a>
                         </#if>
                     </div>
                 </#if>
