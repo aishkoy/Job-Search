@@ -1,5 +1,7 @@
 package kg.attractor.job_search.service.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.dto.user.CreateUserDto;
 import kg.attractor.job_search.dto.user.SimpleUserDto;
@@ -7,12 +9,14 @@ import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
+import kg.attractor.job_search.exception.InvalidPasswordException;
 import kg.attractor.job_search.exception.UserNotFoundException;
 import kg.attractor.job_search.mapper.UserMapper;
 import kg.attractor.job_search.entity.User;
 import kg.attractor.job_search.repository.UserRepository;
 import kg.attractor.job_search.service.RoleService;
 import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.util.CommonUtil;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +36,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
+    private final EmailService emailService;
 
     @Override
     public Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user) {
@@ -367,4 +371,47 @@ public class UserServiceImpl implements UserService {
         return getAuthUser().getId();
     }
 
+    @Override
+    public UserDto getUserByResetPasswordToken(String resetPasswordToken) {
+        User user = userRepository.findByResetPasswordToken(resetPasswordToken)
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    public void updatePassword(UserDto userDto, String newPassword) {
+        String passwordRegex = "^(?=.*[A-Za-zА-Яа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,20}$";
+
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new InvalidPasswordException("Пароль не может быть пустым");
+        }
+
+        if (newPassword.length() < 8 || newPassword.length() > 20) {
+            throw new InvalidPasswordException("Длина пароля должна быть 8-20 символов");
+        }
+
+        if (!newPassword.matches(passwordRegex)) {
+            throw new InvalidPasswordException("Пароль должен содержать хотя бы одну букву (русскую или латинскую) и одну цифру");
+        }
+
+        String password = encoder.encode(newPassword);
+        userDto.setPassword(password);
+        userDto.setResetPasswordToken(null);
+        userRepository.save(userMapper.toEntity(userDto));
+    }
+
+    @Override
+    public void makeResetPasswordLink(HttpServletRequest req) throws MessagingException, UserNotFoundException, IOException {
+        String email = req.getParameter("email");
+        String token = UUID.randomUUID().toString();
+        updateResetPasswordToken(token, email);
+        String resetPasswordLink = CommonUtil.getSiteUrl(req) + "/auth/reset-password?token=" + token;
+        emailService.sendEmail(email, resetPasswordLink);
+    }
+
+    private void updateResetPasswordToken(String token, String email) {
+        UserDto userDto = getUserByEmail(email);
+        userDto.setResetPasswordToken(token);
+        userRepository.save(userMapper.toEntity(userDto));
+    }
 }
