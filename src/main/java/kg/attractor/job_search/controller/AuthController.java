@@ -63,7 +63,7 @@ public class AuthController {
         try{
             userService.makeResetPasswordLink(req);
             model.addAttribute("message", "Ссылка для сброса пароля была отправлена на ваш email");
-        } catch (UserNotFoundException | IOException e){
+        } catch (UserNotFoundException | IOException | IllegalArgumentException e){
             model.addAttribute("error", e.getMessage());
         } catch (MessagingException e) {
             model.addAttribute("error", "Произошла ошибка при отправке письма");

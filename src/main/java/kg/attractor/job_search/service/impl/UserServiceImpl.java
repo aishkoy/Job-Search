@@ -374,7 +374,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserByResetPasswordToken(String resetPasswordToken) {
         User user = userRepository.findByResetPasswordToken(resetPasswordToken)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким токеном!"));
         return userMapper.toDto(user);
     }
 
@@ -403,10 +403,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public void makeResetPasswordLink(HttpServletRequest req) throws MessagingException, UserNotFoundException, IOException {
         String email = req.getParameter("email");
+
+        if (email.isBlank() || !isValidEmail(email)) {
+            throw new IllegalArgumentException("Введен неверный формат email");
+        }
+
+        if (Boolean.FALSE.equals(existsUser(email))) {
+            throw new UserNotFoundException("Пользователь с таким email не найден");
+        }
+
         String token = UUID.randomUUID().toString();
         updateResetPasswordToken(token, email);
         String resetPasswordLink = CommonUtil.getSiteUrl(req) + "/auth/reset-password?token=" + token;
         emailService.sendEmail(email, resetPasswordLink);
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email != null && email.matches(emailRegex);
     }
 
     private void updateResetPasswordToken(String token, String email) {
