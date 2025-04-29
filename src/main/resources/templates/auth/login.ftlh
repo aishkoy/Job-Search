@@ -95,6 +95,12 @@
                         Зарегистрироваться
                     </a>
                 </p>
+                <p class="text-sm text-gray-600">
+
+                    <a href="/auth/forgot-password" class="text-blue-600 font-medium hover:underline ml-1">
+                        Забыли пароль?
+                    </a>
+                </p>
             </div>
         </div>
     </div>
