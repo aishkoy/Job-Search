@@ -41,6 +41,7 @@ public class SecurityConfig {
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies/*").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
