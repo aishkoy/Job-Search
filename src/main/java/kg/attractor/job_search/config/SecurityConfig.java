@@ -40,8 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/vacancies/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
