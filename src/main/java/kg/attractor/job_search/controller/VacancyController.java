@@ -23,7 +23,6 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
-    @PreAuthorize("isAnonymous() or hasRole('APPLICANT')")
     public String vacancies(@RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "5") int size,
                             @RequestParam(required = false) Long categoryId,
@@ -46,7 +45,6 @@ public class VacancyController {
     }
 
     @GetMapping("{vacancyId}")
-    @PreAuthorize("hasRole('APPLICANT') or hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String vacancy(@PathVariable Long vacancyId, Model model) {
         UserDto userDto = null;
         try {

@@ -60,6 +60,10 @@ public class User {
             nullable = false)
     Role role;
 
+    @Column(name = "reset_password_token")
+    @Builder.Default
+    String resetPasswordToken = null;
+
     @OneToMany(mappedBy = "employer")
     List<Vacancy> vacancies;
 

@@ -40,13 +40,7 @@ public interface ResumeService {
 
     List<ResumeDto> getLastResumes();
 
-    Page<ResumeDto> getResumesPage(int page, int size);
-
     Page<ResumeDto> getActiveResumesPage(int page, int size);
-
-    Page<ResumeDto> getResumesPageByApplicantId(int page, int size, Long applicantId);
-
-    Page<ResumeDto> getResumesPageByApplicantName(int page, int size, String applicantName);
 
     Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId);
 }

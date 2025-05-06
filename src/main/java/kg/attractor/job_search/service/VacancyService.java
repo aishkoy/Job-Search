@@ -12,8 +12,6 @@ public interface VacancyService {
 
     List<VacancyDto> getVacancies();
 
-    Page<VacancyDto> getVacanciesPage(int page, int size);
-
     Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId, Long authorId);
@@ -39,12 +37,4 @@ public interface VacancyService {
     Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection);
 
     Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection);
-
-    Page<VacancyDto> getVacanciesPageByEmployer(int page, int size, Long employerId);
-
-    Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId);
-
-    Page<VacancyDto> getVacanciesPageByCategoryName(int page, int size, String categoryName);
-
-    Page<VacancyDto> getVacanciesPageByAppliedUser(int page, int size, Long applicantId);
 }

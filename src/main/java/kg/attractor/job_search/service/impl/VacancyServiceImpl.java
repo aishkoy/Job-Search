@@ -128,15 +128,6 @@ public class VacancyServiceImpl implements VacancyService {
         return mapAndEnrich(vacancy);
     }
 
-
-    @Override
-    public Page<VacancyDto> getVacanciesPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAll(pageable),
-                "Список вакансий пуст!");
-    }
-
     @Override
     public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
@@ -172,39 +163,6 @@ public class VacancyServiceImpl implements VacancyService {
                 () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
                 "Вакансии по указанной категории не найдены!"
         );
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByEmployer(int page, int size, Long employerId) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByEmployerId(employerId, pageable),
-                "У работодателя нет опубликованных вакансий!");
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
-                "Вакансии по указанной категории не найдены!");
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByCategoryName(int page, int size, String categoryName) {
-        String name = categoryName.trim().toLowerCase();
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryName(name, pageable),
-                "Вакансии по указанной категории не найдены!");
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByAppliedUser(int page, int size, Long applicantId) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findVacanciesAppliedByUserId(applicantId, pageable),
-                "Пользователь не откликался на вакансии!");
     }
 
     private Page<VacancyDto> getVacancyDtoPage(Supplier<Page<Vacancy>> supplier, String notFoundMessage) {

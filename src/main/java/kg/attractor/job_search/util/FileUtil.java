@@ -26,7 +26,6 @@ public class FileUtil {
     public String saveUploadFile(MultipartFile file, String subDir) {
         String uuidFile = UUID.randomUUID().toString();
         String resultFileName = uuidFile + "_" + file.getOriginalFilename();
-        //297f4ebe-c153-4359-abdd-b6841a5a340c_avatar_monn_volf.jpg
 
         Path pathDir = Paths.get(UPLOAD_DIR + subDir);
         Files.createDirectories(pathDir);
