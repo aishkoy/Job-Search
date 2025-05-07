@@ -188,17 +188,4 @@
             </div>
         </div>
     </div>
-
-    <#function getPluralForm number singular dual plural>
-        <#assign mod10 = number % 10 />
-        <#assign mod100 = number % 100 />
-
-        <#if mod10 == 1 && mod100 != 11>
-            <#return singular />
-        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
-            <#return dual />
-        <#else>
-            <#return plural />
-        </#if>
-    </#function>
 </@main.layout>

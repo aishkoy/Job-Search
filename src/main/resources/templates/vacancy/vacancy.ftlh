@@ -119,21 +119,6 @@
             <!-- Нижняя панель действий -->
             <div class="p-6 bg-gray-50">
                 <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex space-x-4">
-                        <button class="text-gray-600 hover:text-blue-600 transition-colors flex items-center group">
-                            <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full group-hover:bg-blue-100 transition-all mr-2">
-                                <i class="far fa-bookmark"></i>
-                            </div>
-                            <span><@spring.message "vacancy.actions.save"/></span>
-                        </button>
-                        <button class="text-gray-600 hover:text-blue-600 transition-colors flex items-center group">
-                            <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full group-hover:bg-blue-100 transition-all mr-2">
-                                <i class="fas fa-share-alt"></i>
-                            </div>
-                            <span><@spring.message "vacancy.actions.share"/></span>
-                        </button>
-                    </div>
-
                     <#if !currentUser??>
                         <a href="/auth/login"
                            class="mt-4 md:mt-0 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition font-medium flex items-center">

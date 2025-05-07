@@ -8,15 +8,15 @@
             <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-6">
                 <div class="flex items-center justify-between">
                     <h1 class="text-2xl font-bold flex items-center">
-                        <i class="fas fa-edit mr-2"></i>Редактирование резюме
+                        <i class="fas fa-edit mr-2"></i><@spring.message"resume.edit.title"/>
                     </h1>
                     <a href="/resumes/${resumeForm.id}"
                        class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-white/30 transition font-medium">
-                        <i class="fas fa-eye mr-2"></i>Предпросмотр
+                        <i class="fas fa-eye mr-2"></i><@spring.message"resume.edit.preview"/>
                     </a>
                 </div>
                 <p class="mt-2 text-blue-100 text-sm">
-                    Внесите необходимые изменения в ваше резюме
+                    <@spring.message"resume.edit.description"/>
                 </p>
             </div>
 
@@ -28,21 +28,21 @@
                 <!-- Основная информация -->
                 <div class="p-6 border-b">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>Основная информация
+                        <i class="fas fa-info-circle text-blue-600 mr-2"></i><@spring.message"resume.edit.section.general"/>
                     </h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Левая колонка -->
                         <div>
                             <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700">Название резюме *</label>
-                                <@spring.formInput  "resumeForm.name", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Например: Frontend-разработчик"', "text"/>
-                                <p class="text-xs text-gray-500 mt-1">Это название будет отображаться в результатах поиска</p>
+                                <label class="block text-sm font-semibold text-gray-700"><@spring.message"resume.edit.name.label"/></label>
+                                <@spring.formInput  "resumeForm.name", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "text"/>
+                                <p class="text-xs text-gray-500 mt-1"><@spring.message"resume.edit.name.hint"/></p>
                                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700">Категория *</label>
+                                <label class="block text-sm font-semibold text-gray-700"><@spring.message"resume.edit.category.label"/></label>
                                 <#assign categoryMap = {}>
                                 <#list categories as category>
                                     <#assign categoryMap = categoryMap + {category.id?string: category.name}>
@@ -60,12 +60,14 @@
                         <!-- Правая колонка -->
                         <div>
                             <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Статус резюме</label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message"resume.edit.status.label"/></label>
                                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                     <div class="flex space-x-4">
+                                        <#assign activeLabel><@spring.message code="vacancy.edit.status.active" /></#assign>
+                                        <#assign inactiveLabel><@spring.message code="vacancy.edit.status.inactive" /></#assign>
                                         <@spring.formRadioButtons
-                                        "resumeForm.isActive",
-                                        {"true":"Активная", "false":"Неактивная"},
+                                        "vacancyForm.isActive",
+                                        { "true": activeLabel, "false": inactiveLabel },
                                         "<br>",
                                         "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"
                                         />
@@ -75,8 +77,8 @@
                             </div>
 
                             <div class="mb-4">
-                                <label  class="block text-sm font-semibold text-gray-700">Желаемая зарплата (₽)</label>
-                                <@spring.formInput "resumeForm.salary", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Укажите желаемую зарплату" type="number" min="0"', "number"/>
+                                <label class="block text-sm font-semibold text-gray-700"><@spring.message"resume.edit.salary.label"/></label>
+                                <@spring.formInput "resumeForm.salary", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" type="number" min="0"', "number"/>
                                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
                         </div>
@@ -87,11 +89,11 @@
                 <div class="p-6 border-b">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-address-card text-blue-600 mr-2"></i>Контактная информация
+                            <i class="fas fa-address-card text-blue-600 mr-2"></i><@spring.message"resume.edit.contacts.title"/>
                         </h3>
                         <a href="/resumes/${resumeForm.id}/contacts/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            <i class="fas fa-plus mr-2"></i> Добавить контакт
+                            <i class="fas fa-plus mr-2"></i> <@spring.message"resume.edit.contacts.add"/>
                         </a>
                     </div>
 
@@ -129,7 +131,7 @@
                         </div>
                     <#else>
                         <div class="text-center text-gray-500 py-4">
-                            Контактная информация не добавлена
+                            <@spring.message"resume.edit.contacts.empty"/>
                         </div>
                     </#if>
                 </div>
@@ -138,11 +140,11 @@
                 <div class="p-6 border-b">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-briefcase text-blue-600 mr-2"></i>Опыт работы
+                            <i class="fas fa-briefcase text-blue-600 mr-2"></i><@spring.message"resume.experience.title"/>
                         </h3>
                         <a href="/resumes/${resumeForm.id}/experiences/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            <i class="fas fa-plus mr-2"></i> Добавить опыт работы
+                            <i class="fas fa-plus mr-2"></i> <@spring.message"resume.edit.experience.add"/>
                         </a>
                     </div>
 
@@ -166,14 +168,14 @@
                                         ${exp.responsibilities}
                                     </div>
                                     <div class="mt-2 text-sm text-blue-600">
-                                        Стаж: ${exp.years} ${getPluralForm(exp.years, "год", "года", "лет")}
+                                        <@spring.message"resume.edit.experience.duration"/> ${exp.years}
                                     </div>
                                 </div>
                             </#list>
                         </div>
                     <#else>
                         <div class="text-center text-gray-500 py-4">
-                            Опыт работы не добавлен
+                            <@spring.message"resume.edit.experience.empty"/>
                         </div>
                     </#if>
                 </div>
@@ -182,11 +184,11 @@
                 <div class="p-6 border-b">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                            <i class="fas fa-graduation-cap text-blue-600 mr-2"></i>Образование
+                            <i class="fas fa-graduation-cap text-blue-600 mr-2"></i><@spring.message"resume.education.title"/>
                         </h3>
                         <a href="/resumes/${resumeForm.id}/educations/create"
                            class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            <i class="fas fa-plus mr-2"></i> Добавить образование
+                            <i class="fas fa-plus mr-2"></i> <@spring.message"resume.edit.education.add"/>
                         </a>
                     </div>
 
@@ -224,27 +226,14 @@
                 <div class="p-6 bg-gray-50 flex justify-between items-center">
                     <a href="/resumes/${resumeForm.id}"
                        class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i>Вернуться к просмотру
+                        <i class="fas fa-arrow-left mr-2"></i><@spring.message"resume.edit.back"/>
                     </a>
                     <button type="submit"
                             class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
-                        <i class="fas fa-save mr-2"></i>Сохранить изменения
+                        <i class="fas fa-save mr-2"></i><@spring.message"resume.edit.save"/>
                     </button>
                 </div>
             </form>
         </div>
     </div>
-
-    <#function getPluralForm number singular dual plural>
-        <#assign mod10 = number % 10 />
-        <#assign mod100 = number % 100 />
-
-        <#if mod10 == 1 && mod100 != 11>
-            <#return singular />
-        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
-            <#return dual />
-        <#else>
-            <#return plural />
-        </#if>
-    </#function>
 </@main.layout>
