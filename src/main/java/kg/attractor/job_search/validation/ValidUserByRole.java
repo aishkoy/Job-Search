@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UserRoleValidator.class)
 public @interface ValidUserByRole {
-    String message() default "Некорректные данные для выбранной роли";
+    String message() default "{validation.user.role.invalid}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

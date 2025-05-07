@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidExperienceRange {
-    String message() default "Минимальный опыт работы должен быть меньше максимального";
+    String message() default "{validation.experience.range}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

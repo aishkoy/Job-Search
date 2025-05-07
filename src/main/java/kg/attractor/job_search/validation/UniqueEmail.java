@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = UniqueEmailValidator.class)
 public @interface UniqueEmail {
-    String message() default "Пользователь с такой почтой уже существует";
+    String message() default "{validation.email.unique}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

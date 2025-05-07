@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidContactValue {
-    String message() default "Недопустимый формат для выбранного типа контакта!";
+    String message() default "{validation.contact.format}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
