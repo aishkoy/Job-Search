@@ -1,9 +1,11 @@
+<#import '/spring.ftl' as spring>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobSearch - Пароль сброшен</title>
+    <title><@spring.message "auth.reset.success.title"/></title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -16,7 +18,7 @@
                 <i class="fas fa-briefcase text-blue-600 text-3xl"></i>
             </div>
             <h1 class="text-xl font-bold">JobSearch</h1>
-            <p class="text-sm">Найдите работу вашей мечты</p>
+            <p class="text-sm"><@spring.message "auth.reset.site.slogan"/></p>
         </div>
 
         <div class="p-6 text-center">
@@ -27,13 +29,13 @@
             <h2 class="text-xl font-bold mb-3">${message}</h2>
 
             <p class="text-gray-600 mb-8">
-                Вы можете использовать новый пароль для входа в систему. Пожалуйста, храните его в надежном месте.
+                <@spring.message "auth.reset.success.description"/>
             </p>
 
             <a href="/auth/login"
                class="inline-block bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors">
                 <i class="fas fa-sign-in-alt mr-2"></i>
-                Перейти на страницу входа
+                <@spring.message "auth.reset.success.button"/>
             </a>
         </div>
     </div>
