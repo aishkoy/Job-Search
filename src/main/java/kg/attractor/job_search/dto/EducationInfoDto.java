@@ -16,7 +16,7 @@ import java.sql.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-@ValidDateRange(message = "Дата начала обучения должна быть раньше даты окончания")
+@ValidDateRange
 public class EducationInfoDto {
 
     Long id;

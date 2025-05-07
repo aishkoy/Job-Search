@@ -22,8 +22,7 @@ public class SimpleUserDto {
     RoleDto role;
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$",
-            message = "Имя может содержать только буквы и дефисы")
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$", message = "{validation.name.pattern}")
     String name;
 
     String surname;
@@ -33,6 +32,6 @@ public class SimpleUserDto {
     String resetPasswordToken;
 
     @NotBlank
-    @Pattern(regexp = "^\\+?\\d+$", message = "Номер телефона должен содержать только + и цифры")
+    @Pattern(regexp = "^\\+?\\d+$", message = "{validation.phone.pattern}")
     String phoneNumber;
 }

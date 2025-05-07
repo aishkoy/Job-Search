@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-@ValidContactValue(typeIdField = "contactType.id", contactValueField = "contactValue")
+@ValidContactValue(typeIdField = "contactType.id")
 public class ContactInfoDto {
     Long id;
 
