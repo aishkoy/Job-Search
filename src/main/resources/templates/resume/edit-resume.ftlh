@@ -66,7 +66,7 @@
                                         <#assign activeLabel><@spring.message code="vacancy.edit.status.active" /></#assign>
                                         <#assign inactiveLabel><@spring.message code="vacancy.edit.status.inactive" /></#assign>
                                         <@spring.formRadioButtons
-                                        "vacancyForm.isActive",
+                                        "resumeForm.isActive",
                                         { "true": activeLabel, "false": inactiveLabel },
                                         "<br>",
                                         "class='h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500'"

@@ -76,7 +76,7 @@
                             <#list resumeForm.contacts as contact>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.contacts.item", '#${contact?index + 1}'/> </h4>
+                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.contacts.item", ['${contact?index + 1}']/> </h4>
                                         <div>
                                             <button type="submit" name="action" value="removeContact${contact?index}"
                                                     class="text-red-500 hover:text-red-700">
@@ -129,7 +129,7 @@
                             <#list resumeForm.workExperiences as workExperience>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.experience.item", '#${workExperience?index + 1}'/></h4>
+                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.experience.item", ['${workExperience?index + 1}']/></h4>
                                         <div>
                                             <button type="submit" name="action" value="removeExperience${workExperience?index}"
                                                     class="text-red-500 hover:text-red-700">
@@ -183,7 +183,7 @@
                 <!-- Образование -->
                 <div class="p-6 border-b">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                        <i class="fas fa-graduation-cap text-blue-600 mr-2"></i><@spring.message "resume.create.education.title"/>
+                        <i class="fas fa-graduation-cap text-blue-600 mr-2"></i><@spring.message "resume.create.education"/>
                     </h3>
 
                     <#if resumeForm.educations?? && resumeForm.educations?has_content>
@@ -191,7 +191,7 @@
                             <#list resumeForm.educations as education>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.experience.title", '#${education?index + 1}'/></h4>
+                                        <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.education.title", ['${education?index + 1}']/></h4>
                                         <div>
                                             <button type="submit" name="action" value="removeEducation${education?index}"
                                                     class="text-red-500 hover:text-red-700">

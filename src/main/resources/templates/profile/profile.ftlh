@@ -22,24 +22,28 @@
                     <div class="relative">
                         <img src="/api/users/${user.id}/avatar" alt="<@spring.message "profile.avatar.label"/>"
                              class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
-                        <div class="absolute bottom-0 right-0">
-                            <form method="POST" action="/${url}/${user.id}/avatar" enctype="multipart/form-data">
-                                <@main.csrf/>
-                                <label for="avatar-upload"
-                                       class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
-                                    <i class="fas fa-camera"></i>
-                                </label>
-                                <input id="avatar-upload" name="file" type="file" accept="image/jpeg, image/png"
-                                       class="hidden"
-                                       onchange="this.form.submit()">
-                            </form>
-                        </div>
+                        <#if currentUserId == user.id>
+                            <div class="absolute bottom-0 right-0">
+                                <form method="POST" action="/${url}/${user.id}/avatar" enctype="multipart/form-data">
+                                    <@main.csrf/>
+                                    <label for="avatar-upload"
+                                           class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input id="avatar-upload" name="file" type="file" accept="image/jpeg, image/png"
+                                           class="hidden"
+                                           onchange="this.form.submit()">
+                                </form>
+                            </div>
+                        </#if>
                     </div>
-                    <p class="mt-4 text-sm text-gray-500 text-center"><@spring.message "profile.avatar.change.hint"/></p>
+                    <#if currentUserId == user.id>
+                        <p class="mt-4 text-sm text-gray-500 text-center"><@spring.message "profile.avatar.change.hint"/></p>
+                    </#if>
                 </div>
 
                 <!-- Информация о пользователе занимает 3 колонки сетки -->
-                <div class="md:col-span-3"><@spring.message "profile.avatar.change.hint"/>
+                <div class="md:col-span-3">
                     <div class="flex flex-col md:flex-row justify-between items-start mb-4">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-800">${user.name} ${user.surname!''}</h2>

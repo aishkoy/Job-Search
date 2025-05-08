@@ -35,13 +35,13 @@
                         <!-- Левая колонка -->
                         <div>
                             <div class="mb-4">
-                                <label for="name" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.name"/></label>
+                                <label for="name" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.name"/> <span class="text-red-500">*</span></label>
                                 <@spring.formInput "vacancyForm.name", 'class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"' />
                                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
 
                             <div class="mb-4">
-                                <label for="category.id" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.category"/></label>
+                                <label for="category.id" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.category"/> <span class="text-red-500">*</span></label>
                                 <#assign categoryMap = {}>
                                 <#list categories as category>
                                     <#assign categoryMap = categoryMap + {category.id?string: category.name}>
@@ -56,7 +56,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="salary" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.salary"/></label>
+                                <label for="salary" class="block text-sm font-semibold text-gray-700"><@spring.message "vacancy.edit.label.salary"/> <span class="text-red-500">*</span></label>
                                 <@spring.formInput "vacancyForm.salary", 'type="number" min="0" step="0.01" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"' />
                                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                             </div>
@@ -65,7 +65,7 @@
                         <!-- Правая колонка -->
                         <div>
                             <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "vacancy.edit.label.status"/></label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "vacancy.edit.label.status"/> <span class="text-red-500">*</span></label>
                                 <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                                     <div class="flex space-x-4">
                                         <#assign activeLabel><@spring.message code="vacancy.edit.status.active" /></#assign>
@@ -82,7 +82,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "vacancy.edit.label.experience"/></label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "vacancy.edit.label.experience"/> <span class="text-red-500">*</span></label>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label for="expFrom" class="block text-xs text-gray-500"><@spring.message "vacancy.edit.label.expFrom"/></label>

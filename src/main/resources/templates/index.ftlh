@@ -84,7 +84,7 @@
                         <i class="fas fa-laptop-code text-blue-600 text-xl"></i>
                     </div>
                     <h3 class="font-medium text-gray-800"><@spring.message "index.categories.it"/></h3>
-                    <p class="text-sm text-gray-500 mt-1">1,234 вакансий</p>
+                    <p class="text-sm text-gray-500 mt-1"><@spring.message "index.categories.jobs"/> 1,234</p>
                 </a>
                 <a href="/vacancies/categories?category=finance"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
@@ -92,7 +92,7 @@
                         <i class="fas fa-chart-line text-blue-600 text-xl"></i>
                     </div>
                     <h3 class="font-medium text-gray-800"><@spring.message "index.categories.finance"/></h3>
-                    <p class="text-sm text-gray-500 mt-1">876 вакансий</p>
+                    <p class="text-sm text-gray-500 mt-1"><@spring.message "index.categories.jobs"/> 874</p>
                 </a>
                 <a href="/vacancies/categories?category=marketing"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
@@ -100,7 +100,7 @@
                         <i class="fas fa-bullhorn text-blue-600 text-xl"></i>
                     </div>
                     <h3 class="font-medium text-gray-800"><@spring.message "index.categories.marketing"/></h3>
-                    <p class="text-sm text-gray-500 mt-1">543 вакансий</p>
+                    <p class="text-sm text-gray-500 mt-1"><@spring.message "index.categories.jobs"/> 543</p>
                 </a>
                 <a href="/vacancies/categories?category=medical"
                    class="bg-white rounded-lg shadow p-6 flex flex-col items-center transition hover:shadow-md hover:bg-blue-50">
@@ -137,7 +137,6 @@
                                     <i class="fas fa-map-marker-alt mr-2"></i>
                                     <span><@spring.message "index.city"/></span>
                                     <span class="mx-2">•</span>
-                                    <i class="fas fa-dollar-sign mr-2"></i>
                                     <span>${vacancy.salary} c</span>
                                 </div>
                                 <p class="text-gray-600 mb-4 line-clamp-2">${vacancy.description}</p>
@@ -186,7 +185,6 @@
                                     <span><@spring.message "index.city"/></span>
                                     <#if resume.salary?? && resume.salary gt 0>
                                         <span class="mx-2">•</span>
-                                        <i class="fas fa-dollar-sign mr-2"></i>
                                         <span>${resume.salary} c</span>
                                     </#if>
                                 </div>
