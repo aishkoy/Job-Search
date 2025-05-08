@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import kg.attractor.job_search.validation.ValidDateRange;
 import org.springframework.beans.BeanWrapperImpl;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class DateRangeValidator implements ConstraintValidator<ValidDateRange, Object> {
     private String startDateField;
@@ -26,14 +26,14 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, O
         }
 
         BeanWrapperImpl wrapper = new BeanWrapperImpl(value);
-        Date startDate = (Date) wrapper.getPropertyValue(startDateField);
-        Date endDate = (Date) wrapper.getPropertyValue(endDateField);
+        LocalDate startDate = (LocalDate) wrapper.getPropertyValue(startDateField);
+        LocalDate  endDate = (LocalDate) wrapper.getPropertyValue(endDateField);
 
         if (startDate == null || endDate == null) {
             return true;
         }
 
-        boolean isValid = startDate.before(endDate);
+        boolean isValid = startDate.isBefore(endDate);
 
         if(!isValid) {
             context.disableDefaultConstraintViolation();
