@@ -19,7 +19,7 @@
                 </#if>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Т><@spring.message"contact.type.label"/></label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message"contact.type.label"/></label>
                     <#assign contactTypeMap = {}>
                     <#list contactTypes as contactType>
                         <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.type}>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">><@spring.message"contact.value.label"/></label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message"contact.value.label"/></label>
                     <@spring.formInput
                     "contactDto.contactValue",
                     'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
@@ -45,7 +45,7 @@
                 <div class="flex justify-between items-center">
                     <a href="/resumes/${resumeId}/edit"
                        class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i>><@spring.message"contact.back"/>
+                        <i class="fas fa-arrow-left mr-2"></i><@spring.message"contact.back"/>
                     </a>
                     <button type="submit"
                             class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
