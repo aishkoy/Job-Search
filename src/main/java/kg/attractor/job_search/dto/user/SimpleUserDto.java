@@ -34,4 +34,8 @@ public class SimpleUserDto {
     @NotBlank
     @Pattern(regexp = "^\\+?\\d+$", message = "{validation.phone.pattern}")
     String phoneNumber;
+
+    @NotBlank
+    @Builder.Default
+    String preferredLanguage = "ru";
 }

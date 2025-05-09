@@ -32,6 +32,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.role.role = 'EMPLOYER' and u.id = :userId")
     Optional<User> findEmployerById(@Param("userId") Long userId);
 
+    @Query("SELECT u.preferredLanguage FROM User u WHERE u.email = :email")
+    Optional<String> findPreferredLanguageByEmail(String email);
+
+    @Modifying
+    @Query("UPDATE User u SET u.preferredLanguage = :language WHERE u.email = :email")
+    void updateUserLanguage(String email, String language);
+
     @Modifying
     @Transactional
     @Query("update User u set u.avatar = :avatar where u.id = :userId")
