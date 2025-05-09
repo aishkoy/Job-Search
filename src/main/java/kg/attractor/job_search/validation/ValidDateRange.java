@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidDateRange {
-    String message() default "Дата начала должна быть раньше даты окончания!";
+    String message() default "{validation.date.range}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

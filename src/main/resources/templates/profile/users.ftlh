@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 
 <@main.layout>
     <div class="bg-blue-600 text-white pb-6">
@@ -9,7 +10,7 @@
                     <input
                             type="text"
                             name="query"
-                            placeholder="Поиск пользователей..."
+                            placeholder="<@spring.message "users.search.placeholder"/>"
                             class="flex-1 outline-none text-gray-800 py-2 px-1"
                     >
                     <button type="submit" class="bg-gray-100 text-gray-600 p-2 rounded-full mr-1">
@@ -22,13 +23,13 @@
 
     <main class="container mx-auto px-4 py-6">
         <div class="flex items-center justify-between mb-6">
-            <div class="text-gray-500 text-sm">Найдено пользователей: ${users.totalElements}</div>
+            <div class="text-gray-500 text-sm"><@spring.message "users.total.found"/> ${users.totalElements}</div>
         </div>
 
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold">
                 <#if users.content?size gt 0>
-                    <#if users.content[0].role.role == 'EMPLOYER'>Работодатели<#else>Соискатели</#if>
+                    <#if users.content[0].role.role == 'EMPLOYER'><@spring.message "users.employers"/><#else><@spring.message "users.jobseekers"/></#if>
                 </#if>
             </h2>
         </div>
@@ -53,9 +54,9 @@
                                     </h3>
                                     <p class="text-gray-600 text-sm">
                                         <#if user.role.role == 'EMPLOYER'>
-                                            <i class="fas fa-briefcase mr-2"></i>Работодатель
+                                            <i class="fas fa-briefcase mr-2"></i><@spring.message "profile.role.employer"/>
                                         <#else>
-                                            <i class="fas fa-user-tie mr-2"></i>Соискатель
+                                            <i class="fas fa-user-tie mr-2"></i><@spring.message "profile.role.applicant"/>
                                         </#if>
                                     </p>
                                 </div>
@@ -64,27 +65,29 @@
                             <div class="text-right">
                                 <#if user.role.role == 'EMPLOYER'>
                                     <div class="text-blue-600 font-medium">
-                                        Вакансий: ${user.vacancies?size!0}
+                                        <@spring.message "users.vacancies"/>: ${user.vacancies?size!0}
                                     </div>
                                 <#else>
                                     <div class="text-blue-600 font-medium">
-                                        Резюме: ${user.resumes?size!0}
+                                        <@spring.message "users.resumes"/>: ${user.resumes?size!0}
                                     </div>
                                 </#if>
                             </div>
                         </div>
 
                         <div class="mt-4 flex justify-between items-center">
-                            <div class="text-gray-500 text-sm">
-                                <i class="fas fa-envelope mr-2"></i>${user.email}
+                            <div class="flex flex-col text-gray-500 text-sm">
+                                <div>
+                                    <i class="fas fa-envelope mr-2"></i>${user.email}
+                                </div>
                                 <#if user.age??>
-                                    • ${user.age} лет
+                                    <@spring.message"profile.age"/>: ${user.age}
                                 </#if>
                             </div>
 
                             <a href="/${url}/${user.id}"
                                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                Перейти в профиль
+                                <@spring.message "users.profile.link"/>
                                 <i class="fas fa-arrow-right ml-2"></i>
                             </a>
                         </div>
@@ -95,18 +98,18 @@
                 <div class="flex justify-center items-center mt-6 gap-2">
                     <!-- Информация о пагинации -->
                     <div class="text-gray-500 text-sm mr-4">
-                        Страница ${users.number + 1} из ${users.totalPages}
+                        <@spring.message "pagination.page"/> ${users.number + 1} <@spring.message "pagination.of"/> ${users.totalPages}
                     </div>
 
                     <!-- Кнопка "Предыдущая страница" -->
                     <#if users.number gt 0>
                         <a href="?page=${users.number}<#if size??>&size=${users.size}</#if>"
                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-chevron-left mr-1"></i> Назад
+                            <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                         </a>
                     <#else>
                         <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                            <i class="fas fa-chevron-left mr-1"></i> Назад
+                            <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                         </span>
                     </#if>
 
@@ -146,19 +149,19 @@
                     <#if users.number lt users.totalPages - 1>
                         <a href="?page=${users.number + 2}<#if size??>&size=${users.size}</#if>"
                            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                            Вперед <i class="fas fa-chevron-right ml-1"></i>
+                            <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                         </a>
                     <#else>
                         <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                            Вперед <i class="fas fa-chevron-right ml-1"></i>
+                            <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                         </span>
                     </#if>
                 </div>
             <#else>
                 <div class="bg-white rounded-lg shadow p-6 text-center">
                     <i class="fas fa-users-slash text-gray-400 text-4xl mb-4"></i>
-                    <h3 class="font-bold text-lg text-gray-800 mb-2">Пользователи не найдены</h3>
-                    <p class="text-gray-600">Список пользователей пуст.</p>
+                    <h3 class="font-bold text-lg text-gray-800 mb-2"><@spring.message "users.empty.title"/></h3>
+                    <p class="text-gray-600"><@spring.message "users.empty.description"/></p>
                 </div>
             </#if>
         </div>

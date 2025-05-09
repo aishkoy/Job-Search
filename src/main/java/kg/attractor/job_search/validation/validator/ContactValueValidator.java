@@ -5,10 +5,15 @@ import jakarta.validation.ConstraintValidatorContext;
 import kg.attractor.job_search.enums.ContactType;
 import kg.attractor.job_search.validation.ValidContactValue;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 
 public class ContactValueValidator implements ConstraintValidator<ValidContactValue, Object> {
     private String typeIdField;
     private String contactValueField;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public void initialize(ValidContactValue constraintAnnotation) {
@@ -39,7 +44,9 @@ public class ContactValueValidator implements ConstraintValidator<ValidContactVa
         boolean isValid = type.validate(contactValue);
         if(!isValid) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(type.getErrorMessage())
+            context.buildConstraintViolationWithTemplate(
+                            type.getLocalizedErrorMessage(messageSource)
+                    )
                     .addPropertyNode(contactValueField)
                     .addConstraintViolation();
         }

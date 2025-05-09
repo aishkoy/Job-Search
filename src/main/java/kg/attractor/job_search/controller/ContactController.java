@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller("mvcContacts")
 @RequestMapping("/resumes/{resumeId}/contacts")
@@ -81,7 +80,6 @@ public class ContactController {
                               @PathVariable Long contactId,
                               @ModelAttribute("contactDto") @Valid ContactInfoDto contactDto,
                               BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes,
                               Model model) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
 
@@ -94,7 +92,6 @@ public class ContactController {
 
         contactInfoService.updateContactInfo(contactDto);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Контакт успешно обновлен");
         return "redirect:/resumes/" + resumeId + "/edit";
     }
 

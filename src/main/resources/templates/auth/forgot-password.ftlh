@@ -1,11 +1,12 @@
 <#import '../layout.ftlh' as main>
+<#import '/spring.ftl' as spring>
 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobSearch - Восстановление пароля</title>
+    <title><@spring.message "auth.forgot.site.title"/></title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -21,7 +22,7 @@
         </div>
 
         <div class="p-6">
-            <h2 class="text-xl font-bold text-center mb-6">Восстановление пароля</h2>
+            <h2 class="text-xl font-bold text-center mb-6"><@spring.message "auth.forgot.title"/></h2>
 
             <#if message??>
                 <div class="bg-red-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -33,7 +34,7 @@
                 <@main.csrf/>
                 <div class="space-y-2">
                     <label for="email" class="block text-sm font-medium text-gray-700">
-                        Электронная почта
+                        <@spring.message "auth.forgot.email.label"/>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -43,7 +44,7 @@
                                 type="email"
                                 id="email"
                                 name="email"
-                                placeholder="example@mail.ru"
+                                placeholder="<@spring.message "auth.forgot.email.placeholder"/>"
                                 class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                         />
                     </div>
@@ -51,7 +52,7 @@
 
                 <#if error??>
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                        <strong class="font-bold">Ошибка!</strong>
+                        <strong class="font-bold"><@spring.message "auth.forgot.error.title"/></strong>
                         <span class="block sm:inline">${error}</span>
                     </div>
                 </#if>
@@ -61,7 +62,7 @@
                         class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors"
                 >
                     <i class="fas fa-key"></i>
-                    <span>Отправить ссылку для восстановления</span>
+                    <span><@spring.message "auth.forgot.button"/></span>
                 </button>
             </form>
 
@@ -70,21 +71,21 @@
                     <div class="w-full border-t border-gray-300"></div>
                 </div>
                 <div class="relative flex justify-center">
-                    <span class="bg-white px-4 text-sm text-gray-500">или</span>
+                    <span class="bg-white px-4 text-sm text-gray-500"><@spring.message "auth.forgot.or"/></span>
                 </div>
             </div>
 
             <div class="text-center mt-6">
                 <p class="text-sm text-gray-600">
-                    Вспомнили пароль?
+                    <@spring.message "auth.forgot.remembered"/>
                     <a href="/auth/login" class="text-blue-600 font-medium hover:underline ml-1">
-                        Войти
+                        <@spring.message "auth.forgot.login"/>
                     </a>
                 </p>
                 <p class="text-sm text-gray-600">
-                    Ещё нет аккаунта?
+                    <@spring.message "auth.forgot.no.account"/>
                     <a href="/auth/register" class="text-blue-600 font-medium hover:underline ml-1">
-                        Зарегистрироваться
+                        <@spring.message "auth.forgot.register"/>
                     </a>
                 </p>
             </div>

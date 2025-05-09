@@ -7,7 +7,7 @@ import kg.attractor.job_search.validation.ValidDateRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ import java.sql.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-@ValidDateRange(message = "Дата начала обучения должна быть раньше даты окончания")
+@ValidDateRange
 public class EducationInfoDto {
 
     Long id;
@@ -31,10 +31,10 @@ public class EducationInfoDto {
 
     @NotNull
     @Past
-    Date startDate;
+    LocalDate startDate;
 
     @NotNull
-    Date endDate;
+    LocalDate endDate;
 
     @NotBlank
     String degree;

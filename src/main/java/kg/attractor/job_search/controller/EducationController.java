@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller("mvcEducation")
 @RequestMapping("/resumes/{resumeId}/educations")
@@ -76,7 +75,6 @@ public class EducationController {
                                 @PathVariable Long educationId,
                                 @ModelAttribute("educationDto") @Valid EducationInfoDto educationDto,
                                 BindingResult bindingResult,
-                                RedirectAttributes redirectAttributes,
                                 Model model) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
 
@@ -88,18 +86,15 @@ public class EducationController {
 
         educationInfoService.updateEducationInfo(educationDto);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Образование успешно обновлено");
         return "redirect:/resumes/" + resumeId + "/edit";
     }
 
     @PostMapping("/{educationId}/delete")
     public String deleteEducation(@PathVariable Long resumeId,
-                                  @PathVariable Long educationId,
-                                  RedirectAttributes redirectAttributes) {
+                                  @PathVariable Long educationId) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
         educationInfoService.deleteEducationInfo(educationId);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Образование успешно удалено");
         return "redirect:/resumes/" + resumeId + "/edit";
     }
 }

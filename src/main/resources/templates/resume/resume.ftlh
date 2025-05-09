@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 
 <@main.layout>
     <div class="container mx-auto px-4 py-6">
@@ -13,7 +14,7 @@
                         <#if currentUser?? && currentUser.role.id == 2>
                             <a href="/resumes/${resume.id}/edit"
                                class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition font-medium">
-                                <i class="fas fa-edit mr-2"></i>Редактировать
+                                <i class="fas fa-edit mr-2"></i><@spring.message "resume.edit.button"/>
                             </a>
                         </#if>
                     </div>
@@ -22,20 +23,20 @@
             <div class="p-6 border-b">
                 <div class="flex flex-col md:flex-row justify-between">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">${resume.applicant.name!'Соискатель'}</h2>
+                        <h2 class="text-xl font-bold text-gray-800">${resume.applicant.name!}</h2>
                         <div class="mt-2 text-lg font-medium text-blue-600">
                             <#if resume.salary?? && resume.salary gt 0>
                                 ${resume.salary?string(",##0")} ₽
                             <#else>
-                                Ожидаемая зарплата не указана
+                                <@spring.message "resumes.salary.notSpecified"/>
                             </#if>
                         </div>
 
                         <div class="mt-4 flex flex-wrap gap-2">
                             <#if resume.isActive?? && resume.isActive>
-                                <span class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full">Активно ищет работу</span>
+                                <span class="bg-green-100 text-green-700 text-sm px-3 py-1 rounded-full"><@spring.message "resume.status.active"/></span>
                             <#else>
-                                <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">Не ищет работу</span>
+                                <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"><@spring.message "resume.status.inactive"/></span>
                             </#if>
 
                             <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
@@ -48,11 +49,11 @@
                                     <#assign totalYears = totalYears + exp.years>
                                 </#list>
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
-                                Опыт: ${totalYears} ${getPluralForm(totalYears, "год", "года", "лет")}
+                                <@spring.message "resumes.experience.years"/>: ${totalYears}
                             </span>
                             <#else>
                                 <span class="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">
-                                Без опыта
+                                <@spring.message "resumes.experience.none"/>
                             </span>
                             </#if>
                         </div>
@@ -61,9 +62,9 @@
                     <div class="mt-6 md:mt-0 text-right">
                         <div class="text-sm text-gray-500">
                             <#if resume.updatedAt??>
-                                Обновлено: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
+                                <@spring.message "resumes.updated"/>: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
                             <#elseif resume.createdAt??>
-                                Создано: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
+                                <@spring.message "resumes.created"/>: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
                             </#if>
                         </div>
                     </div>
@@ -73,7 +74,7 @@
             <#if resume.contacts?? && resume.contacts?size gt 0>
                 <div class="p-6 border-b">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">
-                        <i class="fas fa-address-card text-blue-600 mr-2"></i>Контактная информация
+                        <i class="fas fa-address-card text-blue-600 mr-2"></i><@spring.message "resume.contacts.title"/>
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <#list resume.contacts as contact>
@@ -105,15 +106,15 @@
                                 <div>
                                     <div class="text-xs text-gray-500">
                                         <#if contact.contactType.id == 1>
-                                            Email
+                                            <@spring.message "resume.contacts.email"/>
                                         <#elseif contact.contactType.id == 2>
-                                            Телефон
+                                            <@spring.message "resume.contacts.phone"/>
                                         <#elseif contact.contactType.id == 3>
-                                            Telegram
+                                            <@spring.message "resume.contacts.telegram"/>
                                         <#elseif contact.contactType.id == 4>
-                                            Facebook
+                                            <@spring.message "resume.contacts.facebook"/>
                                         <#else>
-                                            LinkedIn
+                                            <@spring.message "resume.contacts.linkedin"/>
                                         </#if>
                                     </div>
                                     <div class="text-gray-800 font-medium">${contact.contactValue}</div>
@@ -126,7 +127,7 @@
 
             <div class="p-6 border-b">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    <i class="fas fa-briefcase text-blue-600 mr-2"></i>Опыт работы
+                    <i class="fas fa-briefcase text-blue-600 mr-2"></i><@spring.message "resume.experience.title"/>
                 </h3>
 
                 <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
@@ -136,7 +137,7 @@
                                 <div class="flex justify-between">
                                     <h4 class="font-medium text-gray-800">${exp.position}</h4>
                                     <span class="text-sm text-gray-500">
-                                    ${exp.years} ${getPluralForm(exp.years, "год", "года", "лет")}
+                                    <@spring.message "resumes.experience.years"/> ${exp.years}
                                 </span>
                                 </div>
                                 <p class="text-blue-600">${exp.companyName}</p>
@@ -147,13 +148,13 @@
                         </#list>
                     </div>
                 <#else>
-                    <p class="text-gray-500 italic">Опыт работы не указан</p>
+                    <p class="text-gray-500 italic"><@spring.message "resumes.experience.notSpecified"/></p>
                 </#if>
             </div>
 
             <div class="p-6 border-b">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">
-                    <i class="fas fa-graduation-cap text-blue-600 mr-2"></i>Образование
+                    <i class="fas fa-graduation-cap text-blue-600 mr-2"></i><@spring.message "resume.education.title"/>
                 </h3>
 
                 <#if resume.educations?? && resume.educations?size gt 0>
@@ -172,41 +173,19 @@
                         </#list>
                     </div>
                 <#else>
-                    <p class="text-gray-500 italic">Образование не указано</p>
+                    <p class="text-gray-500 italic"><@spring.message "resume.education.notSpecified"/></p>
                 </#if>
             </div>
 
             <div class="p-6 bg-gray-50">
                 <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div class="flex space-x-4">
-                        <button class="text-blue-600 hover:text-blue-800">
-                            <i class="far fa-bookmark mr-1"></i> Сохранить
-                        </button>
-                        <button class="text-blue-600 hover:text-blue-800">
-                            <i class="fas fa-share-alt mr-1"></i> Поделиться
-                        </button>
-                    </div>
-
                     <#if currentUser?? && currentUser.role.id == 1>
                         <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium">
-                            <i class="fas fa-paper-plane mr-2"></i>Пригласить на собеседование
+                            <i class="fas fa-paper-plane mr-2"></i><@spring.message "resume.actions.invite"/>
                         </button>
                     </#if>
                 </div>
             </div>
         </div>
     </div>
-
-    <#function getPluralForm number singular dual plural>
-        <#assign mod10 = number % 10 />
-        <#assign mod100 = number % 100 />
-
-        <#if mod10 == 1 && mod100 != 11>
-            <#return singular />
-        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
-            <#return dual />
-        <#else>
-            <#return plural />
-        </#if>
-    </#function>
 </@main.layout>

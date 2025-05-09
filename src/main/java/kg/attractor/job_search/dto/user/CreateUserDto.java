@@ -23,10 +23,10 @@ public class CreateUserDto extends SimpleUserDto {
     String email;
 
     @NotBlank
-    @Size(min = 8, max = 20, message = "Длина пароля должна быть 8-20 символов")
+    @Size(min = 8, max = 20, message = "{validation.password.size}")
     @Pattern(
             regexp = "^(?=.*[A-Za-zА-Яа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,}$",
-            message = "Пароль должен содержать хотя бы одну букву (русскую или латинскую) и одну цифру"
+            message = "{validation.password.pattern}"
     )
     String password;
 }

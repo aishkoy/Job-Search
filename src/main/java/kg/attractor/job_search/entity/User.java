@@ -64,6 +64,10 @@ public class User {
     @Builder.Default
     String resetPasswordToken = null;
 
+    @Column(name = "prefer_lang",
+            nullable = false)
+    String preferredLanguage;
+
     @OneToMany(mappedBy = "employer")
     List<Vacancy> vacancies;
 

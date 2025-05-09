@@ -20,6 +20,8 @@ import kg.attractor.job_search.util.CommonUtil;
 import kg.attractor.job_search.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -37,7 +39,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -50,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final PasswordEncoder encoder;
     private final EmailService emailService;
+    private final MessageSource messageSource;
 
     @Override
     public Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user) {
@@ -155,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long updateUser(Long userId, SimpleUserDto userDto) {
         if (!userId.equals(userDto.getId())) {
-            throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
+            throw new AccessDeniedException("Вы не имеете права на редактирование чужого профиля!");
         }
 
         UserDto dto = getUserById(userId);
@@ -176,11 +178,28 @@ public class UserServiceImpl implements UserService {
     public HttpStatus deleteUser(Long userId, Long authId) {
         getUserById(userId);
         if (!userId.equals(authId)) {
-            throw new AccessDeniedException("Вы не имеете права удалять чужжой профиль!");
+            throw new AccessDeniedException("Вы не имеете права удалять чужой профиль!");
         }
         userRepository.deleteById(userId);
         log.info("Удален пользователь: {}", userId);
         return HttpStatus.OK;
+    }
+
+    @Override
+    public void updateUserLanguage(String email, String language){
+        userRepository.updateUserLanguage(email, language);
+        log.info("Обновлен предпочитаемый язык пользователя: {}, язык: {}", email, language);
+    }
+
+    @Override
+    public String getUserPreferredLanguage(String email) {
+        return userRepository.findPreferredLanguageByEmail(email)
+                .orElse("ru");
+    }
+
+    @Override
+    public void save(User user){
+        userRepository.save(user);
     }
 
     @Override
@@ -374,24 +393,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserByResetPasswordToken(String resetPasswordToken) {
         User user = userRepository.findByResetPasswordToken(resetPasswordToken)
-                .orElseThrow(() -> new UserNotFoundException("Не существует пользователя с таким токеном!"));
+                .orElseThrow(() -> new UserNotFoundException(
+                        messageSource.getMessage("user.not.found.by.token", null, LocaleContextHolder.getLocale())
+                ));
         return userMapper.toDto(user);
     }
 
     @Override
     public void updatePassword(UserDto userDto, String newPassword) {
         String passwordRegex = "^(?=.*[A-Za-zА-Яа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,20}$";
+        Locale locale = LocaleContextHolder.getLocale();
 
         if (newPassword == null || newPassword.isBlank()) {
-            throw new InvalidPasswordException("Пароль не может быть пустым");
+            throw new InvalidPasswordException(
+                    messageSource.getMessage("password.empty", null, locale)
+            );
         }
 
         if (newPassword.length() < 8 || newPassword.length() > 20) {
-            throw new InvalidPasswordException("Длина пароля должна быть 8-20 символов");
+            throw new InvalidPasswordException(
+                    messageSource.getMessage("password.length", null, locale)
+            );
         }
 
         if (!newPassword.matches(passwordRegex)) {
-            throw new InvalidPasswordException("Пароль должен содержать хотя бы одну букву (русскую или латинскую) и одну цифру");
+            throw new InvalidPasswordException(
+                    messageSource.getMessage("password.pattern", null, locale)
+            );
         }
 
         String password = encoder.encode(newPassword);
@@ -403,13 +431,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void makeResetPasswordLink(HttpServletRequest req) throws MessagingException, UserNotFoundException, IOException {
         String email = req.getParameter("email");
+        Locale locale = LocaleContextHolder.getLocale();
 
         if (email.isBlank() || !isValidEmail(email)) {
-            throw new IllegalArgumentException("Введен неверный формат email");
+            throw new IllegalArgumentException(
+                    messageSource.getMessage("email.invalid.format", null, locale)
+            );
         }
 
         if (Boolean.FALSE.equals(existsUser(email))) {
-            throw new UserNotFoundException("Пользователь с таким email не найден");
+            throw new UserNotFoundException(
+                    messageSource.getMessage("user.not.found.by.email", null, locale)
+            );
         }
 
         String token = UUID.randomUUID().toString();

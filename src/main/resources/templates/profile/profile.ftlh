@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import '/spring.ftl' as spring>
 <@main.layout>
     <#assign role = user.role.id />
     <#assign known = SPRING_SECURITY_CONTEXT?? >
@@ -12,29 +13,33 @@
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
             <div class="bg-blue-600 text-white p-4">
                 <h1 class="text-2xl font-bold flex items-center">
-                    <i class="fas fa-user-circle mr-2"></i>Личный кабинет
+                    <i class="fas fa-user-circle mr-2"></i><@spring.message "profile.title"/>
                 </h1>
             </div>
 
             <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div class="flex flex-col items-center">
                     <div class="relative">
-                        <img src="/api/users/${user.id}/avatar" alt="Фото профиля"
+                        <img src="/api/users/${user.id}/avatar" alt="<@spring.message "profile.avatar.label"/>"
                              class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
-                        <div class="absolute bottom-0 right-0">
-                            <form method="POST" action="${url}/${user.id}/avatar" enctype="multipart/form-data">
-                                <@main.csrf/>
-                                <label for="avatar-upload"
-                                       class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
-                                    <i class="fas fa-camera"></i>
-                                </label>
-                                <input id="avatar-upload" name="file" type="file" accept="image/jpeg, image/png"
-                                       class="hidden"
-                                       onchange="this.form.submit()">
-                            </form>
-                        </div>
+                        <#if currentUserId == user.id>
+                            <div class="absolute bottom-0 right-0">
+                                <form method="POST" action="/${url}/${user.id}/avatar" enctype="multipart/form-data">
+                                    <@main.csrf/>
+                                    <label for="avatar-upload"
+                                           class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-blue-700 transition shadow-lg cursor-pointer">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input id="avatar-upload" name="file" type="file" accept="image/jpeg, image/png"
+                                           class="hidden"
+                                           onchange="this.form.submit()">
+                                </form>
+                            </div>
+                        </#if>
                     </div>
-                    <p class="mt-4 text-sm text-gray-500 text-center">Нажмите на иконку,<br>чтобы обновить фото</p>
+                    <#if currentUserId == user.id>
+                        <p class="mt-4 text-sm text-gray-500 text-center"><@spring.message "profile.avatar.change.hint"/></p>
+                    </#if>
                 </div>
 
                 <!-- Информация о пользователе занимает 3 колонки сетки -->
@@ -45,9 +50,9 @@
                             <p class="text-blue-600 font-medium mt-1">
 
                                 <#if role == 2>
-                                    <i class="fas fa-user mr-1"></i> Соискатель
+                                    <i class="fas fa-user mr-1"></i> <@spring.message "profile.role.applicant"/>
                                 <#else>
-                                    <i class="fas fa-building mr-1"></i> Работодатель
+                                    <i class="fas fa-building mr-1"></i> <@spring.message "profile.role.employer"/>
                                 </#if>
                             </p>
                         </div>
@@ -55,7 +60,7 @@
                         <#if currentUserId?? && currentUserId == user.id>
                             <a href="/${url}/${user.id}/edit"
                                class="mt-2 md:mt-0 bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition flex items-center">
-                                <i class="fas fa-edit mr-2"></i>Редактировать профиль
+                                <i class="fas fa-edit mr-2"></i><@spring.message "profile.edit"/>
                             </a>
                         </#if>
                     </div>
@@ -68,8 +73,8 @@
                                     <i class="fas fa-birthday-cake"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <div class="text-xs text-gray-500">Возраст</div>
-                                    <div class="text-gray-800 font-medium truncate">${user.age!'Не указан'}</div>
+                                    <div class="text-xs text-gray-500"><@spring.message "profile.age"/></div>
+                                    <div class="text-gray-800 font-medium truncate">${user.age!}</div>
                                 </div>
                             </div>
                         </#if>
@@ -79,7 +84,7 @@
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-xs text-gray-500">Email</div>
+                                <div class="text-xs text-gray-500"><@spring.message "profile.email"/></div>
                                 <div class="text-gray-800 font-medium truncate">${user.email}</div>
                             </div>
                         </div>
@@ -90,7 +95,7 @@
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-xs text-gray-500">Телефон</div>
+                                <div class="text-xs text-gray-500"><@spring.message "profile.phone"/></div>
                                 <div class="text-gray-800 font-medium truncate">${user.phoneNumber}</div>
                             </div>
                         </div>
@@ -106,12 +111,12 @@
                 <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
                         <i class="fas fa-file-alt text-blue-600 mr-2"></i>
-                        <#if currentUserId?? && currentUserId == user.id>Мои резюме
+                        <#if currentUserId?? && currentUserId == user.id><@spring.message "profile.resumes.title.own"/>
                     </h2>
                     <a href="/resumes/create" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="fas fa-plus mr-1"></i>Создать новое
+                        <i class="fas fa-plus mr-1"></i><@spring.message "profile.resumes.create"/>
                     </a>
-                    <#else>Резюме
+                    <#else><@spring.message "profile.resumes.title"/>
                         </h2>
                     </#if>
                 </div>
@@ -125,7 +130,11 @@
                                         <h3 class="text-lg font-semibold text-gray-800 truncate"
                                             title="${resume.name}">${resume.name}</h3>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium ${resume.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
-                                            ${resume.isActive?string('Активно', 'Не активно')}
+                                            <#if resume.isActive>
+                                                <@spring.message "resumes.status.active"/>
+                                            <#else>
+                                                <@spring.message "resumes.status.inactive"/>
+                                            </#if>
                                         </span>
                                     </div>
 
@@ -135,7 +144,7 @@
                                             <#if resume.salary?? && resume.salary gt 0>
                                                 ${resume.salary?string(",##0")} с
                                             <#else>
-                                                <span class="text-gray-500">Зарплата не указана</span>
+                                                <span class="text-gray-500"><@spring.message "profile.resumes.salary.notSpecified"/></span>
                                             </#if>
                                         </p>
 
@@ -148,7 +157,7 @@
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-clock text-blue-500 mr-2 w-5"></i>
                                             <span class="text-gray-500 text-sm">
-                                                Создано: ${resume.createdAt?string("dd.MM.yyyy")}
+                                                <@spring.message "resumes.created"/>: ${resume.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
                                     </div>
@@ -156,22 +165,23 @@
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
                                         <a href="/resumes/${resume.id}"
                                            class="text-blue-600 hover:text-blue-800 font-medium">
-                                            <i class="fas fa-eye mr-1"></i>Просмотр
+                                            <i class="fas fa-eye mr-1"></i><@spring.message "profile.resumes.view"/>
                                         </a>
 
                                         <#if  currentUserId?? && currentUserId == user.id>
                                             <div class="flex gap-3">
                                                 <a href="/resumes/${resume.id}/edit"
-                                                   class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                   class="text-yellow-600 hover:text-yellow-800"
+                                                   title="<@spring.message "resume.edit.button"/>">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
 
                                                 <form action="/resumes/${resume.id}/delete" method="post"
-                                                      onsubmit="return confirm('Вы уверены, что хотите удалить это резюме?');"
+                                                      onsubmit="return confirm('<@spring.message "profile.resumes.delete.confirm"/>');"
                                                       class="inline">
                                                     <@main.csrf/>
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
-                                                            title="Удалить">
+                                                            title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -188,18 +198,18 @@
                         <div class="flex justify-center items-center mt-6 gap-2">
                             <!-- Информация о пагинации -->
                             <div class="text-gray-500 text-sm mr-4">
-                                Страница ${resumesPage.number + 1} из ${resumesPage.totalPages}
+                                <@spring.message "pagination.page"/> ${resumesPage.number + 1} <@spring.message "pagination.of"/> ${resumesPage.totalPages}
                             </div>
 
                             <!-- Кнопка "Предыдущая страница" -->
                             <#if resumesPage.number gt 0>
                                 <a href="?page=${resumesPage.number}<#if size??>&size=${size}</#if>"
                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                    <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                                 </a>
                             <#else>
                                 <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                    <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                                 </span>
                             </#if>
 
@@ -239,11 +249,11 @@
                             <#if resumesPage.number lt resumesPage.totalPages - 1>
                                 <a href="?page=${resumesPage.number + 2}<#if size??>&size=${size}</#if>"
                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                    <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                                 </a>
                             <#else>
                                 <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                    <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                                 </span>
                             </#if>
                         </div>
@@ -254,13 +264,13 @@
                             <i class="fas fa-file-alt text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-medium text-gray-800 mb-2">
-                            Пока нет резюме</h3>
+                            <@spring.message "profile.resumes.empty.title"/></h3>
                         <#if currentUserId?? && currentUserId == user.id>
-                            <p class="text-gray-600 mb-4">Создайте ваше первое резюме, чтобы найти работу</p>
+                            <p class="text-gray-600 mb-4"><@spring.message "profile.resumes.empty.description"/></p>
 
                             <a href="/resumes/create"
                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
-                                <i class="fas fa-plus mr-2"></i>Создать резюме
+                                <i class="fas fa-plus mr-2"></i><@spring.message "profile.resumes.create.button"/>
                             </a>
                         </#if>
                     </div>
@@ -269,14 +279,14 @@
                 <div class="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
                         <#if currentUserId?? && currentUserId == user.id>
-                        <i class="fas fa-briefcase text-blue-600 mr-2"></i>Мои вакансии
+                        <i class="fas fa-briefcase text-blue-600 mr-2"></i><@spring.message "profile.vacancies.title.own"/>
                     </h2>
 
                     <a href="/vacancies/create" class="text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="fas fa-plus mr-1"></i>Создать новую
+                        <i class="fas fa-plus mr-1"></i><@spring.message "profile.vacancies.create"/>
                     </a>
                     <#else>
-                        Вакансии
+                        <@spring.message "profile.vacancies.title"/>
                         </h2>
                     </#if>
                 </div>
@@ -290,7 +300,11 @@
                                         <h3 class="text-lg font-semibold text-gray-800 truncate"
                                             title="${vacancy.name}">${vacancy.name}</h3>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium ${vacancy.isActive?string('bg-green-100 text-green-800', 'bg-gray-100 text-gray-800')}">
-                                            ${vacancy.isActive?string('Активна', 'Не активна')}
+                                            <#if vacancy.isActive>
+                                                <@spring.message "vacancies.status.active"/>
+                                            <#else>
+                                                <@spring.message "vacancies.status.inactive"/>
+                                            </#if>
                                         </span>
                                     </div>
 
@@ -300,19 +314,19 @@
                                             <#if vacancy.salary?? && vacancy.salary gt 0>
                                                 ${vacancy.salary?string(",##0")} ₽
                                             <#else>
-                                                <span class="text-gray-500">Зарплата не указана</span>
+                                                <span class="text-gray-500"><@spring.message "profile.resumes.salary.notSpecified"/></span>
                                             </#if>
                                         </p>
 
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-briefcase text-blue-500 mr-2 w-5"></i>
-                                            <span>Опыт: ${vacancy.expFrom} - ${vacancy.expTo} ${getPluralForm(vacancy.expTo, "год", "года", "лет")}</span>
+                                            <span><@spring.message "vacancy.experience"/>: ${vacancy.expFrom} - ${vacancy.expTo}</span>
                                         </p>
 
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-clock text-blue-500 mr-2 w-5"></i>
                                             <span class="text-gray-500 text-sm">
-                                                Создана: ${vacancy.createdAt?string("dd.MM.yyyy")}
+                                                <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
                                     </div>
@@ -320,21 +334,22 @@
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
                                         <a href="/vacancies/${vacancy.id}"
                                            class="text-blue-600 hover:text-blue-800 font-medium">
-                                            <i class="fas fa-eye mr-1"></i>Просмотр
+                                            <i class="fas fa-eye mr-1"></i><@spring.message "profile.resumes.view"/>
                                         </a>
 
                                         <#if currentUserId?? && currentUserId == user.id>
                                             <div class="flex gap-3">
                                                 <a href="/vacancies/${vacancy.id}/edit"
-                                                   class="text-yellow-600 hover:text-yellow-800" title="Редактировать">
+                                                   class="text-yellow-600 hover:text-yellow-800"
+                                                   title="<@spring.message "resume.edit.button"/>">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="/vacancies/${vacancy.id}/delete" method="post"
-                                                      onsubmit="return confirm('Вы уверены, что хотите удалить эту вакансию?');"
+                                                      onsubmit="return confirm('<@spring.message "profile.vacancies.delete.confirm"/>');"
                                                       class="inline">
                                                     <@main.csrf/>
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
-                                                            title="Удалить">
+                                                            title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -351,18 +366,18 @@
                         <div class="flex justify-center items-center mt-6 gap-2">
                             <!-- Информация о пагинации -->
                             <div class="text-gray-500 text-sm mr-4">
-                                Страница ${vacanciesPage.number + 1} из ${vacanciesPage.totalPages}
+                                <@spring.message "pagination.page"/> ${vacanciesPage.number + 1} <@spring.message "pagination.of.status.active"/> ${vacanciesPage.totalPages}
                             </div>
 
                             <!-- Кнопка "Предыдущая страница" -->
                             <#if vacanciesPage.number gt 0>
                                 <a href="?page=${vacanciesPage.number}<#if size??>&size=${size}</#if>"
                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                    <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                                 </a>
                             <#else>
                                 <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                                    <i class="fas fa-chevron-left mr-1"></i> Назад
+                                    <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                                 </span>
                             </#if>
 
@@ -402,11 +417,11 @@
                             <#if vacanciesPage.number lt vacanciesPage.totalPages - 1>
                                 <a href="?page=${vacanciesPage.number + 2}<#if size??>&size=${size}</#if>"
                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                    <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                                 </a>
                             <#else>
                                 <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                                    Вперед <i class="fas fa-chevron-right ml-1"></i>
+                                    <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                                 </span>
                             </#if>
                         </div>
@@ -417,12 +432,12 @@
                             <i class="fas fa-briefcase text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-medium text-gray-800 mb-2">
-                            Пока нет вакансий</h3>
+                            <@spring.message "profile.vacancies.empty.title"/></h3>
                         <#if currentUserId?? && currentUserId == user.id>
-                            <p class="text-gray-600 mb-4">Создайте вашу первую вакансию, чтобы найти сотрудников</p>
+                            <p class="text-gray-600 mb-4"><@spring.message "profile.vacancies.empty.description"/></p>
                             <a href="/vacancies/create"
                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition inline-flex items-center">
-                                <i class="fas fa-plus mr-2"></i>Создать вакансию
+                                <i class="fas fa-plus mr-2"></i><@spring.message "profile.vacancies.create.button"/>
                             </a>
                         </#if>
                     </div>
@@ -433,7 +448,7 @@
         <!-- Дополнительные блоки информации -->
         <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-chart-line text-blue-600 mr-2"></i>Статистика
+                <i class="fas fa-chart-line text-blue-600 mr-2"></i><@spring.message "profile.stats.title"/>
             </h3>
 
             <div class="space-y-4">
@@ -444,7 +459,7 @@
                             <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
                                 <i class="fas fa-envelope-open"></i>
                             </div>
-                            <span class="text-gray-700">Приглашения</span>
+                            <span class="text-gray-700"><@spring.message "profile.stats.invitations"/></span>
                         </div>
                         <span class="text-xl font-bold text-gray-800">0</span>
                     </div>
@@ -454,7 +469,7 @@
                             <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
                                 <i class="fas fa-paper-plane"></i>
                             </div>
-                            <span class="text-gray-700">Отклики на вакансии</span>
+                            <span class="text-gray-700"><@spring.message "profile.stats.responses"/></span>
                         </div>
                         <span class="text-xl font-bold text-gray-800">0</span>
                     </div>
@@ -462,17 +477,4 @@
             </div>
         </div>
     </div>
-
-    <#function getPluralForm number singular dual plural>
-        <#assign mod10 = number % 10 />
-        <#assign mod100 = number % 100 />
-
-        <#if mod10 == 1 && mod100 != 11>
-            <#return singular />
-        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
-            <#return dual />
-        <#else>
-            <#return plural />
-        </#if>
-    </#function>
 </@main.layout>

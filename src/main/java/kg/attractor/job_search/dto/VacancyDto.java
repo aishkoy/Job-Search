@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-@ValidExperienceRange(message = "Минимальный опыт работы должен быть меньше максимального\"")
+@ValidExperienceRange
 public class VacancyDto {
     Long id;
 
