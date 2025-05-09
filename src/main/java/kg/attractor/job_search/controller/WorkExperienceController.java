@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller("mvcWorkExperience")
 @RequestMapping("/resumes/{resumeId}/experiences")
@@ -79,7 +78,6 @@ public class WorkExperienceController {
                                  @PathVariable("experienceId") Long experienceId,
                                  @ModelAttribute("experienceDto") @Valid WorkExperienceInfoDto experienceDto,
                                  BindingResult bindingResult,
-                                 RedirectAttributes redirectAttributes,
                                  Model model
     ) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
@@ -92,20 +90,17 @@ public class WorkExperienceController {
 
         workExperienceInfoService.updateWorkExperienceInfo(experienceDto);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Опыт работы успешно обновлен");
         return "redirect:/resumes/" + resumeId + "/edit";
     }
 
     @PostMapping("/{experienceId}/delete")
     public String deleteExperience(@PathVariable("resumeId") Long resumeId,
-                                   @PathVariable("experienceId") Long experienceId,
-                                   RedirectAttributes redirectAttributes
+                                   @PathVariable("experienceId") Long experienceId
     ) {
         resumeService.getResumeById(resumeId, userService.getAuthId());
 
         workExperienceInfoService.deleteWorkExperienceInfo(experienceId);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Опыт работы успешно удален");
         return "redirect:/resumes/" + resumeId + "/edit";
     }
 }
