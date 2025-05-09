@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long updateUser(Long userId, SimpleUserDto userDto) {
         if (!userId.equals(userDto.getId())) {
-            throw new AccessDeniedException("Вы не имеете права на редактироание чужого профиля!");
+            throw new AccessDeniedException("Вы не имеете права на редактирование чужого профиля!");
         }
 
         UserDto dto = getUserById(userId);
@@ -178,11 +178,28 @@ public class UserServiceImpl implements UserService {
     public HttpStatus deleteUser(Long userId, Long authId) {
         getUserById(userId);
         if (!userId.equals(authId)) {
-            throw new AccessDeniedException("Вы не имеете права удалять чужжой профиль!");
+            throw new AccessDeniedException("Вы не имеете права удалять чужой профиль!");
         }
         userRepository.deleteById(userId);
         log.info("Удален пользователь: {}", userId);
         return HttpStatus.OK;
+    }
+
+    @Override
+    public void updateUserLanguage(String email, String language){
+        userRepository.updateUserLanguage(email, language);
+        log.info("Обновлен предпочитаемый язык пользователя: {}, язык: {}", email, language);
+    }
+
+    @Override
+    public String getUserPreferredLanguage(String email) {
+        return userRepository.findPreferredLanguageByEmail(email)
+                .orElse("ru");
+    }
+
+    @Override
+    public void save(User user){
+        userRepository.save(user);
     }
 
     @Override

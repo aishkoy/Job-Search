@@ -36,6 +36,12 @@ public interface UserService {
 
     HttpStatus deleteUser(Long userId, Long authId);
 
+    void updateUserLanguage(String email, String language);
+
+    String getUserPreferredLanguage(String email);
+
+    void save(User user);
+
     List<UserDto> getEmployers();
 
     UserDto getEmployerById(Long id);

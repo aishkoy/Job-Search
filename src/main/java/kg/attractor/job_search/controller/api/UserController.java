@@ -7,6 +7,9 @@ import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,22 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ofNullable(userService.getUsers());
+    }
+
+    @PostMapping("/language")
+    @Transactional
+    public ResponseEntity<Void> updateLanguage(@RequestParam String lang) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                String email = authentication.getName();
+                userService.updateUserLanguage(email, lang);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("{id}")
