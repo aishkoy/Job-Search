@@ -211,6 +211,8 @@
             </div>
         </div>
     </footer>
+
+    <input type="hidden" name="_csrf" value="${_csrf.token}" />
     <script>
         document.getElementById('language-menu-button').addEventListener('click', function () {
             const dropdown = document.getElementById('language-dropdown');
@@ -225,18 +227,39 @@
                 dropdown.classList.add('hidden');
             }
         });
-
         document.querySelectorAll('.language-option').forEach(option => {
             option.addEventListener('click', function (e) {
                 e.preventDefault();
 
+                let lang = this.getAttribute('data-lang');
                 let currentUrl = new URL(window.location.href);
 
-                let lang = this.getAttribute('data-lang');
+                const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+                console.log('CSRF Token:', csrfToken);
 
-                currentUrl.searchParams.set('lang', lang);
-
-                window.location.href = currentUrl.toString();
+                fetch('/api/users/language?lang=' + lang, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-XSRF-TOKEN': csrfToken || ''
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        console.log('Language update response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Failed to update language. Status: ' + response.status);
+                        }
+                        return response;
+                    })
+                    .catch(error => {
+                        console.error('Error updating language:', error);
+                    })
+                    .finally(() => {
+                        // Обновляем параметр языка в URL и перезагружаем страницу
+                        currentUrl.searchParams.set('lang', lang);
+                        window.location.href = currentUrl.toString();
+                    });
             });
         });
     </script>
