@@ -39,7 +39,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public Long createResume(ResumeDto resumeDto) {
         if (resumeDto.getApplicant() == null) throw new ApplicantNotFoundException();
-        categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
+        categoryService.getCategoryIfPresent(resumeDto.getCategory().id());
 
         Resume resume = resumeMapper.toEntity(resumeDto);
         linkResumeChildren(resume);
@@ -54,7 +54,7 @@ public class ResumeServiceImpl implements ResumeService {
     public Long updateResume(Long resumeId, ResumeDto form) {
         ResumeDto existing = getResumeDtoById(resumeId);
         form.setCreatedAt(existing.getCreatedAt());
-        categoryService.getCategoryIfPresent(form.getCategory().getId());
+        categoryService.getCategoryIfPresent(form.getCategory().id());
 
         if (!isResumeOwnedByApplicant(resumeId, form.getApplicant().getId()))
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");

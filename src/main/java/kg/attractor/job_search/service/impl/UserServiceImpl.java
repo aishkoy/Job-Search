@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long registerUser(CreateUserDto userDto) {
-        roleService.getRoleById(userDto.getRole().getId());
+        roleService.getRoleById(userDto.getRole().id());
         normalizeUserData(userDto);
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 

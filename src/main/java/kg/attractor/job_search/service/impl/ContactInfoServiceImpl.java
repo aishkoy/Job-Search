@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Slf4j
 @Service
@@ -25,7 +24,7 @@ public class ContactInfoServiceImpl implements ContactInfoService {
 
     @Override
     public Long createContactInfo(ContactInfoDto contactInfoDto) {
-        contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().getId());
+        contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().id());
         ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
         contactInfo.setResume(Resume.builder().id(contactInfoDto.getResumeId()).build());
         contactInfoRepository.save(contactInfo);

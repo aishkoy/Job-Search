@@ -25,12 +25,12 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
     public boolean isValid(SimpleUserDto dto, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
 
-        if (dto.getRole() == null || dto.getRole().getId() == null) {
+        if (dto.getRole() == null || dto.getRole().id() == null) {
             addViolation(context, "validation.user.role.required", "role.id");
             return false;
         }
 
-        return switch (dto.getRole().getId().intValue()) {
+        return switch (dto.getRole().id().intValue()) {
             case EMPLOYER_ROLE_ID -> validateEmployer(dto, context);
             case APPLICANT_ROLE_ID -> validateApplicant(dto, context);
             default -> {

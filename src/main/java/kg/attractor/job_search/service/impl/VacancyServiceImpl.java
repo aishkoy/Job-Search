@@ -33,7 +33,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public Long createVacancy(VacancyDto dto) {
         userService.getEmployerById(dto.getEmployer().getId());
-        categoryService.getCategoryIfPresent(dto.getCategory().getId());
+        categoryService.getCategoryIfPresent(dto.getCategory().id());
 
         Vacancy vacancy = vacancyMapper.toEntity(dto);
         vacancyRepository.save(vacancy);
@@ -46,7 +46,7 @@ public class VacancyServiceImpl implements VacancyService {
         Vacancy existing = getVacancyById(vacancyId);
         dto.setCreatedAt(existing.getCreatedAt());
         validateOwnership(vacancyId, dto.getEmployer().getId());
-        categoryService.getCategoryIfPresent(dto.getCategory().getId());
+        categoryService.getCategoryIfPresent(dto.getCategory().id());
 
         Vacancy updated = vacancyMapper.toEntity(dto);
 
