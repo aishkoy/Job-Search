@@ -24,8 +24,7 @@ public class User {
             name = "name")
     String name;
 
-    @Column(nullable = false,
-            name = "surname")
+    @Column(name = "surname")
     String surname;
 
     @Column(nullable = false,
@@ -47,13 +46,11 @@ public class User {
 
     @Lob
     @Column(name = "avatar")
-    @Builder.Default
-    String avatar = null;
+    String avatar;
 
     @Column(nullable = false,
             name = "enabled")
-    @Builder.Default
-    Boolean enabled = true;
+    Boolean enabled;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id",
@@ -61,8 +58,7 @@ public class User {
     Role role;
 
     @Column(name = "reset_password_token")
-    @Builder.Default
-    String resetPasswordToken = null;
+    String resetPasswordToken;
 
     @Column(name = "prefer_lang",
             nullable = false)
