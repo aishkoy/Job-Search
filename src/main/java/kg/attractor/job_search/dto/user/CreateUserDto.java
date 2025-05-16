@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 
 @ValidUserByRole
-public class CreateUserDto extends SimpleUserDto {
+public class CreateUserDto extends UserDto {
     @Email
     @NotBlank
     @UniqueEmail
