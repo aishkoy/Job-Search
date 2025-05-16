@@ -11,14 +11,21 @@ import java.util.List;
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
     List<Resume> findAllByIsActiveTrue();
+
     List<Resume> findAllByApplicantId(Long applicantId);
+
     List<Resume> findAllByApplicantName(String applicantName);
+
     List<Resume> findAllByCategoryId(Long categoryId);
+
     List<Resume> findAllByOrderByCreatedAtDesc();
 
 
     boolean existsByIdAndApplicantId(Long resumeId, Long applicantId);
 
     Page<Resume> findAllByIsActiveTrue(Pageable pageable);
-   Page<Resume> findAllByCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Resume> findAllByCategoryId(Long categoryId, Pageable pageable);
+
+    Page<Resume> findAllByApplicantId(Long applicantId, Pageable pageable);
 }

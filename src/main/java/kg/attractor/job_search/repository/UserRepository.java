@@ -20,16 +20,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByResetPasswordToken(String token);
     List<User> findAllByName(String name);
 
-    @Query("select u from User u where u.role.role = 'APPLICANT'")
+    @Query("select u from User u where u.role.name = 'APPLICANT'")
     List<User> findApplicants();
 
-    @Query("select u from User u where u.role.role = 'APPLICANT' and u.id = :userId")
+    @Query("select u from User u where u.role.name = 'APPLICANT' and u.id = :userId")
     Optional<User> findApplicantById(@Param("userId") Long userId);
 
-    @Query("select u from User u where u.role.role = 'EMPLOYER'")
+    @Query("select u from User u where u.role.name = 'EMPLOYER'")
     List<User> findEmployers();
 
-    @Query("select u from User u where u.role.role = 'EMPLOYER' and u.id = :userId")
+    @Query("select u from User u where u.role.name = 'EMPLOYER' and u.id = :userId")
     Optional<User> findEmployerById(@Param("userId") Long userId);
 
     @Query("SELECT u.preferredLanguage FROM User u WHERE u.email = :email")
@@ -54,11 +54,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
 
-    @Query("select u from User u where u.role.role = 'EMPLOYER'")
+    @Query("select u from User u where u.role.name = 'EMPLOYER'")
     Page<User> findAllEmployersPage(Pageable pageable);
 
 
-    @Query("select u from User u where u.role.role = 'APPLICANT'")
+    @Query("select u from User u where u.role.name = 'APPLICANT'")
     Page<User> findAllApplicantsPage(Pageable pageable);
 
 }

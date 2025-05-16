@@ -45,4 +45,5 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
             "WHERE r.applicant.id = :applicantId")
     Page<Vacancy> findVacanciesAppliedByUserId(@Param("applicantId") Long applicantId, Pageable pageable);
 
+    Page<Vacancy> findAllByEmployerId(Long employerId, Pageable pageable);
 }
