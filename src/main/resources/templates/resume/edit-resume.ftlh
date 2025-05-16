@@ -116,7 +116,7 @@
                                                 <#default>
                                                     <i class="fas fa-link text-gray-500 mr-2"></i>
                                             </#switch>
-                                            <span class="font-medium">${contact.contactType.type}</span>
+                                            <span class="font-medium">${contact.contactType.name}</span>
                                         </div>
                                         <div class="flex space-x-2">
                                             <a href="/resumes/${resumeForm.id}/contacts/${contact.id}/edit"

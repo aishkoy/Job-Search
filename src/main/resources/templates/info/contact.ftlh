@@ -22,7 +22,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message"contact.type.label"/></label>
                     <#assign contactTypeMap = {}>
                     <#list contactTypes as contactType>
-                        <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.type}>
+                        <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.name}>
                     </#list>
 
                     <@spring.formSingleSelect

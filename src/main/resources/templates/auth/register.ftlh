@@ -20,7 +20,7 @@
             <div class="flex space-x-4">
                 <#assign roleMap = {}>
                 <#list roles as role>
-                    <#assign roleMap = roleMap + {role.id?string: role.role}>
+                    <#assign roleMap = roleMap + {role.id?string: role.name}>
                 </#list>
 
                 <@spring.formRadioButtons

@@ -29,7 +29,7 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold">
                 <#if users.content?size gt 0>
-                    <#if users.content[0].role.role == 'EMPLOYER'><@spring.message "users.employers"/><#else><@spring.message "users.jobseekers"/></#if>
+                    <#if users.content[0].role.name == 'EMPLOYER'><@spring.message "users.employers"/><#else><@spring.message "users.jobseekers"/></#if>
                 </#if>
             </h2>
         </div>
@@ -53,7 +53,7 @@
                                         ${user.name} ${user.surname!}
                                     </h3>
                                     <p class="text-gray-600 text-sm">
-                                        <#if user.role.role == 'EMPLOYER'>
+                                        <#if user.role.name == 'EMPLOYER'>
                                             <i class="fas fa-briefcase mr-2"></i><@spring.message "profile.role.employer"/>
                                         <#else>
                                             <i class="fas fa-user-tie mr-2"></i><@spring.message "profile.role.applicant"/>
@@ -63,13 +63,13 @@
                             </div>
 
                             <div class="text-right">
-                                <#if user.role.role == 'EMPLOYER'>
+                                <#if user.role.name == 'EMPLOYER'>
                                     <div class="text-blue-600 font-medium">
-                                        <@spring.message "users.vacancies"/>: ${user.vacancies?size!0}
+                                        <@spring.message "users.vacancies"/>: ${user.vacanciesCount!0}
                                     </div>
                                 <#else>
                                     <div class="text-blue-600 font-medium">
-                                        <@spring.message "users.resumes"/>: ${user.resumes?size!0}
+                                        <@spring.message "users.resumes"/>: ${user.resumesCount!0}
                                     </div>
                                 </#if>
                             </div>
