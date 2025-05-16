@@ -24,7 +24,7 @@ public class ContactInfoServiceImpl implements ContactInfoService {
 
     @Override
     public Long createContactInfo(ContactInfoDto contactInfoDto) {
-        contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().id());
+        contactTypeService.getContactTypeIfPresent(contactInfoDto.getContactType().getId());
         ContactInfo contactInfo = contactInfoMapper.toEntity(contactInfoDto);
         contactInfo.setResume(Resume.builder().id(contactInfoDto.getResumeId()).build());
         contactInfoRepository.save(contactInfo);

@@ -3,7 +3,6 @@ package kg.attractor.job_search.service;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import kg.attractor.job_search.dto.user.CreateUserDto;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.entity.User;
 import org.springframework.data.domain.Page;
@@ -13,11 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public interface UserService {
-    Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user);
-
     List<UserDto> getUsers();
 
     User getEntityById(Long userId);
@@ -32,7 +28,7 @@ public interface UserService {
 
     Long registerUser(CreateUserDto userDto);
 
-    Long updateUser(Long userId, SimpleUserDto userDto);
+    Long updateUser(Long userId, UserDto userDto);
 
     HttpStatus deleteUser(Long userId, Long authId);
 
@@ -67,8 +63,6 @@ public interface UserService {
     boolean isCurrentUser(Long userId);
 
     UserDto getAuthUser();
-
-    SimpleUserDto mapToEditUser(UserDto userDto);
 
     Long getAuthId();
 

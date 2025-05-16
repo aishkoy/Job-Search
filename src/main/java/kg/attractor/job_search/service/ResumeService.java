@@ -42,5 +42,7 @@ public interface ResumeService {
 
     Page<ResumeDto> getActiveResumesPage(int page, int size);
 
+    Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size);
+
     Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId);
 }

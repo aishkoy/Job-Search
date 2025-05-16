@@ -39,7 +39,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public Long createResume(ResumeDto resumeDto) {
         if (resumeDto.getApplicant() == null) throw new ApplicantNotFoundException();
-        categoryService.getCategoryIfPresent(resumeDto.getCategory().id());
+        categoryService.getCategoryIfPresent(resumeDto.getCategory().getId());
 
         Resume resume = resumeMapper.toEntity(resumeDto);
         linkResumeChildren(resume);
@@ -54,7 +54,7 @@ public class ResumeServiceImpl implements ResumeService {
     public Long updateResume(Long resumeId, ResumeDto form) {
         ResumeDto existing = getResumeDtoById(resumeId);
         form.setCreatedAt(existing.getCreatedAt());
-        categoryService.getCategoryIfPresent(form.getCategory().id());
+        categoryService.getCategoryIfPresent(form.getCategory().getId());
 
         if (!isResumeOwnedByApplicant(resumeId, form.getApplicant().getId()))
             throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
@@ -142,15 +142,23 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public Page<ResumeDto> getActiveResumesPage(int page, int size){
-        Pageable pageable = PageRequest.of(page-1, size);
+    public Page<ResumeDto> getActiveResumesPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable),
                 "Страница с активными резюме не найдена!");
     }
 
     @Override
-    public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId){
-        Pageable pageable = PageRequest.of(page-1, size);
+    public Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return getResumeDtoPage(() -> resumeRepository.findAllByApplicantId(applicantId, pageable),
+                "Страница с активными резюме не найдена!");
+    }
+
+
+    @Override
+    public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         return getResumeDtoPage(() -> resumeRepository.findAllByCategoryId(categoryId, pageable),
                 "Страница с резюме пользователя не была найдена!");
     }

@@ -2,11 +2,8 @@ package kg.attractor.job_search.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.dto.user.CreateUserDto;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.exception.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.EmployerNotFoundException;
 import kg.attractor.job_search.exception.InvalidPasswordException;
@@ -23,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,20 +48,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
     private final EmailService emailService;
     private final MessageSource messageSource;
-
-    @Override
-    public Map<String, Page<?>> getProfileListsPage(int page, int size, UserDto user) {
-        Map<String, Page<?>> template = new HashMap<>();
-
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        Page<ResumeDto> resumes = toPage(user.getResumes(), pageable);
-        Page<VacancyDto> vacancies = toPage(user.getVacancies(), pageable);
-
-        template.put("resumesPage", resumes);
-        template.put("vacanciesPage", vacancies);
-        return template;
-    }
 
     @Override
     public List<UserDto> getUsers() {
@@ -128,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long registerUser(CreateUserDto userDto) {
-        roleService.getRoleById(userDto.getRole().id());
+        roleService.getRoleById(userDto.getRole().getId());
         normalizeUserData(userDto);
         userDto.setPassword(encoder.encode(userDto.getPassword()));
 
@@ -155,7 +137,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long updateUser(Long userId, SimpleUserDto userDto) {
+    public Long updateUser(Long userId, UserDto userDto) {
         if (!userId.equals(userDto.getId())) {
             throw new AccessDeniedException("Вы не имеете права на редактирование чужого профиля!");
         }
@@ -327,17 +309,6 @@ public class UserServiceImpl implements UserService {
         return userPage.map(userMapper::toDto);
     }
 
-    private <T> Page<T> toPage(List<T> list, Pageable pageable) {
-        return new PageImpl<>(
-                list.stream()
-                        .skip(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .toList(),
-                pageable,
-                list.size()
-        );
-    }
-
     @Override
     public boolean isCurrentUser(Long userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -378,11 +349,6 @@ public class UserServiceImpl implements UserService {
         String email = authentication.getName();
         log.info("Looking up user by email: {}", email);
         return getUserByEmail(email);
-    }
-
-    @Override
-    public SimpleUserDto mapToEditUser(UserDto userDto) {
-        return userMapper.toSimpleUserDto(userDto);
     }
 
     @Override
