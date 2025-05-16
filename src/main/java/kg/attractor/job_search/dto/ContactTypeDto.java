@@ -1,4 +1,15 @@
 package kg.attractor.job_search.dto;
 
-public record ContactTypeDto(Long id, String name) {
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ContactTypeDto {
+     Long id;
+     String name;
 }

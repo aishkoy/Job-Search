@@ -1,4 +1,16 @@
 package kg.attractor.job_search.dto;
 
-public record RoleDto(Long id, String name) {
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+
+public class RoleDto {
+    Long id;
+    String name;
 }
