@@ -1,7 +1,6 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.List;
 @RequestMapping("api/users")
 public class UserController {
     private final UserService userService;
-    private final UserService adapter;
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
@@ -49,14 +47,14 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid SimpleUserDto userDto) {
-        userDto.setId(adapter.getAuthId());
+    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid UserDto userDto) {
+        userDto.setId(userService.getAuthId());
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
 
     @DeleteMapping("{id}")
     public HttpStatus deleteUser(@PathVariable("id") Long userId) {
-        return userService.deleteUser(userId, adapter.getAuthId());
+        return userService.deleteUser(userId, userService.getAuthId());
     }
 
     @GetMapping("by-name")
@@ -81,7 +79,7 @@ public class UserController {
 
     @PostMapping("{id}/avatar")
     public ResponseEntity<MultipartFile> uploadAvatar(@PathVariable("id") Long userId, @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file, adapter.getAuthId()));
+        return ResponseEntity.ofNullable(userService.uploadAvatar(userId, file, userService.getAuthId()));
     }
 
     @GetMapping("{id}/avatar")
