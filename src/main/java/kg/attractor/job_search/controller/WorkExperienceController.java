@@ -32,12 +32,12 @@ public class WorkExperienceController {
 
         model.addAttribute("mode", "create");
         model.addAttribute("experienceDto", experienceDto);
-        model.addAttribute("action", "/resumes/" + resumeId + "/experiences");
+        model.addAttribute("action", "/resumes/" + resumeId + "/experiences/create");
 
         return "info/experience";
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public String createExperience(@PathVariable("resumeId") Long resumeId,
                                    @ModelAttribute("experienceDto") @Valid WorkExperienceInfoDto experienceDto,
                                    BindingResult bindingResult,
@@ -47,7 +47,7 @@ public class WorkExperienceController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "create");
-            model.addAttribute("action", "/resumes/" + resumeId + "/experiences");
+            model.addAttribute("action", "/resumes/" + resumeId + "/experiences/create");
             return "info/experience";
         }
 

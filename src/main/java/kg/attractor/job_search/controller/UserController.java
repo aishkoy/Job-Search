@@ -1,18 +1,26 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
+import kg.attractor.job_search.dto.ResumeDto;
+import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.VacancyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.NoSuchElementException;
+
 @RequiredArgsConstructor
 public abstract class UserController {
     protected final UserService userService;
+    protected final VacancyService vacancyService;
+    protected final ResumeService resumeService;
 
     protected abstract UserDto getUserById(Long userId);
 
@@ -34,7 +42,22 @@ public abstract class UserController {
         model.addAttribute("user", user);
         model.addAttribute("size", size);
         model.addAttribute("url", getUrl());
-        model.addAllAttributes(userService.getProfileListsPage(page, size, user));
+
+        Page<VacancyDto> vacancies = null;
+        Page<ResumeDto> resumes = null;
+
+        try {
+            vacancies = vacancyService.getVacanciesByEmployerId(user.getId(), page, size);
+        } catch (NoSuchElementException ignore) {
+        }
+        try {
+            resumes = resumeService.getResumesByApplicantId(user.getId(), page, size);
+        } catch (NoSuchElementException ignore) {
+        }
+
+
+        model.addAttribute("vacanciesPage", vacancies);
+        model.addAttribute("resumesPage", resumes);
 
         return "profile/profile";
     }
@@ -43,10 +66,8 @@ public abstract class UserController {
     public String editProfile(@PathVariable Long userId,
                               Model model) {
         UserDto user = getUserById(userId);
-        SimpleUserDto simpleUserDto = userService.mapToEditUser(user);
-
         model.addAttribute("url", getUrl());
-        model.addAttribute("userDto", simpleUserDto);
+        model.addAttribute("userDto", user);
         return "profile/edit-profile";
     }
 
@@ -59,7 +80,7 @@ public abstract class UserController {
 
     @PostMapping("{userId}/edit")
     public String editProfile(@PathVariable Long userId,
-                              @ModelAttribute("userDto") @Valid SimpleUserDto userDto,
+                              @ModelAttribute("userDto") @Valid UserDto userDto,
                               BindingResult bindingResult,
                               Model model) {
 

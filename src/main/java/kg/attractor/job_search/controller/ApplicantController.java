@@ -1,9 +1,10 @@
 package kg.attractor.job_search.controller;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
 import kg.attractor.job_search.dto.user.UserDto;
+import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.VacancyService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("applicants")
 public class ApplicantController extends UserController {
 
-    public ApplicantController(UserService userService) {
-        super(userService);
+    public ApplicantController(UserService userService, VacancyService vacancyService, ResumeService resumeService) {
+        super(userService, vacancyService, resumeService);
     }
 
     @GetMapping
@@ -60,7 +61,7 @@ public class ApplicantController extends UserController {
     @PostMapping("{userId}/edit")
     @PreAuthorize("hasRole('APPLICANT') and @userService.isCurrentUser(#userId)")
     public String editProfile(@PathVariable Long userId,
-                              @ModelAttribute("userDto") @Valid SimpleUserDto userDto,
+                              @ModelAttribute("userDto") @Valid UserDto userDto,
                               BindingResult bindingResult,
                               Model model) {
         return super.editProfile(userId, userDto, bindingResult, model);
