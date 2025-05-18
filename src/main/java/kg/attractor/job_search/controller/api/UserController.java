@@ -41,6 +41,11 @@ public class UserController {
         }
     }
 
+    @GetMapping("current")
+    public ResponseEntity<UserDto> getCurrentUser() {
+        return ResponseEntity.ofNullable(userService.getAuthUser());
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId) {
         return  ResponseEntity.ofNullable(userService.getUserById(userId));
