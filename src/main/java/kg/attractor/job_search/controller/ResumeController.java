@@ -65,25 +65,14 @@ public class ResumeController {
     @PreAuthorize("hasRole('APPLICANT')")
     public String createResume(@ModelAttribute("resumeForm") @Valid ResumeDto resumeForm,
                                BindingResult bindingResult,
-                               @RequestParam(required = false) String action,
                                Model model) {
-
-        switch (action) {
-            case "addExperience" -> resumeService.addExperience(resumeForm);
-            case "addEducation" -> resumeService.addEducation(resumeForm);
-            case "addContact" -> resumeService.addContact(resumeForm);
-            case "save" -> {
-                if (bindingResult.hasErrors()) {
-                    break;
-                }
-                Long resumeId =  resumeService.createResume(resumeForm);
-                return "redirect:/resumes/" + resumeId;
-            }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
+            return "resume/create-resume";
         }
-
-        model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
-        return "resume/create-resume";
+        Long resumeId = resumeService.createResume(resumeForm);
+        return "redirect:/resumes/" + resumeId;
     }
 
     @GetMapping("{resumeId}/edit")
