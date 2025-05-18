@@ -1,5 +1,5 @@
 <#import "/spring.ftl" as spring>
-<#macro layout>
+<#macro layout showLanguageSwitcher=true>
     <!DOCTYPE html>
     <html lang="ru">
     <head>
@@ -8,6 +8,8 @@
         <title>JobSearch</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script src="https://kit.fontawesome.com/9b45ec162a.js" crossorigin="anonymous"></script>
+        <meta name="_csrf" content="${_csrf.token}" />
+        <meta name="_csrf_header" content="${_csrf.headerName}" />
     </head>
 
     <body class="bg-gray-100 min-h-screen">
@@ -29,51 +31,53 @@
                     </div>
                     <h1 class="text-xl font-bold">JobSearch</h1>
                 </a>
-                <div class="relative inline-block text-left language-switcher">
-                    <div>
-                        <button type="button"
-                                class="cursor-pointer inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white hover:hover:text-blue-200"
-                                id="language-menu-button" aria-expanded="false" aria-haspopup="true">
-                            <#if springMacroRequestContext.locale.language == 'ru'>
-                                ru
-                            <#elseif springMacroRequestContext.locale.language == 'en'>
-                                en
-                            <#elseif springMacroRequestContext.locale.language == 'el'>
-                                el
-                            <#else>
-                                Выбрать язык
-                            </#if>
-                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                 fill="currentColor" aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                      clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </div>
+                <#if showLanguageSwitcher>
+                    <div class="relative inline-block text-left language-switcher">
+                        <div>
+                            <button type="button"
+                                    class="cursor-pointer inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white hover:hover:text-blue-200"
+                                    id="language-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <#if springMacroRequestContext.locale.language == 'ru'>
+                                    ru
+                                <#elseif springMacroRequestContext.locale.language == 'en'>
+                                    en
+                                <#elseif springMacroRequestContext.locale.language == 'el'>
+                                    el
+                                <#else>
+                                    Выбрать язык
+                                </#if>
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                                     fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                          clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
 
-                    <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-blue-200 ring-opacity-5 focus:outline-none"
-                         role="menu" aria-orientation="vertical" aria-labelledby="language-menu-button" tabindex="-1"
-                         id="language-dropdown">
-                        <div class="py-1" role="none">
-                            <a href="#" data-lang="ru"
-                               class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'ru'>bg-gray-100 font-medium</#if>"
-                               role="menuitem" tabindex="-1">
-                                <span class="inline-block w-5 mr-2">🇷🇺</span> Русский
-                            </a>
-                            <a href="#" data-lang="en"
-                               class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'en'>bg-gray-100 font-medium</#if>"
-                               role="menuitem" tabindex="-1">
-                                <span class="inline-block w-5 mr-2">🇬🇧</span> English
-                            </a>
-                            <a href="#" data-lang="el"
-                               class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'el'>bg-gray-100 font-medium</#if>"
-                               role="menuitem" tabindex="-1">
-                                <span class="inline-block w-5 mr-2">🇬🇷</span> Ελληνικά
-                            </a>
+                        <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-blue-200 ring-opacity-5 focus:outline-none"
+                             role="menu" aria-orientation="vertical" aria-labelledby="language-menu-button" tabindex="-1"
+                             id="language-dropdown">
+                            <div class="py-1" role="none">
+                                <a href="#" data-lang="ru"
+                                   class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'ru'>bg-gray-100 font-medium</#if>"
+                                   role="menuitem" tabindex="-1">
+                                    <span class="inline-block w-5 mr-2">🇷🇺</span> Русский
+                                </a>
+                                <a href="#" data-lang="en"
+                                   class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'en'>bg-gray-100 font-medium</#if>"
+                                   role="menuitem" tabindex="-1">
+                                    <span class="inline-block w-5 mr-2">🇬🇧</span> English
+                                </a>
+                                <a href="#" data-lang="el"
+                                   class="language-option text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100 <#if springMacroRequestContext.locale.language == 'el'>bg-gray-100 font-medium</#if>"
+                                   role="menuitem" tabindex="-1">
+                                    <span class="inline-block w-5 mr-2">🇬🇷</span> Ελληνικά
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </#if>
             </div>
 
             <#if user??>

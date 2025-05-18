@@ -125,7 +125,7 @@
                             <i class="fas fa-sign-in-alt mr-2"></i><@spring.message "vacancy.actions.login"/>
                         </a>
                     <#elseif currentUser.role.id == 2>
-                        <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium flex items-center">
+                        <button id="vacancy-apply-btn" class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium flex items-center">
                             <i class="fas fa-paper-plane mr-2"></i><@spring.message "vacancy.actions.apply"/>
                         </button>
                     </#if>
@@ -134,16 +134,23 @@
         </div>
     </div>
 
-    <#function getPluralForm number singular dual plural>
-        <#assign mod10 = number % 10 />
-        <#assign mod100 = number % 100 />
+    <div id="message-storage" class="hidden">
+        <div data-key="resume.choose"><@spring.message "response.resume.choose" /></div>
+        <div data-key="resume.empty"><@spring.message "response.resume.empty" /></div>
+        <div data-key="resume.create"><@spring.message "response.resume.create" /></div>
+        <div data-key="apply"><@spring.message "response.apply" /></div>
+        <div data-key="user.error"><@spring.message "response.user.error" /></div>
+        <div data-key="resume.error"><@spring.message "response.resume.error" /></div>
+        <div data-key="work-exp.empty"><@spring.message "response.resume.work-exp.empty" /></div>
+        <div data-key="sending"><@spring.message "response.sending" /></div>
+        <div data-key="fail"><@spring.message "response.fail" /></div>
+        <div data-key="success"><@spring.message "response.success" /></div>
+        <div data-key="ready"><@spring.message "response.ready" /></div>
+        <div data-key="page"><@spring.message "pagination.page" /></div>
+        <div data-key="of"><@spring.message "pagination.of" /></div>
+        <div data-key="resume.create.submit"><@spring.message "resume.create.submit" /></div>
 
-        <#if mod10 == 1 && mod100 != 11>
-            <#return singular />
-        <#elseif (mod10 >= 2 && mod10 <= 4) && (mod100 < 10 || mod100 >= 20)>
-            <#return dual />
-        <#else>
-            <#return plural />
-        </#if>
-    </#function>
+    </div>
+
+    <script src="../../static/js/response.js"></script>
 </@main.layout>
