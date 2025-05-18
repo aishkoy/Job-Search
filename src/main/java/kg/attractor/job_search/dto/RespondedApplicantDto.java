@@ -21,5 +21,6 @@ public class RespondedApplicantDto {
     VacancyDto vacancy;
 
     @NotNull
-    Boolean confirmation;
+    @Builder.Default
+    Boolean confirmation = false;
 }
