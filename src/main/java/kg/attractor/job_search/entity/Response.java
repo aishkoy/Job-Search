@@ -12,8 +12,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 @Entity
-@Table(name = "responded_applicants")
-public class RespondedApplicant {
+@Table(name = "responses")
+public class Response {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

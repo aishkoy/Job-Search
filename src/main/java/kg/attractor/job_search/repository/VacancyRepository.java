@@ -26,7 +26,7 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
     List<Vacancy> findAllByOrderByCreatedAtDesc();
 
     @Query("SELECT v FROM Vacancy v " +
-            "JOIN RespondedApplicant ra ON ra.vacancy.id = v.id " +
+            "JOIN Response ra ON ra.vacancy.id = v.id " +
             "JOIN Resume r ON ra.resume.id = r.id " +
             "WHERE r.applicant.id = :applicantId")
     List<Vacancy> findVacanciesAppliedByUserId(Long applicantId);
@@ -40,7 +40,7 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
     Page<Vacancy> findAllByCategoryId(Long categoryId, Pageable pageable);
 
     @Query("SELECT v FROM Vacancy v " +
-            "JOIN RespondedApplicant ra ON ra.vacancy.id = v.id " +
+            "JOIN Response ra ON ra.vacancy.id = v.id " +
             "JOIN Resume r ON ra.resume.id = r.id " +
             "WHERE r.applicant.id = :applicantId")
     Page<Vacancy> findVacanciesAppliedByUserId(@Param("applicantId") Long applicantId, Pageable pageable);

@@ -30,7 +30,15 @@ public class Message {
     Timestamp timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "responded_applicant_id",
+    @JoinColumn(name = "response_id",
             nullable = false)
-    RespondedApplicant respondedApplicant;
+    Response response;
+
+    @Column(name = "is_read",
+            nullable = false)
+    Boolean isRead;
+
+    @Column(name = "is_applicant",
+            nullable = false)
+    Boolean isApplicant;
 }

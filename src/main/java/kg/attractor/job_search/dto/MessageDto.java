@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -20,9 +21,16 @@ public class MessageDto {
     @NotBlank
     String content;
 
-    @NotNull @NotBlank
-    Timestamp timestamp;
+    @NotNull
+    @Builder.Default
+    Timestamp timestamp = Timestamp.from(Instant.now());
 
     @NotNull
-    RespondedApplicantDto respondedApplicant;
+    ResponseDto response;
+
+    @NotNull
+    Boolean isRead;
+
+    @NotNull
+    Boolean isApplicant;
 }

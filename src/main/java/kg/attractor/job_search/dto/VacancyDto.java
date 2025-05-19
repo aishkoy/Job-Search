@@ -55,5 +55,5 @@ public class VacancyDto {
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 
-    List<RespondedApplicantDto> responses;
+    List<ResponseDto> responses;
 }

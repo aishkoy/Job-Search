@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-public class RespondedApplicantDto {
+public class ResponseDto {
     Long id;
 
     @NotNull
@@ -22,5 +22,5 @@ public class RespondedApplicantDto {
 
     @NotNull
     @Builder.Default
-    Boolean confirmation = false;
+    Boolean isConfirmed = false;
 }

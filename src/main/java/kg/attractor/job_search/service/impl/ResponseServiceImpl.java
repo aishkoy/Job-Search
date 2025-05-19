@@ -1,11 +1,11 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.entity.RespondedApplicant;
+import kg.attractor.job_search.entity.Response;
 import kg.attractor.job_search.entity.Resume;
 import kg.attractor.job_search.entity.Vacancy;
 import kg.attractor.job_search.exception.AlreadyRespondedException;
 import kg.attractor.job_search.exception.IncorrectCategoryException;
-import kg.attractor.job_search.repository.RespondedApplicantRepository;
+import kg.attractor.job_search.repository.ResponseRepository;
 import kg.attractor.job_search.service.ResponseService;
 import kg.attractor.job_search.service.ResumeService;
 import kg.attractor.job_search.service.VacancyService;
@@ -21,7 +21,7 @@ import java.util.Locale;
 public class ResponseServiceImpl implements ResponseService {
     private final VacancyService vacancyService;
     private final ResumeService resumeService;
-    private final RespondedApplicantRepository responseRepository;
+    private final ResponseRepository responseRepository;
     private final MessageSource messageSource;
 
     @Override
@@ -40,7 +40,7 @@ public class ResponseServiceImpl implements ResponseService {
             throw new IncorrectCategoryException(messageSource.getMessage("response.category.error", null, locale));
         }
 
-        RespondedApplicant respondedApplicant = RespondedApplicant.builder()
+        Response respondedApplicant = Response.builder()
                 .vacancy(vacancy)
                 .resume(resume)
                 .isConfirmed(false)

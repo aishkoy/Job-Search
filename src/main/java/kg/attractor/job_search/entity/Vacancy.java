@@ -62,5 +62,5 @@ public class Vacancy {
     Timestamp updatedAt;
 
     @OneToMany(mappedBy = "vacancy", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    List<RespondedApplicant> responses;
+    List<Response> responses;
 }

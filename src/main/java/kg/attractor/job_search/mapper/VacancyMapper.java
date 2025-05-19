@@ -6,7 +6,7 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring",
-        uses = {RespondedApplicantMapper.class},
+        uses = {ResponseMapper.class},
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface VacancyMapper {
 
