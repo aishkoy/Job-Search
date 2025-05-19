@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-@Service
+@Service("responseService")
 @Slf4j
 @RequiredArgsConstructor
 public class ResponseServiceImpl implements ResponseService {
@@ -35,7 +35,7 @@ public class ResponseServiceImpl implements ResponseService {
     private final ResponseMapper responseMapper;
 
     @Override
-    public boolean hasAccessToResponse(Long userId, Long responseId) {
+    public Boolean isChatParticipant(Long responseId, Long userId) {
         ResponseDto responseDto = getResponseById(responseId);
         Long applicantId = responseDto.getResume().getApplicant().getId();
         Long employerId = responseDto.getVacancy().getEmployer().getId();

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 
 
 public interface ResponseService {
-    boolean hasAccessToResponse(Long userId, Long responseId);
+    Boolean isChatParticipant(Long responseId, Long userId);
 
     Response getEntityById(Long id);
 
