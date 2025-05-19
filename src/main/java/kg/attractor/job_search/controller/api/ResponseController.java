@@ -16,21 +16,33 @@ public class ResponseController {
     private final ResponseService responseService;
     private final UserService userService;
 
-    @PostMapping("{vacancyId}")
+    @GetMapping("{responseId}")
+    public ResponseEntity<ResponseDto> getResponseById(@PathVariable Long responseId) {
+        return ResponseEntity.ok(responseService.getResponseById(responseId));
+    }
+
+    @PostMapping("vacancies/{vacancyId}")
     public ResponseEntity<Long> applyVacancy(@PathVariable("vacancyId") Long vacancyId, @RequestParam("resumeId") Long resumeId) {
         return ResponseEntity.ofNullable(responseService.applyVacancy(vacancyId, resumeId, userService.getAuthId()));
     }
 
-    @GetMapping("{vacancyId}/applicants/{applicantId}")
+    @GetMapping("vacancies/{vacancyId}/applicants/{applicantId}")
     public ResponseEntity<Boolean> isApplicantApplied(@PathVariable("vacancyId") Long vacancyId, @PathVariable("applicantId") Long applicantId) {
         return ResponseEntity.ofNullable(responseService.isApplicantApplied(vacancyId, applicantId));
     }
 
-    @GetMapping("{vacancyId}")
+    @GetMapping("vacancies/{vacancyId}")
     public ResponseEntity<Page<ResponseDto>> getResponsesByVacancyId(@PathVariable("vacancyId") Long vacancyId,
                                                                      @RequestParam(required = false, defaultValue = "1") Integer page,
                                                                      @RequestParam(required = false, defaultValue = "3") Integer size) {
         return ResponseEntity.ofNullable(responseService.getResponsesByVacancyId(vacancyId, page, size));
+    }
+
+    @GetMapping("resumes/{resumeId}")
+    public ResponseEntity<Page<ResponseDto>> getResponsesByResumeId(@PathVariable("resumeId") Long resumeId,
+                                                                     @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                     @RequestParam(required = false, defaultValue = "3") Integer size) {
+        return ResponseEntity.ofNullable(responseService.getResponsesByResumeId(resumeId, page, size));
     }
 
     @GetMapping("employers/{employerId}/count")

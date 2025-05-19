@@ -5,6 +5,7 @@ import kg.attractor.job_search.service.interfaces.UserService;
 import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.service.interfaces.VacancyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,6 @@ public class VacancyController {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryName(name));
     }
 
-    @GetMapping("employers/{id}")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long id) {
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(id));
-    }
-
     @PostMapping
     public ResponseEntity<Long> createVacancy(@RequestBody @Valid VacancyDto vacancyDto) {
         vacancyDto.setEmployer(adapter.getAuthUser());
@@ -58,6 +54,13 @@ public class VacancyController {
     public ResponseEntity<Long> updateVacancy(@PathVariable("id") Long vacancyId, @RequestBody @Valid VacancyDto vacancyDto) {
         vacancyDto.setEmployer(adapter.getAuthUser());
         return ResponseEntity.ofNullable(vacancyService.updateVacancy(vacancyId, vacancyDto));
+    }
+
+    @GetMapping("employers/{id}")
+    public ResponseEntity<Page<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long userId,
+                                                                   @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                   @RequestParam(required = false, defaultValue = "2") Integer size) {
+        return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(userId, page, size));
     }
 
     @DeleteMapping("{id}")
