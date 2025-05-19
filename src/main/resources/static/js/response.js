@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const applyBtn = document.getElementById('vacancy-apply-btn');
-    if (!applyBtn) return;
-
     const vacancyId = window.location.pathname.split('/').pop();
     const pageSize = 3;
     let currentUserId = null;
     let currentPage = 1;
     let totalPages = 0;
     let selectedResumeId = null;
+
+    const actionsContainer = document.getElementById('vacancy-actions-container');
+    if (!actionsContainer) return;
 
     const modal = createModal();
     const elements = {
@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
         pageInfo: document.getElementById('page-info')
     };
 
-    applyBtn.addEventListener('click', openModal);
+    initializeUserStatus();
+
     elements.closeBtn.addEventListener('click', closeModal);
     elements.submitBtn.addEventListener('click', applyForVacancy);
     elements.prevPageBtn.addEventListener('click', () => navigatePage(-1));
@@ -36,6 +37,46 @@ document.addEventListener('DOMContentLoaded', function () {
             modal.classList.add('hidden');
         }
     });
+
+    async function initializeUserStatus() {
+        try {
+            currentUserId = await fetchCurrentUser();
+            if (!currentUserId) return;
+
+            const response = await fetch(`/api/responses/${vacancyId}/applicants/${currentUserId}`);
+            if (!response.ok) {
+                console.error('Ошибка при проверке отклика');
+                return;
+            }
+
+            const hasApplied = await response.json();
+
+            renderActionButton(hasApplied);
+
+        } catch (error) {
+            console.error('Ошибка при проверке статуса отклика:', error);
+            renderActionButton(false);
+        }
+    }
+
+    function renderActionButton(hasApplied) {
+        if (hasApplied) {
+            actionsContainer.innerHTML = `
+                <a href="/messages/vacancy/${vacancyId}" 
+                   class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium flex items-center">
+                    <i class="fas fa-comments mr-2"></i>${getMessage('chat', 'Перейти в чат')}
+                </a>
+            `;
+        } else {
+            actionsContainer.innerHTML = `
+                <button id="vacancy-apply-btn" 
+                        class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium flex items-center">
+                    <i class="fas fa-paper-plane mr-2"></i>${getMessage('apply', 'Откликнуться')}
+                </button>
+            `;
+            document.getElementById('vacancy-apply-btn').addEventListener('click', openModal);
+        }
+    }
 
     function createModal() {
         const modal = document.createElement('div');
@@ -94,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
         elements.modalContent.classList.remove('scale-95');
 
         try {
-            currentUserId = await fetchCurrentUser();
             await fetchResumes(currentUserId, currentPage, pageSize);
         } catch (error) {
             handleError(error, getMessage('user.error', 'Не удалось загрузить данные пользователя.'));
@@ -325,7 +365,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             showSuccessMessage();
-            setTimeout(closeModal, 2000);
+
+            setTimeout(() => {
+                closeModal();
+                renderActionButton(true);
+            }, 2000);
+
         } catch (error) {
             elements.submitBtn.disabled = false;
             elements.submitBtn.innerHTML = getMessage('apply', 'Откликнуться');

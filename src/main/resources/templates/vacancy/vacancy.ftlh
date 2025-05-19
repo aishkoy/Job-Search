@@ -125,9 +125,11 @@
                             <i class="fas fa-sign-in-alt mr-2"></i><@spring.message "vacancy.actions.login"/>
                         </a>
                     <#elseif currentUser.role.id == 2>
-                        <button id="vacancy-apply-btn" class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium flex items-center">
-                            <i class="fas fa-paper-plane mr-2"></i><@spring.message "vacancy.actions.apply"/>
-                        </button>
+                        <div id="vacancy-actions-container">
+                            <button id="vacancy-apply-btn" class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i><@spring.message "vacancy.actions.apply"/>
+                            </button>
+                        </div>
                     </#if>
                 </div>
             </div>
@@ -149,8 +151,8 @@
         <div data-key="page"><@spring.message "pagination.page" /></div>
         <div data-key="of"><@spring.message "pagination.of" /></div>
         <div data-key="resume.create.submit"><@spring.message "resume.create.submit" /></div>
-
+        <div data-key="chat"><@spring.message "response.chat" /></div>
     </div>
 
-    <script src="../../static/js/response.js"></script>
+    <script src="/static/js/response.js"></script>
 </@main.layout>
