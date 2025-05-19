@@ -38,7 +38,7 @@ public class Message {
             nullable = false)
     Boolean isRead;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id",
             nullable = false)
     User user;
