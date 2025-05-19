@@ -38,7 +38,8 @@ public class Message {
             nullable = false)
     Boolean isRead;
 
-    @Column(name = "is_applicant",
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",
             nullable = false)
-    Boolean isApplicant;
+    User user;
 }

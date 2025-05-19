@@ -2,6 +2,7 @@ package kg.attractor.job_search.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import kg.attractor.job_search.dto.user.UserDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -32,5 +33,5 @@ public class MessageDto {
     Boolean isRead;
 
     @NotNull
-    Boolean isApplicant;
+    UserDto user;
 }
