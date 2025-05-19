@@ -92,10 +92,13 @@
                                     <a href="/applicants" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-users mr-2"></i> <@spring.message "layout.nav.applicants"/>
                                     </a>
+                                    <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span id="unread-messages-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                                    </a>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <a href="/employers/${currentUserId}"
-                                       class="text-white hover:text-blue-200 flex items-center">
+                                    <a href="/employers/${currentUserId}" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-user mr-2"></i>
                                     </a>
                                 </div>
@@ -108,10 +111,13 @@
                                     <a href="/employers" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-users mr-2"></i> <@spring.message "layout.nav.employers"/>
                                     </a>
+                                    <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span id="unread-messages-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                                    </a>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <a href="/applicants/${currentUserId}"
-                                       class="text-white hover:text-blue-200 flex items-center">
+                                    <a href="/applicants/${currentUserId}" class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-user mr-2"></i>
                                     </a>
                                 </div>
@@ -217,6 +223,7 @@
     </footer>
 
     <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
     <script>
         document.getElementById('language-menu-button').addEventListener('click', function () {
             const dropdown = document.getElementById('language-dropdown');
@@ -260,18 +267,20 @@
                         console.error('Error updating language:', error);
                     })
                     .finally(() => {
-                        // Обновляем параметр языка в URL и перезагружаем страницу
                         currentUrl.searchParams.set('lang', lang);
                         window.location.href = currentUrl.toString();
                     });
             });
         });
     </script>
+
+    <script src="/static/js/unread-messages-counter.js"></script>
+    <script>
+        const isUserLoggedIn = ${known?string('true', 'false')};
+    </script>
     </body>
     </html>
 </#macro>
-
-
 
 <#macro csrf>
     <#if _csrf??>
