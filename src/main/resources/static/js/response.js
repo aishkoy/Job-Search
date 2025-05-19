@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
             currentUserId = await fetchCurrentUser();
             if (!currentUserId) return;
 
-            const response = await fetch(`/api/responses/${vacancyId}/applicants/${currentUserId}`);
+            const response = await fetch(`/api/responses/vacancies/${vacancyId}/applicants/${currentUserId}`);
             if (!response.ok) {
                 console.error('Ошибка при проверке отклика');
                 return;
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderActionButton(hasApplied) {
         if (hasApplied) {
             actionsContainer.innerHTML = `
-                <a href="/messages/vacancy/${vacancyId}" 
+                <a href="/chat" 
                    class="mt-4 md:mt-0 bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition font-medium flex items-center">
                     <i class="fas fa-comments mr-2"></i>${getMessage('chat', 'Перейти в чат')}
                 </a>
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const headers = {'Content-Type': 'application/json'};
             if (token && header) headers[header] = token;
 
-            const response = await fetch(`/api/responses/${vacancyId}?resumeId=${selectedResumeId}`, {
+            const response = await fetch(`/api/responses/vacancies/${vacancyId}?resumeId=${selectedResumeId}`, {
                 method: 'POST',
                 headers,
                 credentials: 'include'

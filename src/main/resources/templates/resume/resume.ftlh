@@ -176,16 +176,6 @@
                     <p class="text-gray-500 italic"><@spring.message "resume.education.notSpecified"/></p>
                 </#if>
             </div>
-
-            <div class="p-6 bg-gray-50">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <#if currentUser?? && currentUser.role.id == 1>
-                        <button class="mt-4 md:mt-0 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition font-medium">
-                            <i class="fas fa-paper-plane mr-2"></i><@spring.message "resume.actions.invite"/>
-                        </button>
-                    </#if>
-                </div>
-            </div>
         </div>
     </div>
 </@main.layout>

@@ -365,7 +365,7 @@
                         <div class="flex justify-center items-center mt-6 gap-2">
                             <!-- Информация о пагинации -->
                             <div class="text-gray-500 text-sm mr-4">
-                                <@spring.message "pagination.page"/> ${vacanciesPage.number + 1} <@spring.message "pagination.of.status.active"/> ${vacanciesPage.totalPages}
+                                <@spring.message "pagination.page"/> ${vacanciesPage.number + 1} <@spring.message "pagination.of"/> ${vacanciesPage.totalPages}
                             </div>
 
                             <!-- Кнопка "Предыдущая страница" -->
