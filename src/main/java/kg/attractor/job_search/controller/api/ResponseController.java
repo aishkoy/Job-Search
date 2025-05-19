@@ -21,6 +21,11 @@ public class ResponseController {
         return ResponseEntity.ofNullable(responseService.applyVacancy(vacancyId, resumeId, userService.getAuthId()));
     }
 
+    @GetMapping("{vacancyId}/applicants/{applicantId}")
+    public ResponseEntity<Boolean> isApplicantApplied(@PathVariable("vacancyId") Long vacancyId, @PathVariable("applicantId") Long applicantId) {
+        return ResponseEntity.ofNullable(responseService.isApplicantApplied(vacancyId, applicantId));
+    }
+
     @GetMapping("{vacancyId}")
     public ResponseEntity<Page<ResponseDto>> getResponsesByVacancyId(@PathVariable("vacancyId") Long vacancyId,
                                                                      @RequestParam(required = false, defaultValue = "1") Integer page,

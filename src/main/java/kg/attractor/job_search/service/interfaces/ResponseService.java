@@ -13,4 +13,6 @@ public interface ResponseService {
     Integer getResponseCountByApplicantId(Long applicantId, boolean isConfirmed);
 
     Integer getResponseCountByEmployerId(Long employerId, boolean isConfirmed);
+
+    Boolean isApplicantApplied(Long vacancyId, Long applicantId);
 }

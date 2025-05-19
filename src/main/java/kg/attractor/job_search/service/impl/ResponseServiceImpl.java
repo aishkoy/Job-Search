@@ -87,6 +87,11 @@ public class ResponseServiceImpl implements ResponseService {
         return responseRepository.countAllByVacancy_Employer_Id(employerId);
     }
 
+    @Override
+    public Boolean isApplicantApplied(Long vacancyId, Long applicantId) {
+        return responseRepository.existsByVacancy_IdAndResume_Applicant_Id(vacancyId, applicantId);
+    }
+
     private Pageable getPageable(Integer page, Integer size) {
         return PageRequest.of(page - 1, size);
     }
