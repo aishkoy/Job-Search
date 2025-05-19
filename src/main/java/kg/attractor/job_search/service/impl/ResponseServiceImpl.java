@@ -35,6 +35,27 @@ public class ResponseServiceImpl implements ResponseService {
     private final ResponseMapper responseMapper;
 
     @Override
+    public boolean hasAccessToResponse(Long userId, Long responseId) {
+        ResponseDto responseDto = getResponseById(responseId);
+        Long applicantId = responseDto.getResume().getApplicant().getId();
+        Long employerId = responseDto.getVacancy().getEmployer().getId();
+        return userId.equals(applicantId) || userId.equals(employerId);
+    }
+
+    @Override
+    public Response getEntityById(Long id) {
+        return responseRepository.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Отклик с id " + id + " не найден"));
+    }
+
+    @Override
+    public ResponseDto getResponseById(Long id) {
+        Response response = getEntityById(id);
+        log.info("Получен отклик с id {}", id);
+        return responseMapper.toDto(response);
+    }
+
+    @Override
     public Long applyVacancy(Long vacancyId, Long resumeId, Long applicantId) {
         Vacancy vacancy = vacancyService.getVacancyById(vacancyId);
         Resume resume = resumeService.getResumeById(resumeId, applicantId);
@@ -66,6 +87,13 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
+    public Page<ResponseDto> getResponsesByResumeId(Long resumeId, Integer page, Integer size) {
+        Pageable pageable = getPageable(page, size);
+        return getResponsePage(() -> responseRepository.findAllByResumeId(resumeId, pageable));
+
+    }
+
+    @Override
     public Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size) {
         Pageable pageable = getPageable(page, size);
         return getResponsePage(() -> responseRepository.findAllByResume_Applicant_Id(applicantId, pageable));
@@ -90,6 +118,22 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public Boolean isApplicantApplied(Long vacancyId, Long applicantId) {
         return responseRepository.existsByVacancy_IdAndResume_Applicant_Id(vacancyId, applicantId);
+    }
+
+    @Override
+    public ResponseDto getResponseByVacancyIdAndUserId(Long vacancyId, Long authId) {
+        Response response = responseRepository.findByVacancyIdAndUserId(vacancyId, authId)
+                .orElseThrow(() -> new ResponseNotFoundException("Отклик не найден"));
+        log.info("Получен отклик по вакансии {} и пользователю {}", vacancyId, authId);
+        return responseMapper.toDto(response);
+    }
+
+    @Override
+    public Long getInterlocutorId(ResponseDto response, Long currentUserId) {
+        Long applicantId = response.getResume().getApplicant().getId();
+        Long employerId = response.getVacancy().getEmployer().getId();
+
+        return currentUserId.equals(applicantId) ? employerId : applicantId;
     }
 
     private Pageable getPageable(Integer page, Integer size) {
