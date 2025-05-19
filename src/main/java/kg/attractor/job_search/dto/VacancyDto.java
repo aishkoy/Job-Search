@@ -10,7 +10,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Getter
 @Setter
@@ -55,5 +54,5 @@ public class VacancyDto {
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 
-    List<ResponseDto> responses;
+    Integer responses;
 }

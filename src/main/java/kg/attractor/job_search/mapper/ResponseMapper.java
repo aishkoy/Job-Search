@@ -10,5 +10,6 @@ public interface ResponseMapper {
     @Mapping(target = "vacancy.responses", ignore = true)
     ResponseDto toDto(Response response);
 
+    @Mapping(target = "vacancy.responses", ignore = true)
     Response toEntity(ResponseDto dto);
 }
