@@ -1,9 +1,9 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.interfaces.UserService;
 import kg.attractor.job_search.dto.ResumeDto;
-import kg.attractor.job_search.service.ResumeService;
+import kg.attractor.job_search.service.interfaces.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

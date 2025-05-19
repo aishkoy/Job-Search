@@ -1,7 +1,7 @@
 package kg.attractor.job_search.controller.api;
 
 import kg.attractor.job_search.dto.ContactTypeDto;
-import kg.attractor.job_search.service.ContactTypeService;
+import kg.attractor.job_search.service.interfaces.ContactTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

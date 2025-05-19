@@ -2,7 +2,7 @@ package kg.attractor.job_search.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.interfaces.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.SimpleLocaleContext;

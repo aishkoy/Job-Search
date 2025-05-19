@@ -3,7 +3,7 @@ package kg.attractor.job_search.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import kg.attractor.job_search.validation.ValidDateRange;
+import kg.attractor.job_search.validation.annotation.ValidDateRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

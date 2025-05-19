@@ -1,8 +1,8 @@
 package kg.attractor.job_search.service.impl;
 
 import jakarta.validation.ConstraintViolation;
-import kg.attractor.job_search.exception.handler.ErrorResponseBody;
-import kg.attractor.job_search.service.ErrorService;
+import kg.attractor.job_search.exception.model.ErrorResponseBody;
+import kg.attractor.job_search.service.interfaces.ErrorService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;

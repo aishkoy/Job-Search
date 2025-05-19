@@ -2,12 +2,12 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.entity.Vacancy;
-import kg.attractor.job_search.exception.VacancyNotFoundException;
+import kg.attractor.job_search.exception.nsee.VacancyNotFoundException;
 import kg.attractor.job_search.mapper.VacancyMapper;
 import kg.attractor.job_search.repository.VacancyRepository;
-import kg.attractor.job_search.service.CategoryService;
-import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.service.VacancyService;
+import kg.attractor.job_search.service.interfaces.CategoryService;
+import kg.attractor.job_search.service.interfaces.UserService;
+import kg.attractor.job_search.service.interfaces.VacancyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

@@ -2,8 +2,9 @@ package kg.attractor.job_search.exception.handler;
 
 import jakarta.validation.ConstraintViolationException;
 import kg.attractor.job_search.exception.AlreadyRespondedException;
-import kg.attractor.job_search.exception.IncorrectCategoryException;
-import kg.attractor.job_search.service.ErrorService;
+import kg.attractor.job_search.exception.iae.IncorrectCategoryException;
+import kg.attractor.job_search.exception.model.ErrorResponseBody;
+import kg.attractor.job_search.service.interfaces.ErrorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

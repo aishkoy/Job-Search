@@ -1,6 +1,6 @@
 package kg.attractor.job_search.util;
 
-import kg.attractor.job_search.exception.FileNotFoundException;
+import kg.attractor.job_search.exception.nsee.FileNotFoundException;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.springframework.core.io.ByteArrayResource;

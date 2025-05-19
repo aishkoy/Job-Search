@@ -2,7 +2,7 @@ package kg.attractor.job_search.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import kg.attractor.job_search.validation.ValidContactValue;
+import kg.attractor.job_search.validation.annotation.ValidContactValue;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

@@ -1,8 +1,8 @@
 package kg.attractor.job_search.controller.api;
 
 import kg.attractor.job_search.dto.ResponseDto;
-import kg.attractor.job_search.service.ResponseService;
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.interfaces.ResponseService;
+import kg.attractor.job_search.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

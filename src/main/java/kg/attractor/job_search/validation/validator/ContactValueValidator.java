@@ -3,7 +3,7 @@ package kg.attractor.job_search.validation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import kg.attractor.job_search.enums.ContactType;
-import kg.attractor.job_search.validation.ValidContactValue;
+import kg.attractor.job_search.validation.annotation.ValidContactValue;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

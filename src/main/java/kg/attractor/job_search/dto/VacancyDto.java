@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.validation.ValidExperienceRange;
+import kg.attractor.job_search.validation.annotation.ValidExperienceRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

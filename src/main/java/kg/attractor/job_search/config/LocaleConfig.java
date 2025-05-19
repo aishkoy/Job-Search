@@ -1,6 +1,6 @@
 package kg.attractor.job_search.config;
 
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

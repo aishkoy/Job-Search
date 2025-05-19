@@ -2,17 +2,15 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.entity.Resume;
-import kg.attractor.job_search.exception.EducationInfoNotFoundException;
+import kg.attractor.job_search.exception.nsee.EducationInfoNotFoundException;
 import kg.attractor.job_search.mapper.EducationInfoMapper;
 import kg.attractor.job_search.entity.EducationInfo;
 import kg.attractor.job_search.repository.EducationInfoRepository;
-import kg.attractor.job_search.service.EducationInfoService;
+import kg.attractor.job_search.service.interfaces.EducationInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
