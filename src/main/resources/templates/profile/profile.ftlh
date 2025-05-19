@@ -451,29 +451,28 @@
             </h3>
 
             <div class="space-y-4">
-                <#--                TODO мб когда-нибудь сделаю -->
-                <#if role == 2>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
-                                <i class="fas fa-envelope-open"></i>
-                            </div>
-                            <span class="text-gray-700"><@spring.message "profile.stats.invitations"/></span>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
+                            <i class="fas fa-paper-plane"></i>
                         </div>
-                        <span class="text-xl font-bold text-gray-800">0</span>
+                        <span class="text-gray-700"><@spring.message "profile.stats.responses"/></span>
                     </div>
-                <#else>
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
-                                <i class="fas fa-paper-plane"></i>
-                            </div>
-                            <span class="text-gray-700"><@spring.message "profile.stats.responses"/></span>
+                    <span id="responses" class="text-xl font-bold text-gray-800">0</span>
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg mt-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-3">
+                            <i class="fa-solid fa-check"></i>
                         </div>
-                        <span class="text-xl font-bold text-gray-800">0</span>
+                        <span class="text-gray-700"><@spring.message "profile.stats.approved.resumes"/></span>
                     </div>
-                </#if>
+                    <span id="responses-approved" class="text-xl font-bold text-gray-800">0</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <script src="/static/js/profile.js"></script>
 </@main.layout>
