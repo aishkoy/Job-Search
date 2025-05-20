@@ -23,7 +23,13 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
 
     int countAllByVacancy_Employer_Id(Long employerId);
 
+    Page<Response> findAllByVacancyEmployerId(Long employerId, Pageable pageable);
+
+    Page<Response> findAllByIsConfirmedTrueAndVacancyEmployerId(Long employerId, Pageable pageable);
+
     Page<Response> findAllByResume_Applicant_Id(Long applicantId, Pageable pageable);
+
+    Page<Response> findAllByIsConfirmedTrueAndResume_Applicant_Id(Long applicantId, Pageable pageable);
 
     Page<Response> findAllByVacancy_Id(Long vacancyId, Pageable pageable);
 

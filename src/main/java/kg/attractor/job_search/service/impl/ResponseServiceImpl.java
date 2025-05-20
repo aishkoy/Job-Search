@@ -94,8 +94,11 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
-    public Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size) {
+    public Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size, boolean isConfirmed) {
         Pageable pageable = getPageable(page, size);
+        if(isConfirmed){
+            return getResponsePage(() -> responseRepository.findAllByIsConfirmedTrueAndResume_Applicant_Id(applicantId, pageable));
+        }
         return getResponsePage(() -> responseRepository.findAllByResume_Applicant_Id(applicantId, pageable));
     }
 
@@ -121,19 +124,22 @@ public class ResponseServiceImpl implements ResponseService {
     }
 
     @Override
-    public ResponseDto getResponseByVacancyIdAndUserId(Long vacancyId, Long authId) {
-        Response response = responseRepository.findByVacancyIdAndUserId(vacancyId, authId)
-                .orElseThrow(() -> new ResponseNotFoundException("Отклик не найден"));
-        log.info("Получен отклик по вакансии {} и пользователю {}", vacancyId, authId);
-        return responseMapper.toDto(response);
+    public Page<ResponseDto> getResponsesByEmployerId(Long employerId, Integer page, Integer size, boolean isConfirmed) {
+        Pageable pageable = getPageable(page, size);
+        if(isConfirmed){
+            return getResponsePage(() -> responseRepository.findAllByIsConfirmedTrueAndVacancyEmployerId(employerId, pageable));
+        }
+        return getResponsePage(() -> responseRepository.findAllByVacancyEmployerId(employerId, pageable));
     }
 
     @Override
-    public Long getInterlocutorId(ResponseDto response, Long currentUserId) {
-        Long applicantId = response.getResume().getApplicant().getId();
-        Long employerId = response.getVacancy().getEmployer().getId();
-
-        return currentUserId.equals(applicantId) ? employerId : applicantId;
+    public ResponseDto approveOrDismissResponse(Long responseId) {
+        ResponseDto responseDto = getResponseById(responseId);
+        Boolean isConfirmed = responseDto.getIsConfirmed().equals(Boolean.TRUE) ? Boolean.FALSE : Boolean.TRUE;
+        responseDto.setIsConfirmed(isConfirmed);
+        responseRepository.save(responseMapper.toEntity(responseDto));
+        log.info("Статус отклика с id {} был изменен", responseId);
+        return responseDto;
     }
 
     private Pageable getPageable(Integer page, Integer size) {

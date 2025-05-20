@@ -6,6 +6,7 @@ import kg.attractor.job_search.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -19,6 +20,12 @@ public class ResponseController {
     @GetMapping("{responseId}")
     public ResponseEntity<ResponseDto> getResponseById(@PathVariable Long responseId) {
         return ResponseEntity.ok(responseService.getResponseById(responseId));
+    }
+
+    @PreAuthorize("hasRole('EMPLOYER') and @responseService.isChatParticipant(#responseId, authentication.principal.userId)")
+    @PutMapping("{responseId}")
+    public ResponseEntity<ResponseDto> approveOrDismissResponse(@PathVariable Long responseId) {
+        return ResponseEntity.ok(responseService.approveOrDismissResponse(responseId));
     }
 
     @PostMapping("vacancies/{vacancyId}")
@@ -40,22 +47,32 @@ public class ResponseController {
 
     @GetMapping("resumes/{resumeId}")
     public ResponseEntity<Page<ResponseDto>> getResponsesByResumeId(@PathVariable("resumeId") Long resumeId,
-                                                                     @RequestParam(required = false, defaultValue = "1") Integer page,
-                                                                     @RequestParam(required = false, defaultValue = "3") Integer size) {
+                                                                    @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                    @RequestParam(required = false, defaultValue = "3") Integer size) {
         return ResponseEntity.ofNullable(responseService.getResponsesByResumeId(resumeId, page, size));
     }
 
-    @GetMapping("employers/{employerId}/count")
-    public ResponseEntity<Integer> getResponsesByEmployerId(@PathVariable("employerId") Long employerId,
-                                                            @RequestParam(required = false, defaultValue = "false") boolean isConfirmed){
-        return ResponseEntity.ofNullable(responseService.getResponseCountByEmployerId(employerId, isConfirmed));
+    @GetMapping("employers/{employerId}")
+    public ResponseEntity<Page<ResponseDto>> getResponsesByEmployerId(@PathVariable("employerId") Long employerId,
+                                                                      @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                      @RequestParam(required = false, defaultValue = "3") Integer size,
+                                                                      @RequestParam(required = false, defaultValue = "false") boolean isConfirmed) {
+        return ResponseEntity.ofNullable(responseService.getResponsesByEmployerId(employerId, page, size, isConfirmed));
     }
+
 
     @GetMapping("applicants/{applicantId}")
     public ResponseEntity<Page<ResponseDto>> getResponsesByApplicantId(@PathVariable("applicantId") Long applicantId,
                                                                        @RequestParam(required = false, defaultValue = "1") Integer page,
-                                                                       @RequestParam(required = false, defaultValue = "3") Integer size) {
-        return ResponseEntity.ofNullable(responseService.getResponsesByApplicantId(applicantId, page, size));
+                                                                       @RequestParam(required = false, defaultValue = "3") Integer size,
+                                                                       @RequestParam(required = false, defaultValue = "false") boolean isConfirmed) {
+        return ResponseEntity.ofNullable(responseService.getResponsesByApplicantId(applicantId, page, size, isConfirmed));
+    }
+
+    @GetMapping("employers/{employerId}/count")
+    public ResponseEntity<Integer> getResponsesCountByEmployerId(@PathVariable("employerId") Long employerId,
+                                                                 @RequestParam(required = false, defaultValue = "false") boolean isConfirmed) {
+        return ResponseEntity.ofNullable(responseService.getResponseCountByEmployerId(employerId, isConfirmed));
     }
 
     @GetMapping("applicants/{applicantId}/count")

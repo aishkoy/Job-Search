@@ -4,41 +4,32 @@
 <@layout.layout>
     <div class="container mx-auto py-8 px-4">
         <div class="max-w-4xl mx-auto">
-            <!-- Back button -->
             <div class="mb-4">
                 <a href="javascript:history.back()" class="inline-flex items-center text-blue-600 hover:text-blue-800">
                     <i class="fas fa-arrow-left mr-2"></i> <@spring.message "chat.back"/>
                 </a>
             </div>
 
-            <!-- Chat room -->
             <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <!-- Chat header -->
                 <div class="bg-gray-50 p-4 border-b">
                     <div class="flex justify-between items-center">
                         <div>
                             <h2 id="chat-title" class="font-semibold text-lg text-gray-800">
-                                <!-- Title loaded via JS -->
                             </h2>
                             <p id="chat-subtitle" class="text-gray-600 text-sm">
-                                <!-- Subtitle loaded via JS -->
                             </p>
                         </div>
                         <div id="chat-status">
-                            <!-- Status loaded via JS -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Chat messages -->
                 <div id="messages-container" class="p-4 h-96 overflow-y-auto">
-                    <!-- Messages will be loaded here via JavaScript -->
                     <div class="flex justify-center">
                         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                     </div>
                 </div>
 
-                <!-- Message input -->
                 <div class="border-t p-4">
                     <form id="message-form" class="flex">
                         <input type="text" id="message-input" class="flex-grow border border-gray-300 rounded-l-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="<@spring.message "chat.message.placeholder"/>">
@@ -51,13 +42,10 @@
         </div>
     </div>
 
-    <!-- Import SockJS and STOMP -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-    <!-- Переменные для JavaScript -->
     <script>
-        // Локализованные сообщения
         const messages = {
             statusConfirmed: '<@spring.message "chat.status.confirmed"/>',
             statusPending: '<@spring.message "chat.status.pending"/>',
@@ -67,11 +55,9 @@
             you: '<@spring.message "chat.you"/>'
         };
 
-        // CSRF токен для запросов
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
     </script>
 
-    <!-- Подключение скрипта чат-комнаты -->
     <script src="/static/js/chat-room.js"></script>
 </@layout.layout>

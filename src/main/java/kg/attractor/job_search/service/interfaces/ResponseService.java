@@ -18,7 +18,7 @@ public interface ResponseService {
 
     Page<ResponseDto> getResponsesByResumeId(Long resumeId, Integer page, Integer size);
 
-    Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size);
+    Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size, boolean isConfirmed);
 
     Integer getResponseCountByApplicantId(Long applicantId, boolean isConfirmed);
 
@@ -26,7 +26,7 @@ public interface ResponseService {
 
     Boolean isApplicantApplied(Long vacancyId, Long applicantId);
 
-    ResponseDto getResponseByVacancyIdAndUserId(Long vacancyId, Long authId);
+    Page<ResponseDto> getResponsesByEmployerId(Long employerId, Integer page, Integer size, boolean isConfirmed);
 
-    Long getInterlocutorId(ResponseDto response, Long currentUserId);
+    ResponseDto approveOrDismissResponse(Long responseId);
 }
