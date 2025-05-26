@@ -39,7 +39,7 @@
     </div>
 
     <script>
-        const messages = {
+        window.messages = {
             statusConfirmed: '<@spring.message "chat.status.confirmed"/>',
             statusPending: '<@spring.message "chat.status.pending"/>',
             noResponses: '<@spring.message "chat.no.responses"/>',

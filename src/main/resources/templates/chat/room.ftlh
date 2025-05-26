@@ -46,7 +46,7 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
     <script>
-        const messages = {
+        window.messages = {
             statusConfirmed: '<@spring.message "chat.status.confirmed"/>',
             statusPending: '<@spring.message "chat.status.pending"/>',
             noMessages: '<@spring.message "chat.no.messages"/>',
@@ -55,8 +55,8 @@
             you: '<@spring.message "chat.you"/>'
         };
 
-        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
+        window.csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
+        window.csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
     </script>
 
     <script src="/static/js/chat-room.js"></script>

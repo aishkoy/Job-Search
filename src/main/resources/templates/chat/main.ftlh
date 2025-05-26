@@ -26,11 +26,11 @@
     </div>
 
     <script>
-        const isEmployerRole = ${isEmployer?string('true', 'false')};
-        const noVacanciesMessage = '<@spring.message "chat.no.vacancies"/>';
-        const noResumesMessage = '<@spring.message "chat.no.resumes"/>';
-        const errorLoadingMessage = '<@spring.message "chat.error.loading"/>';
-        const retryMessage = '<@spring.message "chat.retry"/>';
+        window.isEmployerRole = ${isEmployer?string('true', 'false')};
+        window.noVacanciesMessage = '<@spring.message "chat.no.vacancies"/>';
+        window.noResumesMessage = '<@spring.message "chat.no.resumes"/>';
+        window.errorLoadingMessage = '<@spring.message "chat.error.loading"/>';
+        window.retryMessage = '<@spring.message "chat.retry"/>';
     </script>
 
     <script src="/static/js/chat-main.js"></script>
