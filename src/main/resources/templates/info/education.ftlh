@@ -5,10 +5,24 @@
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-6">
-                <h1 class="text-2xl font-bold flex items-center">
-                    <i class="fas fa-graduation-cap mr-2"></i>
-                    <#if mode == 'create'><@spring.message "education.create.title"/><#else><@spring.message "education.edit.title"/></#if>
-                </h1>
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        <#if mode == 'create'><@spring.message "education.create.title"/><#else><@spring.message "education.edit.title"/></#if>
+                    </h1>
+                    <#if mode == 'edit'>
+                        <form action="/resumes/${resumeId}/educations/${educationDto.id}/delete" method="post"
+                              onsubmit="return confirm('<@spring.message "education.delete.confirm"/>');"
+                              class="inline">
+                            <@main.csrf/>
+                            <button type="submit"
+                                    class="bg-red-600/80 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-red-700/90 transition font-medium"
+                                    title="<@spring.message "education.delete"/>">
+                                <i class="fas fa-trash-alt mr-2"></i><@spring.message "education.delete"/>
+                            </button>
+                        </form>
+                    </#if>
+                </div>
             </div>
 
             <form action="${action}" method="post" class="p-6 space-y-6">
@@ -22,7 +36,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "education.institution.label"/></label>
                     <@spring.formInput
                     "educationDto.institution",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
@@ -31,7 +45,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "education.program.label"/></label>
                     <@spring.formInput
                     "educationDto.program",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
@@ -54,7 +68,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "education.degree.label"/></label>
                     <@spring.formInput
                     "educationDto.degree",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
