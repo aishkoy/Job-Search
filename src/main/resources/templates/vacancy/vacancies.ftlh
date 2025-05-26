@@ -4,8 +4,7 @@
 
     <div class="bg-blue-600 text-white pb-6">
         <div class="container mx-auto px-4">
-            <#--TODO-->
-            <form action="#" method="get">
+            <form action="/vacancies" method="get" id="search-form">
                 <div class="flex items-center bg-white rounded-full p-2 shadow-md">
                     <i class="fas fa-search text-gray-500 ml-3 mr-2"></i>
                     <input
@@ -13,29 +12,41 @@
                             name="query"
                             placeholder="<@spring.message "vacancies.search.placeholder"/>"
                             class="flex-1 outline-none text-gray-800 py-2 px-1"
+                            value="${RequestParameters.query!''}"
                     >
                     <button type="submit" class="bg-gray-100 text-gray-600 p-2 rounded-full mr-1">
-                        <i class="fas fa-filter"></i>
+                        <i class="fas fa-search"></i>
                     </button>
+                    <#if RequestParameters.query??>
+                        <button type="button" onclick="window.VacancyFilters.update('query', '')"
+                                class="bg-red-100 text-red-600 p-2 rounded-full mr-1" title="Очистить поиск">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </#if>
                 </div>
             </form>
         </div>
     </div>
+
     <main class="container mx-auto px-4 py-6">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-2">
-                <form action="/vacancies" method="get" class="flex items-center space-x-2">
+                <form action="/vacancies" method="get" class="flex items-center space-x-2" id="sort-form">
                     <#if categoryId??>
                         <input type="hidden" name="categoryId" value="${categoryId}">
                     </#if>
                     <#if size??>
                         <input type="hidden" name="size" value="${size}">
                     </#if>
+                    <#if RequestParameters.query??>
+                        <input type="hidden" name="query" value="${RequestParameters.query}">
+                    </#if>
 
                     <label>
                         <select
                                 name="sortBy"
                                 class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                id="sort-by-select"
                         >
                             <option value="createdAt" <#if (sortBy!'createdAt') == 'createdAt'>selected</#if>>
                                 <@spring.message "vacancies.filter.sort.byDate"/>
@@ -47,10 +58,10 @@
                     </label>
 
                     <button
-                            type="submit"
-                            name="sortDirection"
-                            value="<#if (sortDirection!'desc') == 'desc'>asc<#else>desc</#if>"
+                            type="button"
+                            id="sort-direction-btn"
                             class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            data-direction="${sortDirection!'desc'}"
                     >
                         <#if (sortDirection!'desc') == 'desc'>
                             <i class="fas fa-sort-amount-down text-gray-600"></i>
@@ -61,7 +72,18 @@
                 </form>
             </div>
 
-            <div class="text-gray-500 text-sm"><@spring.message "vacancies.count"/>: ${vacancies.totalElements}</div>
+            <div class="flex items-center space-x-4">
+                <div class="text-gray-500 text-sm">
+                    <@spring.message "vacancies.count"/>: ${vacancies.totalElements}
+                </div>
+                <button
+                        onclick="window.VacancyFilters.clearAll()"
+                        class="text-red-600 hover:text-red-800 text-sm"
+                        title="<@spring.message "vacancies.filter.clear"/>">
+                    <i class="fas fa-times-circle mr-1"></i>
+                    <@spring.message "vacancies.filter.clear"/>
+                </button>
+            </div>
         </div>
 
         <div class="flex justify-between items-center mb-6">
@@ -70,13 +92,13 @@
 
         <#if categories?? && categories?size gt 0>
             <div class="flex flex-wrap gap-2 mb-4">
-                <a href="/vacancies<#if sortBy?? || sortDirection??>?sortBy=${sortBy!'createdAt'}&sortDirection=${sortDirection!'desc'}</#if>"
-                   class="px-3 py-1 rounded-full ${(categoryId??)?then('bg-gray-100 text-gray-700', 'bg-blue-600 text-white')}">
+                <a href="/vacancies<#if sortBy?? || sortDirection?? || RequestParameters.query??>?<#if sortBy??>sortBy=${sortBy}</#if><#if sortDirection??><#if sortBy??>&</#if>sortDirection=${sortDirection}</#if><#if RequestParameters.query??><#if sortBy?? || sortDirection??>&</#if>query=${RequestParameters.query}</#if></#if>"
+                   class="px-3 py-1 rounded-full ${(categoryId??)?then('bg-gray-100 text-gray-700', 'bg-blue-600 text-white')} category-link">
                     <@spring.message "vacancies.category.all"/>
                 </a>
                 <#list categories as category>
-                    <a href="/vacancies?categoryId=${category.id}<#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                       class="px-3 py-1 rounded-full ${(categoryId?? && categoryId == category.id)?then('bg-blue-600 text-white', 'bg-gray-100 text-gray-700')}">
+                    <a href="/vacancies?categoryId=${category.id}<#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                       class="px-3 py-1 rounded-full ${(categoryId?? && categoryId == category.id)?then('bg-blue-600 text-white', 'bg-gray-100 text-gray-700')} category-link">
                         ${category.name}
                     </a>
                 </#list>
@@ -148,8 +170,8 @@
 
                     <!-- Кнопка "Предыдущая страница" -->
                     <#if vacancies.number gt 0>
-                        <a href="?page=${vacancies.number}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                        <a href="?page=${vacancies.number}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors pagination-link">
                             <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
                         </a>
                     <#else>
@@ -163,8 +185,8 @@
                         <#assign startPage = ((vacancies.number - 2) gt 0)?then(vacancies.number - 2, 0)>
                         <#assign endPage = ((startPage + 4) lt vacancies.totalPages)?then(startPage + 4, vacancies.totalPages - 1)>
                         <#if startPage gt 0>
-                            <a href="?page=1<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                            <a href="?page=1<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors pagination-link">
                                 1
                             </a>
                             <#if startPage gt 1>
@@ -173,8 +195,8 @@
                         </#if>
 
                         <#list startPage..endPage as i>
-                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                               class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors">
+                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                               class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors pagination-link">
                                 ${i + 1}
                             </a>
                         </#list>
@@ -183,17 +205,16 @@
                             <#if endPage lt vacancies.totalPages - 2>
                                 <span class="px-2 py-2">...</span>
                             </#if>
-                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors pagination-link">
                                 ${vacancies.totalPages}
                             </a>
                         </#if>
                     </div>
 
-                    <!-- Кнопка "Следующая страница" -->
                     <#if vacancies.number lt vacancies.totalPages - 1>
-                        <a href="?page=${vacancies.number + 2}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if>"
-                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                        <a href="?page=${vacancies.number + 2}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
+                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors pagination-link">
                             <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
                         </a>
                     <#else>
@@ -211,4 +232,6 @@
             </#if>
         </div>
     </main>
+
+    <script src="/static/js/vacancies.js"></script>
 </@main.layout>
