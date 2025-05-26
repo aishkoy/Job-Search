@@ -130,7 +130,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<VacancyDto> getVacanciesByEmployerId(Long employer, int page, int size) {
-        Pageable pageable = createPageableWithSort(page, size, "createdAt", "asc");
+        Pageable pageable = createPageableWithSort(page, size, "updatedAt", "asc");
         return getVacancyDtoPage(() -> vacancyRepository.findAllByEmployerId(employer, pageable), "У данного работодателя пока нет вакансий!");
     }
 
@@ -150,9 +150,12 @@ public class VacancyServiceImpl implements VacancyService {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC
                 : Sort.Direction.DESC;
+
         return switch (sortBy) {
             case "responses" -> PageRequest.of(page - 1, size, direction, "responses");
-            default -> PageRequest.of(page - 1, size, direction, "createdAt");
+            case "salary" -> PageRequest.of(page - 1, size, direction, "salary");
+            case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
+            default -> PageRequest.of(page - 1, size, direction, "updatedAt");
         };
     }
 
@@ -161,7 +164,7 @@ public class VacancyServiceImpl implements VacancyService {
         Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
+                () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
                 "Вакансии по указанной категории не найдены!"
         );
     }

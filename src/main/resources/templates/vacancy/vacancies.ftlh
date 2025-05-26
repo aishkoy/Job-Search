@@ -48,8 +48,14 @@
                                 class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 id="sort-by-select"
                         >
-                            <option value="createdAt" <#if (sortBy!'createdAt') == 'createdAt'>selected</#if>>
+                            <option value="updatedAt" <#if (sortBy!'updatedAt') == 'updatedAt'>selected</#if>>
+                                <@spring.message "vacancies.filter.sort.byUpdatedAt"/>
+                            </option>
+                            <option value="createdAt" <#if sortBy == 'createdAt'>selected</#if>>
                                 <@spring.message "vacancies.filter.sort.byDate"/>
+                            </option>
+                            <option value="salary" <#if sortBy == 'salary'>selected</#if>>
+                                <@spring.message "vacancies.filter.sort.bySalary"/>
                             </option>
                             <option value="responses" <#if sortBy == 'responses'>selected</#if>>
                                 <@spring.message "vacancies.filter.sort.byResponses"/>
@@ -123,7 +129,11 @@
                             </div>
                             <div class="flex flex-col items-end justify-between">
                                 <span class="text-xs text-gray-400 mt-4">
-                                        ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
+                                          <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
+                                </span>
+
+                                <span class="text-xs text-gray-400 mt-4">
+                                          <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?datetime?string("dd.MM.yyyy")}
                                 </span>
                                 <span class="text-xs text-gray-400 mt-4">
                                         <@spring.message "vacancies.responses"/>: ${vacancy.responses!'0'}
