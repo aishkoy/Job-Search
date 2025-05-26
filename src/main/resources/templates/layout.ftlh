@@ -8,8 +8,8 @@
         <title>JobSearch</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script src="https://kit.fontawesome.com/9b45ec162a.js" crossorigin="anonymous"></script>
-        <meta name="_csrf" content="${_csrf.token}" />
-        <meta name="_csrf_header" content="${_csrf.headerName}" />
+        <meta name="_csrf" content="${_csrf.token}"/>
+        <meta name="_csrf_header" content="${_csrf.headerName}"/>
     </head>
 
     <body class="bg-gray-100 min-h-screen">
@@ -56,7 +56,8 @@
                         </div>
 
                         <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-blue-200 ring-opacity-5 focus:outline-none"
-                             role="menu" aria-orientation="vertical" aria-labelledby="language-menu-button" tabindex="-1"
+                             role="menu" aria-orientation="vertical" aria-labelledby="language-menu-button"
+                             tabindex="-1"
                              id="language-dropdown">
                             <div class="py-1" role="none">
                                 <a href="#" data-lang="ru"
@@ -94,11 +95,13 @@
                                     </a>
                                     <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
                                         <i class="fas fa-comments mr-2"></i>
-                                        <span id="unread-messages-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                                        <span id="unread-messages-count"
+                                              class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
                                     </a>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <a href="/employers/${currentUserId}" class="text-white hover:text-blue-200 flex items-center">
+                                    <a href="/employers/${currentUserId}"
+                                       class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-user mr-2"></i>
                                     </a>
                                 </div>
@@ -113,11 +116,13 @@
                                     </a>
                                     <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
                                         <i class="fas fa-comments mr-2"></i>
-                                        <span id="unread-messages-count" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
+                                        <span id="unread-messages-count"
+                                              class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
                                     </a>
                                 </div>
                                 <div class="flex items-center space-x-4">
-                                    <a href="/applicants/${currentUserId}" class="text-white hover:text-blue-200 flex items-center">
+                                    <a href="/applicants/${currentUserId}"
+                                       class="text-white hover:text-blue-200 flex items-center">
                                         <i class="fas fa-user mr-2"></i>
                                     </a>
                                 </div>
@@ -222,7 +227,7 @@
         </div>
     </footer>
 
-    <input type="hidden" name="_csrf" value="${_csrf.token}" />
+    <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 
     <script>
         document.getElementById('language-menu-button').addEventListener('click', function () {
@@ -272,11 +277,6 @@
                     });
             });
         });
-    </script>
-
-    <script src="/static/js/unread-messages-counter.js"></script>
-    <script>
-        const isUserLoggedIn = ${known?string('true', 'false')};
     </script>
     </body>
     </html>
