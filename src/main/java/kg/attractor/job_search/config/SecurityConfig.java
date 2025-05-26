@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/static/**", "/css/**", "/js/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/vacancies").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/vacancies/*").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/").permitAll()
