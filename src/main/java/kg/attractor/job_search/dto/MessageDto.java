@@ -30,8 +30,5 @@ public class MessageDto {
     ResponseDto response;
 
     @NotNull
-    Boolean isRead;
-
-    @NotNull
     UserDto user;
 }
