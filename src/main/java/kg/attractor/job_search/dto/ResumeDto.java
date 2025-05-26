@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -23,7 +23,7 @@ public class ResumeDto {
     Long id;
 
     @NotNull
-    SimpleUserDto applicant;
+    UserDto applicant;
 
     @NotBlank
     String name;

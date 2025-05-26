@@ -150,8 +150,7 @@
 
                                         <p class="text-gray-600 flex items-center text-sm">
                                             <i class="fas fa-tag text-blue-500 mr-2 w-5"></i>
-                                            <span class="truncate"
-                                                  title="${resume.category.name}">${resume.category.name}</span>
+                                            <span class="truncate">${resume.category.name}</span>
                                         </p>
 
                                         <p class="text-gray-600 flex items-center text-sm">

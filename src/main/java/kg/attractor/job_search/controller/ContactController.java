@@ -34,12 +34,12 @@ public class ContactController {
         model.addAttribute("mode", "create");
         model.addAttribute("contactDto", contactDto);
         model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
-        model.addAttribute("action", "/resumes/" + resumeId + "/contacts");
+        model.addAttribute("action", "/resumes/" + resumeId + "/contacts/create");
 
         return "info/contact";
     }
 
-    @PostMapping
+    @PostMapping("create")
     public String createContact(@PathVariable Long resumeId,
                                 @ModelAttribute("contactDto") @Valid ContactInfoDto contactDto,
                                 BindingResult bindingResult,
@@ -50,7 +50,7 @@ public class ContactController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "create");
             model.addAttribute("contactTypes", contactTypeService.getAllContactTypes());
-            model.addAttribute("action", "/resumes/" + resumeId + "/contacts");
+            model.addAttribute("action", "/resumes/" + resumeId + "/contacts/create");
             return "info/contact";
         }
 

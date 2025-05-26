@@ -23,7 +23,7 @@ public class ContactTypeServiceImpl implements ContactTypeService {
     public ContactTypeDto getContactTypeIfPresent(Long id) {
         ContactType contactType  = contactTypeRepository.findById(id)
                 .orElseThrow(() -> new ContactTypeNotFoundException("Не существует типа контакта с таким id!"));
-        log.info("Получен контакт {}", contactType.getType());
+        log.info("Получен контакт {}", contactType.getName());
         return contactTypeMapper.toDto(contactType);
     }
 

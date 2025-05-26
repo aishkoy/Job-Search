@@ -89,7 +89,7 @@
                                             <label class="block text-sm font-medium text-gray-700"><@spring.message "resume.create.contacts.type"/></label>
                                             <#assign contactTypeMap = {}>
                                             <#list contactTypes as contactType>
-                                                <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.type}>
+                                                <#assign contactTypeMap = contactTypeMap + {contactType.id?string: contactType.name}>
                                             </#list>
 
                                             <@spring.formSingleSelect

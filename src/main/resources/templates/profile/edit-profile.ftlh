@@ -39,7 +39,7 @@
         <form method="POST" action="/${url}/${userDto.id}/edit" class="space-y-6">
             <@main.csrf/>
             <input type="hidden" name="role.id" value="${userDto.role.id}">
-            <input type="hidden" name="role.role" value="${userDto.role.role}">
+            <input type="hidden" name="role.name" value="${userDto.role.name}">
             <input type="hidden" name="id" value="${userDto.id}">
 
             <div>
@@ -60,7 +60,7 @@
                 <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
             </div>
 
-            <#if userDto.role.role == 'APPLICANT'>
+            <#if userDto.role.name == 'APPLICANT'>
                 <div>
                     <label for="age" class="block text-sm font-medium text-gray-700"><@spring.message "profile.age.label"/></label>
                     <@spring.formInput "userDto.age", 'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"', "number"/>

@@ -129,12 +129,14 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
-                ? Sort.Direction.ASC
-                : Sort.Direction.DESC;
+    public Page<VacancyDto> getVacanciesByEmployerId(Long employer, int page, int size) {
+        Pageable pageable = createPageableWithSort(page, size, "createdAt", "asc");
+        return getVacancyDtoPage(() -> vacancyRepository.findAllByEmployerId(employer, pageable), "У данного работодателя пока нет вакансий!");
+    }
 
-        Pageable pageable = createPageableWithSort(page, size, sortBy, direction);
+    @Override
+    public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
+        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return categoryId != null
                 ? getVacanciesPageByCategoryId(page, size, categoryId, sortBy, sortDirection)
@@ -144,7 +146,10 @@ public class VacancyServiceImpl implements VacancyService {
         );
     }
 
-    private Pageable createPageableWithSort(int page, int size, String sortBy, Sort.Direction direction) {
+    private Pageable createPageableWithSort(int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
         return switch (sortBy) {
             case "responses" -> PageRequest.of(page - 1, size, direction, "responses");
             default -> PageRequest.of(page - 1, size, direction, "createdAt");
@@ -153,11 +158,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection) {
-        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
-                ? Sort.Direction.ASC
-                : Sort.Direction.DESC;
-
-        Pageable pageable = createPageableWithSort(page, size, sortBy, direction);
+        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return getVacancyDtoPage(
                 () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),

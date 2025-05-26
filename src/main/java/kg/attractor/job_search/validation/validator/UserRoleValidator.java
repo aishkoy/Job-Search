@@ -2,7 +2,7 @@ package kg.attractor.job_search.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import kg.attractor.job_search.dto.user.SimpleUserDto;
+import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.validation.ValidUserByRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -11,7 +11,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, SimpleUserDto> {
+public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, UserDto> {
     private static final int EMPLOYER_ROLE_ID = 1;
     private static final int APPLICANT_ROLE_ID = 2;
     private static final int MIN_AGE = 18;
@@ -22,7 +22,7 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
     private MessageSource messageSource;
 
     @Override
-    public boolean isValid(SimpleUserDto dto, ConstraintValidatorContext context) {
+    public boolean isValid(UserDto dto, ConstraintValidatorContext context) {
         context.disableDefaultConstraintViolation();
 
         if (dto.getRole() == null || dto.getRole().getId() == null) {
@@ -40,7 +40,7 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
         };
     }
 
-    private boolean validateEmployer(SimpleUserDto dto, ConstraintValidatorContext context) {
+    private boolean validateEmployer(UserDto dto, ConstraintValidatorContext context) {
         boolean isValid = true;
 
         if (dto.getAge() != null) {
@@ -56,7 +56,7 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
         return isValid;
     }
 
-    private boolean validateApplicant(SimpleUserDto dto, ConstraintValidatorContext context) {
+    private boolean validateApplicant(UserDto dto, ConstraintValidatorContext context) {
         boolean isValid = true;
 
         isValid &= validateAge(dto, context);
@@ -66,7 +66,7 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
         return isValid;
     }
 
-    private boolean validateAge(SimpleUserDto dto, ConstraintValidatorContext context) {
+    private boolean validateAge(UserDto dto, ConstraintValidatorContext context) {
         if (dto.getAge() == null) {
             addViolation(context, "validation.applicant.age.required", "age");
             return false;
@@ -84,7 +84,7 @@ public class UserRoleValidator implements ConstraintValidator<ValidUserByRole, S
         return true;
     }
 
-    private boolean validateSurname(SimpleUserDto dto, ConstraintValidatorContext context) {
+    private boolean validateSurname(UserDto dto, ConstraintValidatorContext context) {
         if (isBlank(dto.getSurname())) {
             addViolation(context, "validation.applicant.surname.required", "surname");
             return false;

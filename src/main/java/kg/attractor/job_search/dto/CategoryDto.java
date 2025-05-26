@@ -12,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 public class CategoryDto {
     Long id;
     String name;
-    CategoryDto parentCategory;
+    Long parentId;
 }

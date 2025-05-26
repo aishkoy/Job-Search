@@ -31,12 +31,12 @@ public class EducationController {
 
         model.addAttribute("mode", "create");
         model.addAttribute("educationDto", educationDto);
-        model.addAttribute("action", "/resumes/" + resumeId + "/educations");
+        model.addAttribute("action", "/resumes/" + resumeId + "/educations/create");
 
         return "info/education";
     }
 
-    @PostMapping
+    @PostMapping("create")
     public String createEducation(@PathVariable Long resumeId,
                                   @ModelAttribute("educationDto") @Valid EducationInfoDto educationDto,
                                   BindingResult bindingResult,
@@ -45,7 +45,7 @@ public class EducationController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("mode", "create");
-            model.addAttribute("action", "/resumes/" + resumeId + "/educations");
+            model.addAttribute("action", "/resumes/" + resumeId + "/educations/create");
             return "info/education";
         }
 

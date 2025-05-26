@@ -1,13 +1,11 @@
 package kg.attractor.job_search.dto.user;
 
-import kg.attractor.job_search.dto.ResumeDto;
-import kg.attractor.job_search.dto.VacancyDto;
+import jakarta.validation.constraints.*;
+import kg.attractor.job_search.dto.RoleDto;
+import kg.attractor.job_search.validation.ValidUserByRole;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,15 +14,42 @@ import java.util.List;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
-public class UserDto extends SimpleUserDto {
+@ValidUserByRole
+public class UserDto {
+    Long id;
+
+    @NotBlank
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё-]+$", message = "{validation.name.pattern}")
+    String name;
+
+    String surname;
+
+    Integer age;
+
     String email;
+
     String password;
-    String avatar;
-    Boolean enabled;
+
+    @NotBlank
+    @Pattern(regexp = "^\\+?\\d+$", message = "{validation.phone.pattern}")
+    String phoneNumber;
 
     @Builder.Default
-    List<VacancyDto> vacancies = new ArrayList<>();
+    String avatar = null;
 
     @Builder.Default
-    List<ResumeDto> resumes = new ArrayList<>();
+    Boolean enabled = true;
+
+    @NotNull
+    RoleDto role;
+
+    @Builder.Default
+    String resetPasswordToken = null;
+
+    @NotBlank
+    @Builder.Default
+    String preferredLanguage = "ru";
+
+    Integer resumesCount;
+    Integer vacanciesCount;
 }

@@ -12,5 +12,5 @@ import lombok.experimental.FieldDefaults;
 
 public class RoleDto {
     Long id;
-    String role;
+    String name;
 }
