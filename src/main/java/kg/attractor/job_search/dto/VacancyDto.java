@@ -5,12 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.validation.ValidExperienceRange;
+import kg.attractor.job_search.validation.annotation.ValidExperienceRange;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 @Getter
 @Setter
@@ -55,5 +54,5 @@ public class VacancyDto {
     @Builder.Default
     Timestamp updatedAt = new Timestamp(System.currentTimeMillis());
 
-    List<RespondedApplicantDto> responses;
+    Integer responses;
 }

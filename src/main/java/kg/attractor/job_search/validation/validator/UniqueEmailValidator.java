@@ -2,8 +2,8 @@ package kg.attractor.job_search.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import kg.attractor.job_search.service.UserService;
-import kg.attractor.job_search.validation.UniqueEmail;
+import kg.attractor.job_search.service.interfaces.UserService;
+import kg.attractor.job_search.validation.annotation.UniqueEmail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

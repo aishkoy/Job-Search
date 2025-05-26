@@ -2,7 +2,7 @@ package kg.attractor.job_search.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import kg.attractor.job_search.validation.ValidExperienceRange;
+import kg.attractor.job_search.validation.annotation.ValidExperienceRange;
 import org.springframework.beans.BeanWrapperImpl;
 
 public class ExperienceRangeValidator implements ConstraintValidator<ValidExperienceRange, Object> {

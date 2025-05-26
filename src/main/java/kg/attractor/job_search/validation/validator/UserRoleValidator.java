@@ -3,7 +3,7 @@ package kg.attractor.job_search.validation.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import kg.attractor.job_search.dto.user.UserDto;
-import kg.attractor.job_search.validation.ValidUserByRole;
+import kg.attractor.job_search.validation.annotation.ValidUserByRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

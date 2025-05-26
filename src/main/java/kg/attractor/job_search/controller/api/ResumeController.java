@@ -1,10 +1,11 @@
 package kg.attractor.job_search.controller.api;
 
 import jakarta.validation.Valid;
-import kg.attractor.job_search.service.UserService;
+import kg.attractor.job_search.service.interfaces.UserService;
 import kg.attractor.job_search.dto.ResumeDto;
-import kg.attractor.job_search.service.ResumeService;
+import kg.attractor.job_search.service.interfaces.ResumeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,13 @@ public class ResumeController {
         return resumeService.deleteResume(resumeId, adapter.getAuthId());
     }
 
+    @GetMapping("applicants/{id}")
+    public ResponseEntity<Page<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long userId,
+                                                                   @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                   @RequestParam(required = false, defaultValue = "2") Integer size) {
+        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(userId, page, size));
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<ResumeDto> getResumeById(@PathVariable Long id) {
         return ResponseEntity.ofNullable(resumeService.getResumeDtoById(id, adapter.getAuthId()));
@@ -54,11 +62,6 @@ public class ResumeController {
     @GetMapping("categories/{categoryId}")
     public ResponseEntity<List<ResumeDto>> getResumesByCategory(@PathVariable("categoryId") Long categoryId) {
         return ResponseEntity.ofNullable(resumeService.getResumesByCategoryId(categoryId));
-    }
-
-    @GetMapping("applicants/{id}")
-    public ResponseEntity<List<ResumeDto>> getResumesByApplicantId(@PathVariable("id") Long applicantId) {
-        return ResponseEntity.ofNullable(resumeService.getResumesByApplicantId(applicantId));
     }
 
     @GetMapping("applicants/by-name")

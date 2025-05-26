@@ -2,10 +2,10 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.CategoryDto;
 import kg.attractor.job_search.entity.Category;
-import kg.attractor.job_search.exception.CategoryNotFoundException;
+import kg.attractor.job_search.exception.nsee.CategoryNotFoundException;
 import kg.attractor.job_search.mapper.CategoryMapper;
 import kg.attractor.job_search.repository.CategoryRepository;
-import kg.attractor.job_search.service.CategoryService;
+import kg.attractor.job_search.service.interfaces.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

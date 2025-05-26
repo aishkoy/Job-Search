@@ -30,7 +30,16 @@ public class Message {
     Timestamp timestamp;
 
     @ManyToOne
-    @JoinColumn(name = "responded_applicant_id",
+    @JoinColumn(name = "response_id",
             nullable = false)
-    RespondedApplicant respondedApplicant;
+    Response response;
+
+    @Column(name = "is_read",
+            nullable = false)
+    Boolean isRead;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id",
+            nullable = false)
+    User user;
 }

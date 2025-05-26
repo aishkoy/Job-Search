@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
             select u from User u
             inner join Resume r on u.id = r.applicant.id
-            inner join RespondedApplicant ra on ra.resume.id = r.id
+            inner join Response ra on ra.resume.id = r.id
             where ra.vacancy.id = :vacancyId""")
     List<User> findApplicantsByVacancyId(@Param("vacancyId")  Long vacancyId);
 

@@ -1,8 +1,8 @@
 package kg.attractor.job_search.dto.user;
 
 import jakarta.validation.constraints.*;
-import kg.attractor.job_search.validation.UniqueEmail;
-import kg.attractor.job_search.validation.ValidUserByRole;
+import kg.attractor.job_search.validation.annotation.UniqueEmail;
+import kg.attractor.job_search.validation.annotation.ValidUserByRole;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;

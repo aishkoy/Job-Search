@@ -1,7 +1,7 @@
 <#import "../layout.ftlh" as main>
 <#import "/spring.ftl" as spring>
 
-<@main.layout>
+<@main.layout showLanguageSwitcher=false>
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-6">
@@ -15,7 +15,7 @@
                 </p>
             </div>
 
-            <form action="/resumes/create" method="post" class="space-y-6">
+            <form action="/resumes/create" method="post" class="space-y-6" id="resume-form">
                 <@main.csrf/>
                 <@spring.formHiddenInput "resumeForm.applicant.id"/>
 
@@ -66,20 +66,19 @@
                 </div>
 
                 <!-- Контактная информация -->
-                <div class="p-6 border-b">
+                <div class="p-6 border-b" id="contacts-section">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-address-card text-blue-600 mr-2"></i><@spring.message "resume.edit.contacts.title"/>
                     </h3>
 
                     <#if resumeForm.contacts?? && resumeForm.contacts?has_content>
-                        <div class="space-y-4 mb-6">
+                        <div class="space-y-4 mb-6" id="contacts-container">
                             <#list resumeForm.contacts as contact>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
                                         <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.contacts.item", ['${contact?index + 1}']/> </h4>
                                         <div>
-                                            <button type="submit" name="action" value="removeContact${contact?index}"
-                                                    class="text-red-500 hover:text-red-700">
+                                            <button type="button" class="contact-delete-btn text-red-500 hover:text-red-700">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
@@ -108,10 +107,12 @@
                                 </div>
                             </#list>
                         </div>
+                    <#else>
+                        <div class="space-y-4 mb-6 hidden" id="contacts-container"></div>
                     </#if>
 
                     <div class="flex justify-center">
-                        <button type="submit" name="action" value="addContact"
+                        <button type="button" id="add-contact-btn"
                                 class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-plus mr-2"></i> <@spring.message "resume.create.contacts.add"/>
                         </button>
@@ -119,20 +120,19 @@
                 </div>
 
                 <!-- Опыт работы -->
-                <div class="p-6 border-b">
+                <div class="p-6 border-b" id="work-experience-section">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-briefcase text-blue-600 mr-2"></i><@spring.message "resume.create.experience.title"/>
                     </h3>
 
                     <#if resumeForm.workExperiences?? && resumeForm.workExperiences?has_content>
-                        <div class="space-y-4 mb-6">
+                        <div class="space-y-4 mb-6" id="work-experience-container">
                             <#list resumeForm.workExperiences as workExperience>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
                                         <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.experience.item", ['${workExperience?index + 1}']/></h4>
                                         <div>
-                                            <button type="submit" name="action" value="removeExperience${workExperience?index}"
-                                                    class="text-red-500 hover:text-red-700">
+                                            <button type="button" class="work-exp-delete-btn text-red-500 hover:text-red-700">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
@@ -170,10 +170,12 @@
                                 </div>
                             </#list>
                         </div>
+                    <#else>
+                        <div class="space-y-4 mb-6 hidden" id="work-experience-container"></div>
                     </#if>
 
                     <div class="flex justify-center">
-                        <button type="submit" name="action" value="addExperience"
+                        <button type="button" id="add-experience-btn"
                                 class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-plus mr-2"></i> <@spring.message "resume.create.experience.add"/>
                         </button>
@@ -181,20 +183,19 @@
                 </div>
 
                 <!-- Образование -->
-                <div class="p-6 border-b">
+                <div class="p-6 border-b" id="education-section">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-graduation-cap text-blue-600 mr-2"></i><@spring.message "resume.create.education"/>
                     </h3>
 
                     <#if resumeForm.educations?? && resumeForm.educations?has_content>
-                        <div class="space-y-4 mb-6">
+                        <div class="space-y-4 mb-6" id="education-container">
                             <#list resumeForm.educations as education>
                                 <div class="p-4 border border-gray-200 rounded-lg bg-gray-50">
                                     <div class="flex justify-between items-center mb-3">
                                         <h4 class="font-medium text-gray-800"><@spring.messageArgs "resume.create.education.title", ['${education?index + 1}']/></h4>
                                         <div>
-                                            <button type="submit" name="action" value="removeEducation${education?index}"
-                                                    class="text-red-500 hover:text-red-700">
+                                            <button type="button" class="education-delete-btn text-red-500 hover:text-red-700">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
@@ -238,10 +239,12 @@
                                 </div>
                             </#list>
                         </div>
+                    <#else>
+                        <div class="space-y-4 mb-6 hidden" id="education-container"></div>
                     </#if>
 
                     <div class="flex justify-center">
-                        <button type="submit" name="action" value="addEducation"
+                        <button type="button" id="add-education-btn"
                                 class="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <i class="fas fa-plus mr-2"></i> <@spring.message "resume.create.education.add"/>
                         </button>
@@ -266,4 +269,25 @@
             </form>
         </div>
     </div>
+
+    <div id="message-storage" class="hidden">
+        <div data-key="contact.title"><@spring.message "resume.create.contacts.item" /></div>
+        <div data-key="contact.type"><@spring.message "resume.create.contacts.type" /></div>
+        <div data-key="contact.value"><@spring.message "resume.create.contacts.value" /></div>
+
+        <div data-key="experience.title"><@spring.message "resume.create.experience.item" /></div>
+        <div data-key="experience.company"><@spring.message "resume.edit.experience.company" /></div>
+        <div data-key="experience.position"><@spring.message "resume.create.experience.position" /></div>
+        <div data-key="experience.years"><@spring.message "resume.create.experience.years" /></div>
+        <div data-key="experience.responsibilities"><@spring.message "resume.create.experience.responsibilities" /></div>
+
+        <div data-key="education.title"><@spring.message "resume.create.education.title" /></div>
+        <div data-key="education.institution"><@spring.message "resume.create.education.institution" /></div>
+        <div data-key="education.program"><@spring.message "resume.create.education.program" /></div>
+        <div data-key="education.startDate"><@spring.message "resume.create.education.startDate" /></div>
+        <div data-key="education.endDate"><@spring.message "resume.create.education.endDate" /></div>
+        <div data-key="education.degree"><@spring.message "resume.create.education.degree" /></div>
+    </div>
+
+    <script src="/static/js/create-resume.js"></script>
 </@main.layout>

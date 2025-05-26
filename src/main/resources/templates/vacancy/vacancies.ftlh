@@ -104,7 +104,7 @@
                                         ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
                                 </span>
                                 <span class="text-xs text-gray-400 mt-4">
-                                        <@spring.message "vacancies.responses"/>: ${vacancy.responses?size!'0'}
+                                        <@spring.message "vacancies.responses"/>: ${vacancy.responses!'0'}
                                 </span>
                             </div>
                         </div>

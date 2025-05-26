@@ -2,12 +2,12 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.ContactInfoDto;
 import kg.attractor.job_search.entity.Resume;
-import kg.attractor.job_search.exception.ContactInfoNotFoundException;
+import kg.attractor.job_search.exception.nsee.ContactInfoNotFoundException;
 import kg.attractor.job_search.mapper.ContactInfoMapper;
 import kg.attractor.job_search.entity.ContactInfo;
 import kg.attractor.job_search.repository.ContactInfoRepository;
-import kg.attractor.job_search.service.ContactInfoService;
-import kg.attractor.job_search.service.ContactTypeService;
+import kg.attractor.job_search.service.interfaces.ContactInfoService;
+import kg.attractor.job_search.service.interfaces.ContactTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

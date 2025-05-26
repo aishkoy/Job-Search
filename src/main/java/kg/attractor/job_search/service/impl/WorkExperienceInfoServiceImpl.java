@@ -2,17 +2,15 @@ package kg.attractor.job_search.service.impl;
 
 import kg.attractor.job_search.dto.WorkExperienceInfoDto;
 import kg.attractor.job_search.entity.Resume;
-import kg.attractor.job_search.exception.WorkExperienceNotFoundException;
+import kg.attractor.job_search.exception.nsee.WorkExperienceNotFoundException;
 import kg.attractor.job_search.mapper.WorkExperienceMapper;
 import kg.attractor.job_search.entity.WorkExperienceInfo;
 import kg.attractor.job_search.repository.WorkExperienceRepository;
-import kg.attractor.job_search.service.WorkExperienceInfoService;
+import kg.attractor.job_search.service.interfaces.WorkExperienceInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service

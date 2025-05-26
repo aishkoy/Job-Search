@@ -2,7 +2,7 @@ package kg.attractor.job_search.validation.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import kg.attractor.job_search.validation.ValidDateRange;
+import kg.attractor.job_search.validation.annotation.ValidDateRange;
 import org.springframework.beans.BeanWrapperImpl;
 
 import java.time.LocalDate;
