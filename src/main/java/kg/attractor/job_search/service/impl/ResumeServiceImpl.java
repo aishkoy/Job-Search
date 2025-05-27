@@ -178,7 +178,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryId(categoryId, pageable),
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
                 "Страница с резюме пользователя не была найдена!");
     }
 
