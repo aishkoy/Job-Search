@@ -114,59 +114,85 @@
         <div class="space-y-4">
             <#if vacancies.content?? && vacancies.content?size gt 0>
                 <#list vacancies.content as vacancy>
-                    <div class="bg-white rounded-lg shadow p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="flex justify-between">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">${vacancy.name}</h3>
-                                <p class="text-gray-600 mb-2">${vacancy.employer.name!}</p>
-                                <div class="text-blue-600 font-medium">
-                                    <#if vacancy.salary?? && vacancy.salary gt 0>
-                                        ${vacancy.salary?string(",##0")} ₽
-                                    <#else>
-                                        <@spring.message "vacancies.salary.notSpecified"/>
-                                    </#if>
+                    <div class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                         onclick="window.location.href='/vacancies/${vacancy.id}'">
+                        <div class="p-4">
+                            <div class="flex items-center gap-4">
+                                <!-- Аватар работодателя -->
+                                <div class="flex-shrink-0">
+                                    <div class="w-22 h-22 rounded-full overflow-hidden bg-gray-200 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
+                                         onclick="event.stopPropagation(); window.location.href='/employers/${vacancy.employer.id}'">
+                                        <img src="/api/users/${vacancy.employer.id}/avatar"
+                                             alt="${vacancy.employer.name!''}"
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+
+                                <!-- Основная информация -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-bold text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
+                                                ${vacancy.name}
+                                            </h3>
+                                            <p class="text-gray-600 mb-2">${vacancy.employer.name!}</p>
+                                            <div class="text-blue-600 font-medium mb-3">
+                                                <#if vacancy.salary?? && vacancy.salary gt 0>
+                                                    ${vacancy.salary?string(",##0")} ₽
+                                                <#else>
+                                                    <@spring.message "vacancies.salary.notSpecified"/>
+                                                </#if>
+                                            </div>
+
+                                            <!-- Опыт работы и статус -->
+                                            <div class="flex flex-wrap gap-2 mb-3">
+                                                <#if vacancy.expFrom?? && vacancy.expTo??>
+                                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "vacancy.experience"/>: ${vacancy.expFrom}-${vacancy.expTo}
+                                                    </span>
+                                                </#if>
+
+                                                <#if vacancy.isActive?? && vacancy.isActive>
+                                                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "vacancies.status.active"/>
+                                                    </span>
+                                                <#else>
+                                                    <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "vacancies.status.inactive"/>
+                                                    </span>
+                                                </#if>
+
+                                                <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                                    <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
+                                                </span>
+                                            </div>
+
+                                            <!-- Описание -->
+                                            <p class="text-gray-600 text-sm">
+                                                <#if vacancy.description?has_content>
+                                                    ${vacancy.description?truncate(150)}
+                                                <#else>
+                                                    <@spring.message "vacancies.description.empty"/>
+                                                </#if>
+                                            </p>
+                                        </div>
+
+                                        <!-- Даты -->
+                                        <div class="flex flex-col items-end text-xs text-gray-400 ml-4">
+                                            <span class="mb-1">
+                                                <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
+                                            </span>
+                                            <span>
+                                                <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?datetime?string("dd.MM.yyyy")}
+                                            </span>
+
+                                            <span class="bg-gray-100 text-gray-600 text-xs mt-6 px-2 py-1 rounded">
+                                                    <@spring.message "vacancies.responses"/>: ${vacancy.responses!'0'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex flex-col items-end justify-between">
-                                <span class="text-xs text-gray-400 mt-4">
-                                          <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
-                                </span>
-
-                                <span class="text-xs text-gray-400 mt-4">
-                                          <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?datetime?string("dd.MM.yyyy")}
-                                </span>
-                                <span class="text-xs text-gray-400 mt-4">
-                                        <@spring.message "vacancies.responses"/>: ${vacancy.responses!'0'}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <#if vacancy.expFrom?? && vacancy.expTo??>
-                                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                                    <@spring.message "vacancy.experience"/>: ${vacancy.expFrom}-${vacancy.expTo}
-                                </span>
-                            </#if>
-
-                            <#if vacancy.isActive?? && vacancy.isActive>
-                                <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded"><@spring.message "vacancies.status.active"/></span>
-                            <#else>
-                                <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded"><@spring.message "vacancies.status.inactive"/></span>
-                            </#if>
-
-                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                                    <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
-                            </span>
-                        </div>
-                        <p class="text-gray-600 text-sm mt-3 line-clamp-2">
-                            <#if vacancy.description?has_content>
-                                ${vacancy.description?truncate(150)}
-                            <#else>
-                                <@spring.message "vacancies.description.empty"/>
-                            </#if>
-                        </p>
-                        <div class="flex justify-between items-center mt-4">
-                            <a href="/vacancies/${vacancy.id}"
-                               class="text-blue-600 hover:text-blue-800 text-sm font-medium"><@spring.message "index.details"/></a>
                         </div>
                     </div>
                 </#list>
