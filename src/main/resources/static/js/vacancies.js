@@ -188,9 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        const currentPage = url.searchParams.get('page');
-        if (currentPage && currentPage !== '1') {
-            searchParams.set('page', currentPage);
+        const page = filters.page || 1;
+        if (page > 1) {
+            searchParams.set('page', page);
         }
 
         const newUrl = `${url.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
