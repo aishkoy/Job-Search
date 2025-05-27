@@ -24,10 +24,10 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
-    public String vacancies(@RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "5") int size,
+    public String vacancies(@RequestParam(required = false ,defaultValue = "1") int page,
+                            @RequestParam(required = false,defaultValue = "5") int size,
                             @RequestParam(required = false) Long categoryId,
-                            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                            @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
                             @RequestParam(required = false, defaultValue = "desc") String sortDirection,
                             Model model) {
 

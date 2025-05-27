@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const STORAGE_KEY = 'vacancy_filters';
+    const GUEST_USER_KEY = 'guest';
     const DEFAULT_FILTERS = {
         categoryId: null,
         sortBy: 'updatedAt',
@@ -8,7 +8,81 @@ document.addEventListener('DOMContentLoaded', function() {
         query: ''
     };
 
-    initializeFilters();
+    let currentUserId = null;
+    let isInitialized = false;
+
+    initializeWithUser();
+
+    async function initializeWithUser() {
+        try {
+            currentUserId = await getCurrentUser();
+            console.log('Current user ID:', currentUserId);
+
+            if (currentUserId !== GUEST_USER_KEY) {
+                migrateGuestFiltersIfNeeded();
+            }
+
+            initializeFilters();
+            isInitialized = true;
+
+        } catch (error) {
+            currentUserId = GUEST_USER_KEY;
+            initializeFilters();
+            isInitialized = true;
+        }
+    }
+
+    async function getCurrentUser() {
+        try {
+            const response = await fetch('/api/users/current', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('User data received:', userData);
+                return userData && userData.id ? userData.id.toString() : GUEST_USER_KEY;
+            } else {
+                return GUEST_USER_KEY;
+            }
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            return GUEST_USER_KEY;
+        }
+    }
+
+    function migrateGuestFiltersIfNeeded() {
+        try {
+            const guestFilters = getFiltersFromStorage(GUEST_USER_KEY);
+            const migrationKey = `migration_done_${currentUserId}`;
+
+            const migrationDone = localStorage.getItem(migrationKey);
+
+            if (guestFilters && Object.keys(guestFilters).length > 0 && !migrationDone) {
+                const userFilters = getFiltersFromStorage(currentUserId);
+
+                if (!userFilters || Object.keys(userFilters).length === 0) {
+                    saveFiltersToStorage(currentUserId, guestFilters);
+                }
+
+                localStorage.setItem(migrationKey, 'true');
+            }
+            if (guestFilters) {
+                clearFiltersFromStorage(GUEST_USER_KEY);
+            }
+
+        } catch (error) {
+            try {
+                clearFiltersFromStorage(GUEST_USER_KEY);
+            } catch (clearError) {
+            }
+        }
+    }
 
     function initializeFilters() {
         const urlParams = getCurrentUrlParams();
@@ -17,11 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (hasUrlParams(urlParams)) {
             const currentFilters = mergeFilters(DEFAULT_FILTERS, urlParams);
             saveFilters(currentFilters);
-            console.log('Filters loaded from URL and saved:', currentFilters);
         }
         else if (savedFilters && Object.keys(savedFilters).length > 0) {
             applyFiltersToUrl(savedFilters);
-            console.log('Filters loaded from localStorage:', savedFilters);
         }
 
         setupEventListeners();
@@ -47,25 +119,45 @@ document.addEventListener('DOMContentLoaded', function() {
             params.query !== null;
     }
 
-    function getSavedFilters() {
+    function getFiltersFromStorage(userId) {
         try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : null;
+            const saved = localStorage.getItem(userId);
+            if (saved === null || saved === 'null') {
+                return null;
+            }
+            return JSON.parse(saved);
         } catch (error) {
-            console.error('Error reading filters from localStorage:', error);
+            console.error(`Error reading filters for user ${userId} from localStorage:`, error);
             return null;
         }
     }
 
-    function saveFilters(filters) {
+    function getSavedFilters() {
+        if (!currentUserId) return null;
+        return getFiltersFromStorage(currentUserId);
+    }
+
+    function saveFiltersToStorage(userId, filters) {
         try {
             const filtersToSave = { ...filters };
-            delete filtersToSave.page;
-
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(filtersToSave));
-            console.log('Filters saved to localStorage:', filtersToSave);
+            localStorage.setItem(userId, JSON.stringify(filtersToSave));
         } catch (error) {
-            console.error('Error saving filters to localStorage:', error);
+            console.error(`Error saving filters for user ${userId} to localStorage:`, error);
+        }
+    }
+
+    function saveFilters(filters) {
+        if (!currentUserId) {
+            return;
+        }
+        saveFiltersToStorage(currentUserId, filters);
+    }
+
+    function clearFiltersFromStorage(userId) {
+        try {
+            localStorage.removeItem(userId);
+        } catch (error) {
+            console.error(`Error clearing filters for user ${userId}:`, error);
         }
     }
 
@@ -88,6 +180,10 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.keys(filters).forEach(key => {
             const value = filters[key];
             if (value !== null && value !== undefined && value !== '' && key !== 'page') {
+                if (key === 'sortBy' && value === 'updatedAt') return;
+                if (key === 'sortDirection' && value === 'desc') return;
+                if (key === 'size' && value === 5) return;
+
                 searchParams.set(key, value);
             }
         });
@@ -110,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function() {
             searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const query = this.querySelector('input[name="query"]').value.trim();
-                console.log('Search form submitted with query:', query);
                 updateFilter('query', query);
             });
         }
@@ -122,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (sortBySelect) {
                 sortBySelect.addEventListener('change', function() {
-                    console.log('Sort by changed to:', this.value);
                     updateFilter('sortBy', this.value);
                 });
             }
@@ -132,7 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     const currentDirection = getCurrentSortDirection();
                     const newDirection = currentDirection === 'desc' ? 'asc' : 'desc';
-                    console.log('Sort direction clicked, changing from', currentDirection, 'to', newDirection);
                     updateFilter('sortDirection', newDirection);
                 });
             }
@@ -141,26 +234,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const categoryLinks = document.querySelectorAll('.category-link');
         categoryLinks.forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault(); // Предотвращаем стандартный переход
+                e.preventDefault();
                 const href = this.getAttribute('href');
                 const url = new URL(href, window.location.origin);
-                const categoryId = url.searchParams.get('categoryId');
+                const categoryIdParam = url.searchParams.get('categoryId');
 
-                console.log('Category link clicked, categoryId:', categoryId);
-
-                if (categoryId) {
-                    updateFilter('categoryId', parseInt(categoryId));
+                if (!categoryIdParam) {
+                    clearCategoryFilter();
                 } else {
-                    updateFilter('categoryId', null);
+                    updateFilter('categoryId', parseInt(categoryIdParam));
                 }
-            });
-        });
-
-        const paginationLinks = document.querySelectorAll('.pagination-link');
-        paginationLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                console.log('Pagination link clicked:', href);
             });
         });
     }
@@ -171,25 +254,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateFilter(key, value) {
+        if (!isInitialized) {
+            return;
+        }
+
         const currentFilters = getCurrentUrlParams();
         const savedFilters = getSavedFilters() || {};
 
-        const updatedFilters = mergeFilters(savedFilters, { [key]: value });
+        const updatedFilters = mergeFilters(savedFilters, currentFilters);
+        updatedFilters[key] = value;
 
         if (key !== 'page') {
             updatedFilters.page = 1;
         }
 
-        console.log('Updating filter:', key, '=', value);
-        console.log('Updated filters:', updatedFilters);
+        saveFilters(updatedFilters);
+        applyFiltersToUrl(updatedFilters);
+    }
+
+    function clearCategoryFilter() {
+        if (!isInitialized) {
+            return;
+        }
+
+        const currentFilters = getCurrentUrlParams();
+        const savedFilters = getSavedFilters() || {};
+
+        const updatedFilters = mergeFilters(savedFilters, currentFilters);
+        updatedFilters.categoryId = null;
+        updatedFilters.page = 1;
 
         saveFilters(updatedFilters);
         applyFiltersToUrl(updatedFilters);
     }
 
     function clearAllFilters() {
-        console.log('Clearing all filters');
-        localStorage.removeItem(STORAGE_KEY);
+        if (currentUserId) {
+            clearFiltersFromStorage(currentUserId);
+        }
         window.location.href = '/vacancies';
     }
 
@@ -197,12 +299,35 @@ document.addEventListener('DOMContentLoaded', function() {
         return getSavedFilters();
     }
 
+    function debugGetAllFilters() {
+        const allFilters = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            try {
+                const value = localStorage.getItem(key);
+                const parsed = JSON.parse(value);
+                if (parsed && typeof parsed === 'object' && (parsed.sortBy || parsed.categoryId !== undefined)) {
+                    allFilters[key] = parsed;
+                }
+            } catch (e) {
+            }
+        }
+        return allFilters;
+    }
+
+    function debugGetCurrentUserId() {
+        return currentUserId;
+    }
+
     window.VacancyFilters = {
         clearAll: clearAllFilters,
         getCurrent: getCurrentFilters,
         update: updateFilter,
-        save: saveFilters
+        save: saveFilters,
+        debug: {
+            getAllFilters: debugGetAllFilters,
+            getCurrentUserId: debugGetCurrentUserId,
+            migrateGuestFilters: migrateGuestFiltersIfNeeded
+        }
     };
-
-    console.log('Vacancy filters system initialized');
 });
