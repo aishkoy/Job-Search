@@ -17,7 +17,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -41,13 +44,25 @@ public class VacancyServiceImpl implements VacancyService {
         return vacancy.getId();
     }
 
+    @Transactional
+    @Override
+    public void updateVacancy(Long vacancyId, Long userId) {
+        Vacancy existing = getVacancyById(vacancyId);
+        validateOwnership(vacancyId, userId);
+        existing.setUpdatedAt(Timestamp.from(Instant.now()));
+
+        vacancyRepository.save(existing);
+        log.info("Обновлено время вакансии {}", vacancyId);
+    }
+
+    @Transactional
     @Override
     public Long updateVacancy(Long vacancyId, VacancyDto dto) {
         Vacancy existing = getVacancyById(vacancyId);
-        dto.setCreatedAt(existing.getCreatedAt());
-        validateOwnership(vacancyId, dto.getEmployer().getId());
         categoryService.getCategoryIfPresent(dto.getCategory().getId());
+        validateOwnership(vacancyId, dto.getEmployer().getId());
 
+        dto.setCreatedAt(existing.getCreatedAt());
         Vacancy updated = vacancyMapper.toEntity(dto);
 
         vacancyRepository.save(updated);
