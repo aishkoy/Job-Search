@@ -159,6 +159,13 @@
                                                 <@spring.message "resumes.created"/>: ${resume.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-sync-alt text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                <@spring.message "resumes.updated"/>: ${resume.updatedAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
                                     </div>
 
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
@@ -182,6 +189,15 @@
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
                                                             title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+
+                                                <form action="/resumes/${resume.id}/update" method="post"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-green-600 hover:text-green-800"
+                                                            title="<@spring.message "profile.update"/>">
+                                                        <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -328,6 +344,13 @@
                                                 <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-sync-alt text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
                                     </div>
 
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
@@ -350,6 +373,14 @@
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
                                                             title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="/vacancies/${vacancy.id}/update" method="post"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-green-600 hover:text-green-800"
+                                                            title="<@spring.message "profile.update"/>">
+                                                        <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>
