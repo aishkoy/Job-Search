@@ -104,23 +104,14 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getVacanciesByEmployerId(Long employerId) {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByEmployerId(employerId),
-                "У работодателя нет опубликованных вакансий!");
-    }
-
-    @Override
     public List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId) {
         return findAndMapVacancies(() -> vacancyRepository.findVacanciesAppliedByUserId(applicantId),
                 "Пользователь не откликался на вакансии!");
     }
 
     @Override
-    public List<VacancyDto> getLastVacancies() {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc()
-                        .stream()
-                        .limit(4)
-                        .toList(),
+    public List<VacancyDto> getLastVacancies(Integer limit) {
+        return findAndMapVacancies(() -> vacancyRepository.findLastVacancies(limit),
                 "Новые вакансии не были найдены!");
     }
 

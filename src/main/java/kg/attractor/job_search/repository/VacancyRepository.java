@@ -19,11 +19,11 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
 
     Optional<Vacancy> findByIdAndEmployerId(Long vacancyId, Long employerId);
 
-    List<Vacancy> findAllByEmployerId(Long employerId);
-
     List<Vacancy> findAllByCategoryName(String categoryName);
 
-    List<Vacancy> findAllByOrderByCreatedAtDesc();
+    @Query(value = "SELECT * FROM VACANCIES ORDER BY created_at DESC LIMIT :limit",
+            nativeQuery = true)
+    List<Vacancy> findLastVacancies(@Param("limit") Integer limit);
 
     @Query("SELECT v FROM Vacancy v " +
             "JOIN Response ra ON ra.vacancy.id = v.id " +

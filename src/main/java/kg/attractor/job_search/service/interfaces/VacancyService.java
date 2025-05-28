@@ -22,6 +22,8 @@ public interface VacancyService {
 
     List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 
+    List<VacancyDto> getLastVacancies(Integer limit);
+
     VacancyDto getVacancyDtoById(Long vacancyId);
 
     Vacancy getVacancyById(Long vacancyId);
@@ -29,8 +31,6 @@ public interface VacancyService {
     VacancyDto getVacancyDtoByIdAndAuthor(Long vacancyId, Long authorId);
 
     List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId);
-
-    List<VacancyDto> getVacanciesByEmployerId(Long employerId);
 
     List<VacancyDto> getVacanciesByCategoryName(String categoryName);
 
