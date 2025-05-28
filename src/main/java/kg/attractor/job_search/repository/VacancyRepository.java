@@ -37,13 +37,21 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
 
     Page<Vacancy> findAllByIsActiveTrue(Pageable pageable);
 
-    Page<Vacancy> findAllByCategoryIdAndIsActiveTrue(Long categoryId, Pageable pageable);
+    @Query("SELECT v FROM Vacancy v WHERE v.isActive = true AND " +
+            "(LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(v.employer.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Vacancy> findAllByIsActiveTrueWithQuery(@Param("query") String query, Pageable pageable);
 
-    @Query("SELECT v FROM Vacancy v " +
-            "JOIN Response ra ON ra.vacancy.id = v.id " +
-            "JOIN Resume r ON ra.resume.id = r.id " +
-            "WHERE r.applicant.id = :applicantId")
-    Page<Vacancy> findVacanciesAppliedByUserId(@Param("applicantId") Long applicantId, Pageable pageable);
+    Page<Vacancy> findAllByCategoryIdAndIsActiveTrue(@Param("categoryId") Long categoryId, Pageable pageable);
+
+    @Query("SELECT v FROM Vacancy v WHERE v.isActive = true AND v.category.id = :categoryId AND " +
+            "(LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(v.employer.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Vacancy> findAllByCategoryIdAndIsActiveTrueWithQuery(
+            @Param("query") String query,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable);
+
 
     Page<Vacancy> findAllByEmployerId(Long employerId, Pageable pageable);
 }

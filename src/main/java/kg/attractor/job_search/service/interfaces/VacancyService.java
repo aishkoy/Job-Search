@@ -34,11 +34,7 @@ public interface VacancyService {
 
     List<VacancyDto> getVacanciesByCategoryName(String categoryName);
 
-    List<VacancyDto> getLastVacancies();
-
     Page<VacancyDto> getVacanciesByEmployerId(Long employer, int page, int size);
 
-    Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection);
-
-    Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection);
+    Page<VacancyDto> getActiveVacanciesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection);
 }

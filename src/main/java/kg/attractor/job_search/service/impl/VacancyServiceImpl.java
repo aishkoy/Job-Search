@@ -141,14 +141,39 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
+    public Page<VacancyDto> getActiveVacanciesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection) {
         Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return categoryId != null
-                ? getVacanciesPageByCategoryId(page, size, categoryId, sortBy, sortDirection)
-                : getVacancyDtoPage(
+                ? getVacanciesPageByCategoryId(query, categoryId, pageable)
+                : getActiveVacanciesPage(query, pageable);
+    }
+
+    public Page<VacancyDto> getActiveVacanciesPage(String query, Pageable pageable) {
+        if (query != null && !query.isBlank()) {
+            return getVacancyDtoPage(
+                    () -> vacancyRepository.findAllByIsActiveTrueWithQuery(query, pageable),
+                    "Активных вакансий не найдено!"
+            );
+        }
+
+        return getVacancyDtoPage(
                 () -> vacancyRepository.findAllByIsActiveTrue(pageable),
                 "Активных вакансий не найдено!"
+        );
+    }
+
+    public Page<VacancyDto> getVacanciesPageByCategoryId(String query, Long categoryId, Pageable pageable) {
+        if (query != null && !query.isBlank()) {
+            return getVacancyDtoPage(
+                    () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrueWithQuery(query, categoryId, pageable),
+                    "Вакансии по указанной категории не найдены!"
+            );
+        }
+
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
+                "Вакансии по указанной категории не найдены!"
         );
     }
 
@@ -163,16 +188,6 @@ public class VacancyServiceImpl implements VacancyService {
             case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
             default -> PageRequest.of(page - 1, size, direction, "updatedAt");
         };
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection) {
-        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
-
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
-                "Вакансии по указанной категории не найдены!"
-        );
     }
 
     private Page<VacancyDto> getVacancyDtoPage(Supplier<Page<Vacancy>> supplier, String notFoundMessage) {
