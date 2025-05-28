@@ -21,8 +21,15 @@ public class ResumeController {
     private final UserService adapter;
 
     @GetMapping
-    public ResponseEntity<List<ResumeDto>> getResumes() {
-        return ResponseEntity.ofNullable(resumeService.getResumes());
+    public ResponseEntity<Page<ResumeDto>> resumes(@RequestParam(required = false) String query,
+                                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                                      @RequestParam(required = false, defaultValue = "5") int size,
+                                                      @RequestParam(required = false) Long categoryId,
+                                                      @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
+                                                      @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+
+        return ResponseEntity.ofNullable(resumeService.getActiveResumesPage(
+                query, page, size, categoryId, sortBy, sortDirection));
     }
 
     @PostMapping
