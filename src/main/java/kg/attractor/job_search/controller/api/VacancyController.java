@@ -20,8 +20,15 @@ public class VacancyController {
     private final UserService adapter;
 
     @GetMapping
-    public ResponseEntity<List<VacancyDto>> getVacancies() {
-        return ResponseEntity.ofNullable(vacancyService.getVacancies());
+    public ResponseEntity<Page<VacancyDto>> vacancies(@RequestParam(required = false) String query,
+                                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                                      @RequestParam(required = false, defaultValue = "5") int size,
+                                                      @RequestParam(required = false) Long categoryId,
+                                                      @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
+                                                      @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+
+        return ResponseEntity.ofNullable(vacancyService.getActiveVacanciesPage(
+                query, page, size, categoryId, sortBy, sortDirection));
     }
 
     @GetMapping("{id}")
@@ -58,8 +65,8 @@ public class VacancyController {
 
     @GetMapping("employers/{id}")
     public ResponseEntity<Page<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long userId,
-                                                                   @RequestParam(required = false, defaultValue = "1") Integer page,
-                                                                   @RequestParam(required = false, defaultValue = "2") Integer size) {
+                                                                     @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                     @RequestParam(required = false, defaultValue = "2") Integer size) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(userId, page, size));
     }
 

@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers("/auth/**", "/static/**", "/css/**", "/js/**", "/api/users/language", "/").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/vacancies", "/vacancies/*", "api/users/*/avatar").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies", "/vacancies/*", "/api/users/*/avatar", "/api/vacancies/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
