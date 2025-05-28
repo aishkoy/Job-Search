@@ -32,17 +32,11 @@ public interface ResumeService {
 
     Long updateResume(Long resumeId, ResumeDto resumeDto);
 
-    void addExperience(ResumeDto resumeForm);
-
-    void addEducation(ResumeDto resumeForm);
-
-    void addContact(ResumeDto resumeForm);
-
     HttpStatus deleteResume(Long resumeId, Long userId);
 
     List<ResumeDto> getResumesByCategoryId(Long categoryId);
 
-    List<ResumeDto> getLastResumes();
+    List<ResumeDto> getLastResumes(Integer limit);
 
     Page<ResumeDto> getActiveResumesPage(int page, int size);
 

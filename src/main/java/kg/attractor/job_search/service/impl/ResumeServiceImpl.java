@@ -1,9 +1,6 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.dto.ResumeDto;
-import kg.attractor.job_search.dto.WorkExperienceInfoDto;
 import kg.attractor.job_search.exception.nsee.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.nsee.EmployerNotFoundException;
 import kg.attractor.job_search.exception.nsee.ResumeNotFoundException;
@@ -27,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -153,11 +148,8 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getLastResumes() {
-        return findAndMapResumes(() -> resumeRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
-                .limit(4)
-                .toList(), "Новые резюме не были найдены!");
+    public List<ResumeDto> getLastResumes(Integer limit) {
+        return findAndMapResumes(() -> resumeRepository.findLastResumes(limit), "Новые резюме не были найдены!");
     }
 
     @Override
@@ -180,22 +172,6 @@ public class ResumeServiceImpl implements ResumeService {
         Pageable pageable = PageRequest.of(page - 1, size);
         return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
                 "Страница с резюме пользователя не была найдена!");
-    }
-
-
-    @Override
-    public void addExperience(ResumeDto form) {
-        addItemToList(form.getWorkExperiences(), WorkExperienceInfoDto::new, form::setWorkExperiences);
-    }
-
-    @Override
-    public void addEducation(ResumeDto form) {
-        addItemToList(form.getEducations(), EducationInfoDto::new, form::setEducations);
-    }
-
-    @Override
-    public void addContact(ResumeDto form) {
-        addItemToList(form.getContacts(), ContactInfoDto::new, form::setContacts);
     }
 
     private Page<ResumeDto> getResumeDtoPage(Supplier<Page<Resume>> supplier, String notFoundMessage) {
@@ -231,12 +207,6 @@ public class ResumeServiceImpl implements ResumeService {
         resume.getContacts().forEach(c -> c.setResume(resume));
         resume.getEducations().forEach(e -> e.setResume(resume));
         resume.getWorkExperiences().forEach(w -> w.setResume(resume));
-    }
-
-    private <T> void addItemToList(List<T> list, Supplier<T> creator, Consumer<List<T>> setter) {
-        if (list == null) list = new ArrayList<>();
-        list.add(creator.get());
-        setter.accept(list);
     }
 
     public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
