@@ -13,8 +13,6 @@ public interface ResumeService {
 
     List<ResumeDto> getActiveResumes();
 
-    List<ResumeDto> getResumesByApplicantId(Long userId);
-
     List<ResumeDto> getResumesByApplicantName(String name);
 
     Long createResume(ResumeDto resumeDto);
@@ -38,9 +36,7 @@ public interface ResumeService {
 
     List<ResumeDto> getLastResumes(Integer limit);
 
-    Page<ResumeDto> getActiveResumesPage(int page, int size);
+    Page<ResumeDto> getActiveResumesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection);
 
     Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size);
-
-    Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId);
 }

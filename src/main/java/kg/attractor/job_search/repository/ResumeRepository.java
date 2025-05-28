@@ -24,7 +24,20 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
     Page<Resume> findAllByIsActiveTrue(Pageable pageable);
 
+    @Query("SELECT r FROM Resume r WHERE r.isActive = true AND " +
+            "(LOWER(r.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(r.applicant.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Resume> findAllActiveWithQuery(String query, Pageable pageable);
+
     Page<Resume> findAllByCategoryIdAndIsActiveTrue(Long categoryId, Pageable pageable);
+
+    @Query("SELECT r FROM Resume r WHERE r.isActive = true AND r.category.id = :categoryId AND " +
+            "(LOWER(r.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(r.applicant.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Resume> findAllActiveByCategoryAndQuery(
+            @Param("query") String query,
+            @Param("categoryId") Long categoryId,
+            Pageable pageable);
 
     Page<Resume> findAllByApplicantId(Long applicantId, Pageable pageable);
 

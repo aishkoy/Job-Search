@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -101,13 +102,6 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumesByApplicantId(Long userId) {
-        userService.getApplicantById(userId);
-        return findAndMapResumes(() -> resumeRepository.findAllByApplicantId(userId),
-                "Резюме для пользователя с ID: " + userId + " не найдены");
-    }
-
-    @Override
     public List<ResumeDto> getResumesByApplicantName(String name) {
         String formattedName = StringUtils.capitalize(name.trim().toLowerCase());
         userService.getUsersByName(formattedName);
@@ -153,11 +147,31 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public Page<ResumeDto> getActiveResumesPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable),
-                "Страница с активными резюме не найдена!");
+    public Page<ResumeDto> getActiveResumesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection) {
+        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
+        if (categoryId != null) {
+            return getResumesPageByCategoryId(query, categoryId, pageable);
+        }
+        return getResumesPage(query, pageable);
     }
+
+    public Page<ResumeDto> getResumesPage(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable), "Страница с резюме не найдена!");
+        }
+        return getResumeDtoPage(() -> resumeRepository.findAllActiveWithQuery(query, pageable),
+                "Страница с резюме не найдена!");
+    }
+
+    public Page<ResumeDto> getResumesPageByCategoryId(String query, Long categoryId, Pageable pageable) {
+        if (query != null && !query.isBlank()) {
+            return getResumeDtoPage(() -> resumeRepository.findAllActiveByCategoryAndQuery(query, categoryId, pageable),
+                    "Страница с резюме не найдена!");
+        }
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
+                "Страница с резюме пользователя не была найдена!");
+    }
+
 
     @Override
     public Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size) {
@@ -167,11 +181,16 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
 
-    @Override
-    public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
-                "Страница с резюме пользователя не была найдена!");
+    private Pageable createPageableWithSort(int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        return switch (sortBy) {
+            case "salary" -> PageRequest.of(page - 1, size, direction, "salary");
+            case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
+            default -> PageRequest.of(page - 1, size, direction, "updatedAt");
+        };
     }
 
     private Page<ResumeDto> getResumeDtoPage(Supplier<Page<Resume>> supplier, String notFoundMessage) {
@@ -179,7 +198,7 @@ public class ResumeServiceImpl implements ResumeService {
         if (resumePage.isEmpty()) {
             throw new VacancyNotFoundException(notFoundMessage);
         }
-        log.info("Получено {} вакансий на странице", resumePage.getSize());
+        log.info("Получено {} резюме на странице", resumePage.getSize());
         return resumePage.map(resumeMapper::toDto);
     }
 
