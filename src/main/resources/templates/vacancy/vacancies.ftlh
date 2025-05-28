@@ -4,25 +4,24 @@
 
     <div class="bg-blue-600 text-white pb-6">
         <div class="container mx-auto px-4">
-            <form action="/vacancies" method="get" id="search-form">
+            <form id="search-form">
                 <div class="flex items-center bg-white rounded-full p-2 shadow-md">
                     <i class="fas fa-search text-gray-500 ml-3 mr-2"></i>
                     <input
                             type="text"
                             name="query"
+                            id="search-input"
                             placeholder="<@spring.message "vacancies.search.placeholder"/>"
                             class="flex-1 outline-none text-gray-800 py-2 px-1"
-                            value="${RequestParameters.query!''}"
                     >
                     <button type="submit" class="bg-gray-100 text-gray-600 p-2 rounded-full mr-1">
                         <i class="fas fa-search"></i>
                     </button>
-                    <#if RequestParameters.query??>
-                        <button type="button" onclick="window.VacancyFilters.update('query', '')"
-                                class="bg-red-100 text-red-600 p-2 rounded-full mr-1" title="Очистить поиск">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </#if>
+                    <button type="button" id="clear-search-btn"
+                            class="bg-red-100 text-red-600 p-2 rounded-full mr-1 hidden"
+                            title="Очистить поиск">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </form>
         </div>
@@ -31,33 +30,40 @@
     <main class="container mx-auto px-4 py-6">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-2">
-                <form action="/vacancies" method="get" class="flex items-center space-x-2" id="sort-form">
-                    <#if categoryId??>
-                        <input type="hidden" name="categoryId" value="${categoryId}">
-                    </#if>
-                    <#if size??>
-                        <input type="hidden" name="size" value="${size}">
-                    </#if>
-                    <#if RequestParameters.query??>
-                        <input type="hidden" name="query" value="${RequestParameters.query}">
-                    </#if>
+                <div class="flex items-center space-x-2">
+                    <label>
+                        <select
+                                id="category-select"
+                                class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">
+                                <@spring.message "vacancies.category.all"/>
+                            </option>
+                            <#if categories?? && categories?size gt 0>
+                                <#list categories as category>
+                                    <option value="${category.id}">
+                                        ${category.name}
+                                    </option>
+                                </#list>
+                            </#if>
+                        </select>
+                    </label>
 
                     <label>
                         <select
-                                name="sortBy"
-                                class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 id="sort-by-select"
+                                class="appearance-none w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="updatedAt" <#if (sortBy!'updatedAt') == 'updatedAt'>selected</#if>>
+                            <option value="updatedAt">
                                 <@spring.message "vacancies.filter.sort.byUpdatedAt"/>
                             </option>
-                            <option value="createdAt" <#if sortBy == 'createdAt'>selected</#if>>
+                            <option value="createdAt">
                                 <@spring.message "vacancies.filter.sort.byDate"/>
                             </option>
-                            <option value="salary" <#if sortBy == 'salary'>selected</#if>>
+                            <option value="salary">
                                 <@spring.message "vacancies.filter.sort.bySalary"/>
                             </option>
-                            <option value="responses" <#if sortBy == 'responses'>selected</#if>>
+                            <option value="responses">
                                 <@spring.message "vacancies.filter.sort.byResponses"/>
                             </option>
                         </select>
@@ -67,23 +73,19 @@
                             type="button"
                             id="sort-direction-btn"
                             class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                            data-direction="${sortDirection!'desc'}"
+                            data-direction="desc"
                     >
-                        <#if (sortDirection!'desc') == 'desc'>
-                            <i class="fas fa-sort-amount-down text-gray-600"></i>
-                        <#else>
-                            <i class="fas fa-sort-amount-up text-gray-600"></i>
-                        </#if>
+                        <i class="fas fa-sort-amount-down text-gray-600"></i>
                     </button>
-                </form>
+                </div>
             </div>
 
             <div class="flex items-center space-x-4">
-                <div class="text-gray-500 text-sm">
-                    <@spring.message "vacancies.count"/>: ${vacancies.totalElements}
+                <div class="text-gray-500 text-sm" id="vacancies-count">
+                    <@spring.message "vacancies.count"/>: 0
                 </div>
                 <button
-                        onclick="window.VacancyFilters.clearAll()"
+                        id="clear-filters-btn"
                         class="text-red-600 hover:text-red-800 text-sm"
                         title="<@spring.message "vacancies.filter.clear"/>">
                     <i class="fas fa-times-circle mr-1"></i>
@@ -96,178 +98,51 @@
             <h2 class="text-xl font-bold"><@spring.message "vacancies.title"/></h2>
         </div>
 
-        <#if categories?? && categories?size gt 0>
-            <div class="flex flex-wrap gap-2 mb-4">
-                <a href="/vacancies<#if sortBy?? || sortDirection?? || RequestParameters.query??>?<#if sortBy??>sortBy=${sortBy}</#if><#if sortDirection??><#if sortBy??>&</#if>sortDirection=${sortDirection}</#if><#if RequestParameters.query??><#if sortBy?? || sortDirection??>&</#if>query=${RequestParameters.query}</#if></#if>"
-                   class="px-3 py-1 rounded-full ${(categoryId??)?then('bg-gray-100 text-gray-700', 'bg-blue-600 text-white')} category-link">
-                    <@spring.message "vacancies.category.all"/>
-                </a>
-                <#list categories as category>
-                    <a href="/vacancies?categoryId=${category.id}<#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                       class="px-3 py-1 rounded-full ${(categoryId?? && categoryId == category.id)?then('bg-blue-600 text-white', 'bg-gray-100 text-gray-700')} category-link">
-                        ${category.name}
-                    </a>
-                </#list>
-            </div>
-        </#if>
+        <div id="loading-spinner" class="hidden text-center py-8">
+            <i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
+            <p class="text-gray-600 mt-2">Загрузка вакансий...</p>
+        </div>
 
-        <div class="space-y-4">
-            <#if vacancies.content?? && vacancies.content?size gt 0>
-                <#list vacancies.content as vacancy>
-                    <div class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
-                         onclick="window.location.href='/vacancies/${vacancy.id}'">
-                        <div class="p-4">
-                            <div class="flex items-center gap-4">
-                                <!-- Аватар работодателя -->
-                                <div class="flex-shrink-0">
-                                    <div class="w-22 h-22 rounded-full overflow-hidden bg-gray-200 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
-                                         onclick="event.stopPropagation(); window.location.href='/employers/${vacancy.employer.id}'">
-                                        <img src="/api/users/${vacancy.employer.id}/avatar"
-                                             alt="${vacancy.employer.name!''}"
-                                             class="w-full h-full object-cover">
-                                    </div>
-                                </div>
+        <div class="space-y-4" id="vacancies-container">
+        </div>
 
-                                <!-- Основная информация -->
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex-1">
-                                            <h3 class="font-bold text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
-                                                ${vacancy.name}
-                                            </h3>
-                                            <p class="text-gray-600 mb-2">${vacancy.employer.name!}</p>
-                                            <div class="text-blue-600 font-medium mb-3">
-                                                <#if vacancy.salary?? && vacancy.salary gt 0>
-                                                    ${vacancy.salary?string(",##0")} ₽
-                                                <#else>
-                                                    <@spring.message "vacancies.salary.notSpecified"/>
-                                                </#if>
-                                            </div>
+        <div id="no-vacancies" class="bg-white rounded-lg shadow p-6 text-center hidden">
+            <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+            <h3 class="font-bold text-lg text-gray-800 mb-2" id="no-vacancies-title">
+                <@spring.message "vacancies.empty.title"/>
+            </h3>
+            <p class="text-gray-600" id="no-vacancies-description">
+                <@spring.message "vacancies.empty.description"/>
+            </p>
+        </div>
 
-                                            <!-- Опыт работы и статус -->
-                                            <div class="flex flex-wrap gap-2 mb-3">
-                                                <#if vacancy.expFrom?? && vacancy.expTo??>
-                                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                                                        <@spring.message "vacancy.experience"/>: ${vacancy.expFrom}-${vacancy.expTo}
-                                                    </span>
-                                                </#if>
-
-                                                <#if vacancy.isActive?? && vacancy.isActive>
-                                                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded">
-                                                        <@spring.message "vacancies.status.active"/>
-                                                    </span>
-                                                <#else>
-                                                    <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">
-                                                        <@spring.message "vacancies.status.inactive"/>
-                                                    </span>
-                                                </#if>
-
-                                                <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                                                    <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
-                                                </span>
-                                            </div>
-
-                                            <!-- Описание -->
-                                            <p class="text-gray-600 text-sm">
-                                                <#if vacancy.description?has_content>
-                                                    ${vacancy.description?truncate(150)}
-                                                <#else>
-                                                    <@spring.message "vacancies.description.empty"/>
-                                                </#if>
-                                            </p>
-                                        </div>
-
-                                        <!-- Даты -->
-                                        <div class="flex flex-col items-end text-xs text-gray-400 ml-4">
-                                            <span class="mb-1">
-                                                <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?datetime?string("dd.MM.yyyy")}
-                                            </span>
-                                            <span>
-                                                <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?datetime?string("dd.MM.yyyy")}
-                                            </span>
-
-                                            <span class="bg-gray-100 text-gray-600 text-xs mt-6 px-2 py-1 rounded">
-                                                    <@spring.message "vacancies.responses"/>: ${vacancy.responses!'0'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </#list>
-
-                <!-- Пагинация -->
-                <div class="flex justify-center items-center mt-6 gap-2">
-                    <!-- Информация о пагинации -->
-                    <div class="text-gray-500 text-sm mr-4">
-                        <@spring.message "pagination.page"/> ${vacancies.number + 1} <@spring.message "pagination.of"/> ${vacancies.totalPages}
-                    </div>
-
-                    <!-- Кнопка "Предыдущая страница" -->
-                    <#if vacancies.number gt 0>
-                        <a href="?page=${vacancies.number}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors pagination-link">
-                            <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
-                        </a>
-                    <#else>
-                        <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                            <i class="fas fa-chevron-left mr-1"></i> <@spring.message "pagination.previous"/>
-                        </span>
-                    </#if>
-
-                    <!-- Номера страниц -->
-                    <div class="flex space-x-1">
-                        <#assign startPage = ((vacancies.number - 2) gt 0)?then(vacancies.number - 2, 0)>
-                        <#assign endPage = ((startPage + 4) lt vacancies.totalPages)?then(startPage + 4, vacancies.totalPages - 1)>
-                        <#if startPage gt 0>
-                            <a href="?page=1<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors pagination-link">
-                                1
-                            </a>
-                            <#if startPage gt 1>
-                                <span class="px-2 py-2">...</span>
-                            </#if>
-                        </#if>
-
-                        <#list startPage..endPage as i>
-                            <a href="?page=${i + 1}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                               class="px-3 py-2 rounded ${(i == vacancies.number)?then('bg-blue-600 text-white', 'hover:bg-gray-100')} transition-colors pagination-link">
-                                ${i + 1}
-                            </a>
-                        </#list>
-
-                        <#if endPage lt vacancies.totalPages - 1>
-                            <#if endPage lt vacancies.totalPages - 2>
-                                <span class="px-2 py-2">...</span>
-                            </#if>
-                            <a href="?page=${vacancies.totalPages}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                               class="px-3 py-2 rounded hover:bg-gray-100 transition-colors pagination-link">
-                                ${vacancies.totalPages}
-                            </a>
-                        </#if>
-                    </div>
-
-                    <#if vacancies.number lt vacancies.totalPages - 1>
-                        <a href="?page=${vacancies.number + 2}<#if size??>&size=${vacancies.size}</#if><#if categoryId??>&categoryId=${categoryId}</#if><#if sortBy??>&sortBy=${sortBy}</#if><#if sortDirection??>&sortDirection=${sortDirection}</#if><#if RequestParameters.query??>&query=${RequestParameters.query}</#if>"
-                           class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors pagination-link">
-                            <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
-                        </a>
-                    <#else>
-                        <span class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
-                            <@spring.message "pagination.next"/> <i class="fas fa-chevron-right ml-1"></i>
-                        </span>
-                    </#if>
-                </div>
-            <#else>
-                <div class="bg-white rounded-lg shadow p-6 text-center">
-                    <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
-                    <h3 class="font-bold text-lg text-gray-800 mb-2"><@spring.message "vacancies.empty.title"/></h3>
-                    <p class="text-gray-600"><@spring.message "vacancies.empty.description"/></p>
-                </div>
-            </#if>
+        <div class="flex justify-center items-center mt-6 gap-2" id="pagination-container">
         </div>
     </main>
 
+    <!-- Скрипт для интернационализации -->
+    <script>
+        window.i18n = {
+            'vacancies.count': '<@spring.message "vacancies.count"/>',
+            'vacancies.salary.notSpecified': '<@spring.message "vacancies.salary.notSpecified"/>',
+            'vacancy.experience': '<@spring.message "vacancy.experience"/>',
+            'vacancies.status.active': '<@spring.message "vacancies.status.active"/>',
+            'vacancies.status.inactive': '<@spring.message "vacancies.status.inactive"/>',
+            'vacancies.description.empty': '<@spring.message "vacancies.description.empty"/>',
+            'profile.vacancies.created': '<@spring.message "profile.vacancies.created"/>',
+            'profile.vacancies.updated': '<@spring.message "profile.vacancies.updated"/>',
+            'vacancies.responses': '<@spring.message "vacancies.responses"/>',
+            'pagination.page': '<@spring.message "pagination.page"/>',
+            'pagination.of': '<@spring.message "pagination.of"/>',
+            'pagination.previous': '<@spring.message "pagination.previous"/>',
+            'pagination.next': '<@spring.message "pagination.next"/>',
+            'vacancies.empty.title': '<@spring.message "vacancies.empty.title"/>',
+            'vacancies.empty.description': '<@spring.message "vacancies.empty.description"/>',
+            'vacancies.search.noResults': '<@spring.message "search.noResult"/>',
+            'vacancies.search.tryOther': '<@spring.message "search.tryOther"/>'
+        };
+    </script>
+
+    <script src="/static/js/vacancies-filter.js"></script>
     <script src="/static/js/vacancies.js"></script>
 </@main.layout>
