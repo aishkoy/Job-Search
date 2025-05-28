@@ -25,6 +25,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -51,6 +53,19 @@ public class ResumeServiceImpl implements ResumeService {
 
         log.info("Созданное резюме: {}", resume.getId());
         return resume.getId();
+    }
+
+    @Transactional
+    @Override
+    public void updateResume(Long resumeId, Long userId) {
+        Resume existing = getResumeById(resumeId);
+        existing.setUpdatedAt(Timestamp.from(Instant.now()));
+
+        if (!isResumeOwnedByApplicant(resumeId, userId))
+            throw new AccessDeniedException("У вас нет прав на редактирование этого резюме");
+
+        resumeRepository.save(existing);
+        log.info("Обновлена дата обновления резюме: {}", resumeId);
     }
 
     @Override
@@ -163,7 +178,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryId(categoryId, pageable),
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
                 "Страница с резюме пользователя не была найдена!");
     }
 

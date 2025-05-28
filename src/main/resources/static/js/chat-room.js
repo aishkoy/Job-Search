@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     async function init() {
         try {
-            const [_, user, responseData] = await Promise.all([
+            const [_] = await Promise.all([
                 connectToWebSocket(),
                 loadCurrentUser(),
                 loadResponseDetails(responseId)
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             stompClient.debug = null;
 
             return new Promise((resolve, reject) => {
-                stompClient.connect({}, function(frame) {
+                stompClient.connect({}, function() {
                     console.log('Connected to WebSocket');
 
                     stompClient.subscribe(`/topic/response/${responseId}`, function(message) {
@@ -57,15 +57,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadCurrentUser() {
         try {
             const response = await fetch('/api/users/current');
-            if (!response.ok) {
-                throw new Error('Ошибка получения данных пользователя');
-            }
 
             const user = await response.json();
-            if (!user || !user.id) {
-                throw new Error('Получены некорректные данные пользователя');
-            }
-
             currentUser = user;
             return user;
         } catch (error) {
@@ -77,15 +70,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadResponseDetails(responseId) {
         try {
             const response = await fetch(`/api/responses/${responseId}`);
-            if (!response.ok) {
-                throw new Error('Ошибка получения данных ответа');
-            }
 
             const responseData = await response.json();
-            if (!responseData) {
-                throw new Error('Получены некорректные данные ответа');
-            }
-
             const isEmployer = currentUser.role.name === 'ROLE_EMPLOYER';
 
             const titleElement = document.getElementById('chat-title');
@@ -107,9 +93,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             const statusElement = document.getElementById('chat-status');
             if (statusElement) {
                 if (responseData.isConfirmed) {
-                    statusElement.innerHTML = `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>${messages.statusConfirmed}</span>`;
+                    statusElement.innerHTML = `<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"><i class="fas fa-check-circle mr-1"></i>${window.messages?.statusConfirmed || 'Подтверждено'}</span>`;
                 } else {
-                    statusElement.innerHTML = `<span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>${messages.statusPending}</span>`;
+                    statusElement.innerHTML = `<span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full"><i class="fas fa-clock mr-1"></i>${window.messages?.statusPending || 'В ожидании'}</span>`;
                 }
             }
 
@@ -123,9 +109,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadMessages(responseId) {
         try {
             const response = await fetch(`/api/messages/responses/${responseId}`);
-            if (!response.ok) {
-                throw new Error('Ошибка получения сообщений');
-            }
 
             const messages = await response.json();
             const container = document.getElementById('messages-container');
@@ -144,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             } else {
                 container.innerHTML = `
                     <div class="text-center py-8">
-                        <p class="text-gray-500">${messages.noMessages}</p>
+                        <p class="text-gray-500">${window.messages?.noMessages || 'Нет сообщений'}</p>
                     </div>
                 `;
             }
@@ -177,11 +160,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         const formattedDate = timestamp.toLocaleDateString();
 
         let senderName = isCurrentUser
-            ? messages.you
+            ? window.messages?.you || 'Вы'
             : `${message.user?.name || ''} ${message.user?.surname || ''}`.trim();
 
-        if (!senderName || senderName === messages.you) {
-            senderName = isCurrentUser ? messages.you : 'Пользователь';
+        if (!senderName || senderName === (window.messages?.you || 'Вы')) {
+            senderName = isCurrentUser ? (window.messages?.you || 'Вы') : 'Пользователь';
         }
 
         messageElement.innerHTML = `
@@ -198,24 +181,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (isNew) {
             scrollToBottom();
-
-            if (!isCurrentUser && message.id) {
-                markMessageAsRead(message.id);
-            }
-        }
-    }
-
-    async function markMessageAsRead(messageId) {
-        try {
-            await fetch(`/api/messages/${messageId}/read`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    [csrfHeader]: csrfToken
-                }
-            });
-        } catch (error) {
-            console.error('Error marking message as read:', error);
         }
     }
 
@@ -255,9 +220,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         container.innerHTML = `
             <div class="text-center py-8">
-                <p class="text-red-500">${messages.errorLoading}</p>
+                <p class="text-red-500">${window.messages?.errorLoading || 'Ошибка загрузки данных'}</p>
                 <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="window.location.reload()">
-                    ${messages.retry}
+                    ${window.messages?.retry || 'Повторить'}
                 </button>
             </div>
         `;

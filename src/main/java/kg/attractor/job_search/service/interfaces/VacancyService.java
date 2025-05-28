@@ -12,6 +12,8 @@ public interface VacancyService {
 
     List<VacancyDto> getVacancies();
 
+    void updateVacancy(Long vacancyId, Long userId);
+
     Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId, Long authorId);

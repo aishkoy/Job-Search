@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller.mvc;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.VacancyDto;
 import kg.attractor.job_search.dto.user.UserDto;
@@ -23,10 +24,10 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
-    public String vacancies(@RequestParam(defaultValue = "1") int page,
-                            @RequestParam(defaultValue = "5") int size,
+    public String vacancies(@RequestParam(required = false ,defaultValue = "1") int page,
+                            @RequestParam(required = false,defaultValue = "5") int size,
                             @RequestParam(required = false) Long categoryId,
-                            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+                            @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
                             @RequestParam(required = false, defaultValue = "desc") String sortDirection,
                             Model model) {
 
@@ -93,7 +94,7 @@ public class VacancyController {
     @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String delete(@PathVariable("vacancyId") Long vacancyId) {
         vacancyService.deleteVacancy(vacancyId, userService.getAuthId());
-        return "redirect:/";
+        return "redirect:/employers/" + userService.getAuthId();
     }
 
     @PostMapping("{vacancyId}/edit")
@@ -108,5 +109,15 @@ public class VacancyController {
         }
         vacancyService.updateVacancy(vacancyId, vacancyDto);
         return "redirect:/vacancies/" + vacancyId;
+    }
+
+    @PostMapping("{vacancyId}/update")
+    @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
+    public String updateVacancyStatus(@PathVariable("vacancyId") Long vacancyId,
+                                     HttpServletRequest request) {
+        vacancyService.updateVacancy(vacancyId, userService.getAuthId());
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
     }
 }

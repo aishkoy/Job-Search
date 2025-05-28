@@ -34,9 +34,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function loadCurrentUser() {
         try {
             const response = await fetch('/api/users/current');
-            if (!response.ok) {
-                throw new Error('Ошибка получения данных пользователя');
-            }
 
             const user = await response.json();
             if (user && user.id) {
@@ -51,7 +48,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const response = await fetch(`/api/vacancies/${vacancyId}`);
             if (!response.ok) {
-                throw new Error(`Ошибка получения данных вакансии: ${response.status} ${response.statusText}`);
+                if (response.status === 404) {
+                    showError('Вакансия не найдена');
+                    return;
+                }
             }
 
             const vacancy = await response.json();
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         } catch (error) {
             console.error('Error loading vacancy details:', error);
-            showError();
+            showError('Не удалось загрузить данные вакансии');
         }
     }
 
@@ -73,7 +73,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const response = await fetch(`/api/resumes/${resumeId}`);
             if (!response.ok) {
-                throw new Error(`Ошибка получения данных резюме: ${response.status} ${response.statusText}`);
+                if (response.status === 404) {
+                    showError('Резюме не найдено');
+                    return;
+                }
             }
 
             const resume = await response.json();
@@ -90,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         } catch (error) {
             console.error('Error loading resume details:', error);
-            showError();
+            showError('Не удалось загрузить данные резюме');
         }
     }
 
@@ -99,14 +102,17 @@ document.addEventListener('DOMContentLoaded', async function() {
             const response = await fetch(`/api/responses/vacancies/${vacancyId}?page=${page}&size=${size}`);
 
             if (!response.ok) {
-                throw new Error(`Ошибка получения откликов на вакансию: ${response.status} ${response.statusText}`);
+                if (response.status === 404) {
+                    showError('Никто не откликался на вашу вакансию!');
+                    return;
+                }
             }
 
             const data = await response.json();
-            await renderResponses(data, isEmployer);
+            renderResponses(data, isEmployer);
         } catch (error) {
             console.error('Подробная ошибка загрузки откликов на вакансию:', error);
-            showError('Не удалось загрузить отклики на вакансию. Пожалуйста, проверьте наличие доступа или попробуйте позже.');
+            showError('Не удалось загрузить отклики на вакансию');
         }
     }
 
@@ -115,18 +121,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             const response = await fetch(`/api/responses/resumes/${resumeId}?page=${page}&size=${size}`);
 
             if (!response.ok) {
-                throw new Error(`Ошибка получения откликов на резюме: ${response.status} ${response.statusText}`);
+                if (response.status === 404) {
+                    showError('Вы еще не откликались с этим резюме!');
+                    return;
+                }
             }
 
             const data = await response.json();
-            await renderResponses(data, isEmployer);
+            renderResponses(data, isEmployer);
         } catch (error) {
             console.error('Подробная ошибка загрузки откликов на резюме:', error);
-            showError('Не удалось загрузить отклики на резюме. Пожалуйста, проверьте наличие доступа или попробуйте позже.');
+            showError('Не удалось загрузить отклики на резюме');
         }
     }
 
-    async function renderResponses(data, isEmployer) {
+    function renderResponses(data, isEmployer) {
         const container = document.getElementById('responses-container');
         if (!container) return;
 
@@ -135,10 +144,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (data.content && data.content.length > 0) {
             totalPages = data.totalPages || 1;
 
-            const responsePromises = data.content.map(async (response) => {
+            data.content.forEach((response) => {
                 if (!response || !response.id) {
                     console.warn('Пропуск некорректного отклика:', response);
-                    return null;
+                    return;
                 }
 
                 const responseElement = document.createElement('div');
@@ -149,67 +158,32 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const responseId = response.id;
 
                 const status = response.isConfirmed
-                    ? `<span class="text-green-500 text-sm"><i class="fas fa-check-circle mr-1"></i>${messages.statusConfirmed || 'Подтверждено'}</span>`
-                    : `<span class="text-gray-500 text-sm"><i class="fas fa-clock mr-1"></i>${messages.statusPending || 'В ожидании'}</span>`;
+                    ? `<span class="text-green-500 text-sm"><i class="fas fa-check-circle mr-1"></i>${window.messages?.statusConfirmed || 'Подтверждено'}</span>`
+                    : `<span class="text-gray-500 text-sm"><i class="fas fa-clock mr-1"></i>${window.messages?.statusPending || 'В ожидании'}</span>`;
 
-                try {
-                    const unreadResponse = await fetch(`/api/messages/unread/by-response?responseId=${responseId}&userId=${currentUserId || ''}`);
-                    if (!unreadResponse.ok) {
-                        throw new Error('Ошибка получения непрочитанных сообщений');
-                    }
-
-                    const count = await unreadResponse.json();
-                    const unreadBadge = count > 0
-                        ? `<span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${count}</span>`
-                        : '';
-
-                    responseElement.innerHTML = `
-                        <a href="/chat/room/${responseId}" class="block">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
-                                    <p class="text-gray-600">${escapeHtml(subtitle)}</p>
-                                    <div class="mt-2">${status}</div>
-                                </div>
-                                <div class="flex items-center">
-                                    ${unreadBadge}
-                                    <span class="ml-2 text-blue-500"><i class="fas fa-comments"></i></span>
-                                </div>
+                responseElement.innerHTML = `
+                    <a href="/chat/room/${responseId}" class="block">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
+                                <p class="text-gray-600">${escapeHtml(subtitle)}</p>
+                                <div class="mt-2">${status}</div>
                             </div>
-                        </a>
-                    `;
-                } catch (error) {
-                    console.error('Error fetching unread count:', error);
-
-                    responseElement.innerHTML = `
-                        <a href="/chat/room/${responseId}" class="block">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
-                                    <p class="text-gray-600">${escapeHtml(subtitle)}</p>
-                                    <div class="mt-2">${status}</div>
-                                </div>
-                                <div>
-                                    <span class="text-blue-500"><i class="fas fa-comments"></i></span>
-                                </div>
+                            <div>
+                                <span class="text-blue-500"><i class="fas fa-comments"></i></span>
                             </div>
-                        </a>
-                    `;
-                }
+                        </div>
+                    </a>
+                `;
 
-                return responseElement;
+                container.appendChild(responseElement);
             });
-
-            const responseElements = await Promise.all(responsePromises);
-            responseElements
-                .filter(elem => elem !== null)
-                .forEach(elem => container.appendChild(elem));
 
             renderPagination(currentPage, totalPages);
         } else {
             container.innerHTML = `
                 <div class="text-center py-8">
-                    <p class="text-gray-500">${messages.noResponses || 'Нет активных откликов'}</p>
+                    <p class="text-gray-500">${window.messages?.noResponses || 'Нет активных откликов'}</p>
                 </div>
             `;
         }
@@ -297,8 +271,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const container = document.getElementById('responses-container');
         if (!container) return;
 
-        const errorMessage = customMessage || messages.errorLoading || 'Ошибка загрузки данных';
-        const retryText = messages.retry || 'Повторить';
+        const errorMessage = customMessage || window.messages?.errorLoading || 'Ошибка загрузки данных';
+        const retryText = window.messages?.retry || 'Повторить';
 
         container.innerHTML = `
             <div class="text-center py-8">

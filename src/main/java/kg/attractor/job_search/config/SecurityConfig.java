@@ -42,11 +42,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/vacancies").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/vacancies/*").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/").permitAll()
-                                .requestMatchers("/api/users/language").permitAll()
+                                .requestMatchers("/auth/**", "/static/**", "/css/**", "/js/**", "/api/users/language", "/").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies", "/vacancies/*", "api/users/*/avatar").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();

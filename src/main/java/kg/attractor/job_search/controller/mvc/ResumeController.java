@@ -1,5 +1,6 @@
 package kg.attractor.job_search.controller.mvc;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.service.interfaces.CategoryService;
@@ -96,7 +97,7 @@ public class ResumeController {
     @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
     public String deleteResume(@PathVariable("resumeId") Long resumeId) {
         resumeService.deleteResume(resumeId, userService.getAuthId());
-        return "redirect:/";
+        return "redirect:/applicants/" + userService.getAuthId();
     }
 
     @PostMapping("{resumeId}/edit")
@@ -119,4 +120,13 @@ public class ResumeController {
         return "redirect:/resumes/" + resumeId;
     }
 
+    @PostMapping("{resumeId}/update")
+    @PreAuthorize("hasRole('APPLICANT') and @resumeService.isAuthorOfResume(#resumeId, authentication.principal.userId)")
+    public String updateResumeStatus(@PathVariable("resumeId") Long resumeId,
+                                     HttpServletRequest request) {
+        resumeService.updateResume(resumeId, userService.getAuthId());
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
+    }
 }

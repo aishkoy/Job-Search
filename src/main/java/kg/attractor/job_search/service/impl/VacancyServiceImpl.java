@@ -17,7 +17,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -41,13 +44,25 @@ public class VacancyServiceImpl implements VacancyService {
         return vacancy.getId();
     }
 
+    @Transactional
+    @Override
+    public void updateVacancy(Long vacancyId, Long userId) {
+        Vacancy existing = getVacancyById(vacancyId);
+        validateOwnership(vacancyId, userId);
+        existing.setUpdatedAt(Timestamp.from(Instant.now()));
+
+        vacancyRepository.save(existing);
+        log.info("Обновлено время вакансии {}", vacancyId);
+    }
+
+    @Transactional
     @Override
     public Long updateVacancy(Long vacancyId, VacancyDto dto) {
         Vacancy existing = getVacancyById(vacancyId);
-        dto.setCreatedAt(existing.getCreatedAt());
-        validateOwnership(vacancyId, dto.getEmployer().getId());
         categoryService.getCategoryIfPresent(dto.getCategory().getId());
+        validateOwnership(vacancyId, dto.getEmployer().getId());
 
+        dto.setCreatedAt(existing.getCreatedAt());
         Vacancy updated = vacancyMapper.toEntity(dto);
 
         vacancyRepository.save(updated);
@@ -130,7 +145,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<VacancyDto> getVacanciesByEmployerId(Long employer, int page, int size) {
-        Pageable pageable = createPageableWithSort(page, size, "createdAt", "asc");
+        Pageable pageable = createPageableWithSort(page, size, "updatedAt", "asc");
         return getVacancyDtoPage(() -> vacancyRepository.findAllByEmployerId(employer, pageable), "У данного работодателя пока нет вакансий!");
     }
 
@@ -150,9 +165,12 @@ public class VacancyServiceImpl implements VacancyService {
         Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC
                 : Sort.Direction.DESC;
+
         return switch (sortBy) {
             case "responses" -> PageRequest.of(page - 1, size, direction, "responses");
-            default -> PageRequest.of(page - 1, size, direction, "createdAt");
+            case "salary" -> PageRequest.of(page - 1, size, direction, "salary");
+            case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
+            default -> PageRequest.of(page - 1, size, direction, "updatedAt");
         };
     }
 
@@ -161,7 +179,7 @@ public class VacancyServiceImpl implements VacancyService {
         Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryId(categoryId, pageable),
+                () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
                 "Вакансии по указанной категории не найдены!"
         );
     }

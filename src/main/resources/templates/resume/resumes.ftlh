@@ -44,73 +44,91 @@
         <div class="space-y-4">
             <#if resumes.content?? && resumes.content?size gt 0>
                 <#list resumes.content as resume>
-                    <div class="bg-white rounded-lg shadow p-4 border border-gray-200 hover:shadow-md transition-shadow">
-                        <div class="flex justify-between">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">${resume.name}</h3>
-                                <p class="text-gray-600 mb-2">${resume.applicant.name!}</p>
-                                <div class="text-blue-600 font-medium">
-                                    <#if resume.salary?? && resume.salary gt 0>
-                                        ${resume.salary?string(",##0")} ₽
-                                    <#else>
-                                        <@spring.message "resumes.salary.notSpecified"/>
-                                    </#if>
+                    <div class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                         onclick="window.location.href='/resumes/${resume.id}'">
+                        <div class="p-4">
+                            <div class="flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-22 h-22 rounded-full overflow-hidden bg-gray-200 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
+                                         onclick="event.stopPropagation(); window.location.href='/applicants/${resume.applicant.id}'">
+                                        <img src="/api/users/${resume.applicant.id}/avatar?size=small"
+                                             alt="${resume.applicant.name!''} ${resume.applicant.surname!''}"
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h3 class="font-bold text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
+                                                ${resume.name}
+                                            </h3>
+                                            <p class="text-gray-600 mb-2">${resume.applicant.name!} ${resume.applicant.surname!''}</p>
+                                            <div class="text-blue-600 font-medium mb-3">
+                                                <#if resume.salary?? && resume.salary gt 0>
+                                                    ${resume.salary?string(",##0")} ₽
+                                                <#else>
+                                                    <@spring.message "resumes.salary.notSpecified"/>
+                                                </#if>
+                                            </div>
+
+                                            <!-- Опыт работы и статус -->
+                                            <div class="flex flex-wrap gap-2 mb-3">
+                                                <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
+                                                    <#assign totalYears = 0>
+                                                    <#list resume.workExperiences as exp>
+                                                        <#assign totalYears = totalYears + exp.years>
+                                                    </#list>
+                                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "resumes.experience.years"/>: ${totalYears}
+                                                    </span>
+                                                <#else>
+                                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "resumes.experience.none"/>
+                                                    </span>
+                                                </#if>
+
+                                                <#if resume.isActive?? && resume.isActive>
+                                                    <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "resumes.status.active"/>
+                                                    </span>
+                                                <#else>
+                                                    <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded">
+                                                        <@spring.message "resumes.status.inactive"/>
+                                                    </span>
+                                                </#if>
+
+                                                <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+                                                    <i class="fas fa-tags mr-1"></i>${resume.category.name}
+                                                </span>
+                                            </div>
+
+                                            <!-- Последнее место работы -->
+                                            <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
+                                                <#assign lastJob = resume.workExperiences[0]>
+                                                <p class="text-gray-600 text-sm">
+                                                    <span class="font-medium"><@spring.message "resumes.lastPosition"/>:</span> ${lastJob.position}
+                                                    <@spring.message "resumes.lastPosition.at"/> ${lastJob.companyName}
+                                                </p>
+                                            <#else>
+                                                <p class="text-gray-600 text-sm italic">
+                                                    <@spring.message "resumes.experience.notSpecified"/>
+                                                </p>
+                                            </#if>
+                                        </div>
+
+                                        <!-- Даты -->
+                                        <div class="flex flex-col items-end text-xs text-gray-400 ml-4">
+                                            <span class="mb-1">
+                                                <@spring.message "resumes.created"/>: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
+                                            </span>
+                                            <span>
+                                                <@spring.message "resumes.updated"/>: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex flex-col items-end justify-between">
-                                <span class="text-xs text-gray-400 mt-4">
-                                <#if resume.updatedAt??>
-                                    <@spring.message "resumes.updated"/>: ${resume.updatedAt?datetime?string("dd.MM.yyyy")}
-                                <#elseif resume.createdAt??>
-                                    <@spring.message "resumes.created"/>: ${resume.createdAt?datetime?string("dd.MM.yyyy")}
-                                <#else>
-                                    <@spring.message "resumes.date.notSpecified"/>
-                                </#if>
-                            </span>
-                            </div>
-                        </div>
-
-                        <!-- Опыт работы и образование -->
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
-                                <#assign totalYears = 0>
-                                <#list resume.workExperiences as exp>
-                                    <#assign totalYears = totalYears + exp.years>
-                                </#list>
-                                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                                <@spring.message "resumes.experience.years"/>: ${totalYears}
-                            </span>
-                            <#else>
-                                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                                <@spring.message "resumes.experience.none"/>
-                            </span>
-                            </#if>
-
-                            <#if resume.isActive?? && resume.isActive>
-                                <span class="bg-green-100 text-green-600 text-xs px-2 py-1 rounded"><@spring.message "resumes.status.active"/></span>
-                            <#else>
-                                <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded"><@spring.message "resumes.status.inactive"/></span>
-                            </#if>
-
-                            <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                                    <i class="fas fa-tags mr-1"></i>${resume.category.name}
-                            </span>
-                        </div>
-
-                        <#if resume.workExperiences?? && resume.workExperiences?size gt 0>
-                            <#assign lastJob = resume.workExperiences[0]>
-                            <p class="text-gray-600 text-sm mt-3">
-                                <span class="font-medium"><@spring.message "resumes.lastPosition"/>:</span> ${lastJob.position}
-                                <@spring.message "resumes.lastPosition.at"/> ${lastJob.companyName}
-
-                            </p>
-                        <#else>
-                            <p class="text-gray-600 text-sm mt-3 italic"><@spring.message "resumes.experience.notSpecified"/></p>
-                        </#if>
-
-                        <div class="flex justify-between items-center mt-4">
-                            <a href="/resumes/${resume.id}"
-                               class="text-blue-600 hover:text-blue-800 text-sm font-medium"><@spring.message "resumes.details"/></a>
                         </div>
                     </div>
                 </#list>

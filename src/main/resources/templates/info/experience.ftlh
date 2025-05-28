@@ -5,10 +5,24 @@
     <div class="container mx-auto px-4 py-6">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
             <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-6">
-                <h1 class="text-2xl font-bold flex items-center">
-                    <i class="fas fa-briefcase mr-2"></i>
-                    <#if mode == 'create'><@spring.message "experience.create.title"/><#else><@spring.message "experience.edit.title"/></#if>
-                </h1>
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-briefcase mr-2"></i>
+                        <#if mode == 'create'><@spring.message "experience.create.title"/><#else><@spring.message "experience.edit.title"/></#if>
+                    </h1>
+                    <#if mode == 'edit'>
+                        <form action="/resumes/${resumeId}/experiences/${experienceDto.id}/delete" method="post"
+                              onsubmit="return confirm('<@spring.message "experience.delete.confirm"/>');"
+                              class="inline">
+                            <@main.csrf/>
+                            <button type="submit"
+                                    class="bg-red-600/80 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-red-700/90 transition font-medium"
+                                    title="<@spring.message "experience.delete"/>">
+                                <i class="fas fa-trash-alt mr-2"></i><@spring.message "experience.delete"/>
+                            </button>
+                        </form>
+                    </#if>
+                </div>
             </div>
 
             <form action="${action}" method="post" class="p-6 space-y-6">
@@ -22,7 +36,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "experience.company.label"/></label>
                     <@spring.formInput
                     "experienceDto.companyName",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
@@ -31,7 +45,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "experience.position.label"/></label>
                     <@spring.formInput
                     "experienceDto.position",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
@@ -40,7 +54,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "experience.years.label"/></label>
                     <@spring.formInput
                     "experienceDto.years",
-                    'type="number" min="1" max="80" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"'
+                    'type="number" min="1" max="80" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>
@@ -49,7 +63,7 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2"><@spring.message "experience.responsibilities.label"/></label>
                     <@spring.formTextarea
                     "experienceDto.responsibilities",
-                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 h-32"'
+                    'class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 h-32 focus:outline-none focus:ring-blue-500 focus:border-blue-500"'
                     />
                     <@spring.showErrors '<br>', 'text-red-500 text-xs mt-1'/>
                 </div>

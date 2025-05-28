@@ -10,17 +10,34 @@
                     <h1 class="text-2xl font-bold flex items-center">
                         <i class="fas fa-edit mr-2"></i><@spring.message "vacancy.edit.title"/>
                     </h1>
-                    <a href="/vacancies/${vacancyForm.id}"
-                       class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-white/30 transition font-medium">
-                        <i class="fas fa-eye mr-2"></i><@spring.message "vacancy.edit.preview"/>
-                    </a>
+                    <div class="flex space-x-3">
+                        <a href="/vacancies/${vacancyForm.id}"
+                           class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-white/30 transition font-medium">
+                            <i class="fas fa-eye mr-2"></i><@spring.message "vacancy.edit.preview"/>
+                        </a>
+                        <button type="submit"
+                                form="vacancy-edit-form"
+                                class="bg-green-600/80 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-green-700/90 transition font-medium">
+                            <i class="fas fa-save mr-2"></i><@spring.message "vacancy.actions.save"/>
+                        </button>
+                        <form action="/vacancies/${vacancyForm.id}/delete" method="post"
+                              onsubmit="return confirm('<@spring.message "profile.vacancies.delete.confirm"/>');"
+                              class="inline">
+                            <@main.csrf/>
+                            <button type="submit"
+                                    class="bg-red-600/80 backdrop-blur-sm text-white px-4 py-2 rounded-md hover:bg-red-700/90 transition font-medium"
+                                    title="<@spring.message "profile.resumes.delete"/>">
+                                <i class="fas fa-trash-alt mr-2"></i><@spring.message "profile.resumes.delete"/>
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 <p class="mt-2 text-blue-100 text-sm">
                     <@spring.message "vacancy.edit.description"/>
                 </p>
             </div>
 
-            <form action="/vacancies/${vacancyForm.id}/edit" method="post" class="space-y-6">
+            <form id="vacancy-edit-form" action="/vacancies/${vacancyForm.id}/edit" method="post" class="space-y-6">
                 <@main.csrf/>
                 <input type="hidden" name="id" value="${vacancyForm.id}"/>
                 <input type="hidden" name="employer.id" value="${vacancyForm.employer.id}"/>
@@ -123,12 +140,6 @@
                         <a href="/vacancies/${vacancyForm.id}" class="text-gray-600 hover:text-blue-600 transition-all flex items-center">
                             <i class="fas fa-arrow-left mr-2"></i><@spring.message "vacancy.edit.back"/>
                         </a>
-                    </div>
-
-                    <div class="flex space-x-3">
-                        <button type="submit" class="flex items-center justify-center py-2 px-6 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm">
-                            <i class="fas fa-save mr-2"></i><@spring.message "vacancy.actions.save"/>
-                        </button>
                     </div>
                 </div>
             </form>

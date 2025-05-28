@@ -159,6 +159,13 @@
                                                 <@spring.message "resumes.created"/>: ${resume.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-sync-alt text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                <@spring.message "resumes.updated"/>: ${resume.updatedAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
                                     </div>
 
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
@@ -182,6 +189,15 @@
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
                                                             title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+
+                                                <form action="/resumes/${resume.id}/update" method="post"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-green-600 hover:text-green-800"
+                                                            title="<@spring.message "profile.update"/>">
+                                                        <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -328,6 +344,13 @@
                                                 <@spring.message "profile.vacancies.created"/>: ${vacancy.createdAt?string("dd.MM.yyyy")}
                                             </span>
                                         </p>
+
+                                        <p class="text-gray-600 flex items-center text-sm">
+                                            <i class="fas fa-sync-alt text-blue-500 mr-2 w-5"></i>
+                                            <span class="text-gray-500 text-sm">
+                                                <@spring.message "profile.vacancies.updated"/>: ${vacancy.updatedAt?string("dd.MM.yyyy")}
+                                            </span>
+                                        </p>
                                     </div>
 
                                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
@@ -350,6 +373,14 @@
                                                     <button type="submit" class="text-red-600 hover:text-red-800"
                                                             title="<@spring.message "profile.resumes.delete"/>">
                                                         <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="/vacancies/${vacancy.id}/update" method="post"
+                                                      class="inline">
+                                                    <@main.csrf/>
+                                                    <button type="submit" class="text-green-600 hover:text-green-800"
+                                                            title="<@spring.message "profile.update"/>">
+                                                        <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -445,33 +476,38 @@
         </div>
 
         <!-- Дополнительные блоки информации -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-chart-line text-blue-600 mr-2"></i><@spring.message "profile.stats.title"/>
-            </h3>
+        <#if currentUserId?? && currentUserId == user.id>
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-blue-600 mr-2"></i><@spring.message "profile.stats.title"/>
+                </h3>
 
-            <div class="space-y-4">
-                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
-                            <i class="fas fa-paper-plane"></i>
+                <div class="space-y-4">
+                    <div id="responses-block"
+                         class="flex justify-between items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200 hover:shadow-md transform hover:scale-[1.01]">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <span class="text-gray-700"><@spring.message "profile.stats.responses"/></span>
                         </div>
-                        <span class="text-gray-700"><@spring.message "profile.stats.responses"/></span>
+                        <span id="responses" class="text-xl font-bold text-blue-600">0</span>
                     </div>
-                    <span id="responses" class="text-xl font-bold text-gray-800">0</span>
-                </div>
 
-                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg mt-3">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-3">
-                            <i class="fa-solid fa-check"></i>
+                    <div id="responses-approved-block"
+                         class="flex justify-between items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200 hover:shadow-md transform hover:scale-[1.01]">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mr-3">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <span class="text-gray-700"><@spring.message "profile.stats.approved.resumes"/></span>
                         </div>
-                        <span class="text-gray-700"><@spring.message "profile.stats.approved.resumes"/></span>
+                        <span id="responses-approved" class="text-xl font-bold text-blue-600">0</span>
                     </div>
-                    <span id="responses-approved" class="text-xl font-bold text-gray-800">0</span>
                 </div>
             </div>
-        </div>
+        </#if>
+
     </div>
 
     <script src="/static/js/profile.js"></script>

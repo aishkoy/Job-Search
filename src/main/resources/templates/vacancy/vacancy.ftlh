@@ -15,6 +15,16 @@
                                class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition font-medium">
                                 <i class="fas fa-edit mr-2"></i><@spring.message "vacancy.edit"/>
                             </a>
+                            <form action="/vacancies/${vacancy.id}/delete" method="post"
+                                  onsubmit="return confirm('<@spring.message "profile.vacancies.delete.confirm"/>');"
+                                  class="inline">
+                                <@main.csrf/>
+                                <button type="submit"
+                                        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition font-medium"
+                                        title="<@spring.message "profile.resumes.delete"/>">
+                                    <i class="fas fa-trash-alt mr-2"></i><@spring.message "profile.resumes.delete"/>
+                                </button>
+                            </form>
                         </#if>
                     </div>
                 </div>

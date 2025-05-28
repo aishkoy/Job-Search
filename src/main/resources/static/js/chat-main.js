@@ -9,13 +9,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function fetchCurrentUser() {
         try {
             const response = await fetch('/api/users/current');
-            if (!response.ok) {
-                throw new Error('Ошибка получения данных пользователя');
-            }
 
             const user = await response.json();
             if (user && user.id) {
-                if (isEmployerRole) {
+                if (window.isEmployerRole) {
                     await loadVacancies(user.id, currentPage, pageSize);
                 } else {
                     await loadResumes(user.id, currentPage, pageSize);
@@ -33,8 +30,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function loadVacancies(userId, page, size) {
         try {
             const response = await fetch(`/api/vacancies/employers/${userId}?page=${page}&size=${size}`);
+
             if (!response.ok) {
-                throw new Error('Ошибка получения вакансий');
+                if (response.status === 404) {
+                    showError('У вас нет вакансий!');
+                    return;
+                }
             }
 
             const data = await response.json();
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 data.userId = userId;
             }
 
-            await renderItems(data, true);
+            renderItems(data, true);
         } catch (error) {
             console.error('Ошибка загрузки вакансий:', error);
             showError('Не удалось загрузить вакансии');
@@ -53,8 +54,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     async function loadResumes(userId, page, size) {
         try {
             const response = await fetch(`/api/resumes/applicants/${userId}?page=${page}&size=${size}`);
+
             if (!response.ok) {
-                throw new Error('Ошибка получения резюме');
+                if (response.status === 404) {
+                    showError('У вас нет резюме!');
+                    return;
+                }
             }
 
             const data = await response.json();
@@ -63,14 +68,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 data.userId = userId;
             }
 
-            await renderItems(data, false);
+            renderItems(data, false);
         } catch (error) {
             console.error('Ошибка загрузки резюме:', error);
             showError('Не удалось загрузить резюме');
         }
     }
 
-    async function renderItems(data, isEmployer) {
+    function renderItems(data, isEmployer) {
         const container = document.getElementById('chat-items-container');
         if (!container) return;
 
@@ -85,10 +90,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (data.content && data.content.length > 0) {
             totalPages = data.totalPages || 1;
 
-            const itemPromises = data.content.map(async (item) => {
+            data.content.forEach((item) => {
                 if (!item || !item.id) {
                     console.error('Некорректный элемент:', item);
-                    return null;
+                    return;
                 }
 
                 const itemElement = document.createElement('div');
@@ -98,66 +103,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                 const subtitle = getItemSubtitle(item, isEmployer);
                 const itemId = item.id;
 
-                const unreadEndpoint = isEmployer
-                    ? `/api/messages/unread/by-vacancy?vacancyId=${itemId}&userId=${data.userId || ''}`
-                    : `/api/messages/unread/by-resume?resumeId=${itemId}&userId=${data.userId || ''}`;
-
-                try {
-                    const response = await fetch(unreadEndpoint);
-                    if (!response.ok) {
-                        throw new Error('Ошибка получения непрочитанных сообщений');
-                    }
-
-                    const count = await response.json();
-                    const unreadBadge = count > 0
-                        ? `<span class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">${count}</span>`
-                        : '';
-
-                    const roomType = isEmployer ? 'vacancy' : 'resume';
-                    itemElement.innerHTML = `
-                        <a href="/chat/${roomType}/${itemId}" class="block">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
-                                    <p class="text-gray-600">${escapeHtml(subtitle)}</p>
-                                </div>
-                                <div class="flex items-center">
-                                    ${unreadBadge}
-                                    <span class="ml-2 text-blue-500"><i class="fas fa-chevron-right"></i></span>
-                                </div>
+                const roomType = isEmployer ? 'vacancy' : 'resume';
+                itemElement.innerHTML = `
+                    <a href="/chat/${roomType}/${itemId}" class="block">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
+                                <p class="text-gray-600">${escapeHtml(subtitle)}</p>
                             </div>
-                        </a>
-                    `;
-                } catch (error) {
-                    console.error('Ошибка получения непрочитанных сообщений:', error);
-
-                    const roomType = isEmployer ? 'vacancy' : 'resume';
-                    itemElement.innerHTML = `
-                        <a href="/chat/${roomType}/${itemId}" class="block">
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <h3 class="font-medium text-lg text-gray-800">${escapeHtml(title)}</h3>
-                                    <p class="text-gray-600">${escapeHtml(subtitle)}</p>
-                                </div>
-                                <div>
-                                    <span class="text-blue-500"><i class="fas fa-chevron-right"></i></span>
-                                </div>
+                            <div>
+                                <span class="text-blue-500"><i class="fas fa-chevron-right"></i></span>
                             </div>
-                        </a>
-                    `;
-                }
+                        </div>
+                    </a>
+                `;
 
-                return itemElement;
-            });
-
-            const itemElements = await Promise.all(itemPromises);
-            itemElements.filter(item => item !== null).forEach(item => {
-                container.appendChild(item);
+                container.appendChild(itemElement);
             });
 
             renderPagination(currentPage, totalPages);
         } else {
-            const message = isEmployer ? noVacanciesMessage : noResumesMessage;
+            const message = isEmployer
+                ? (window.noVacanciesMessage || 'У вас нет вакансий')
+                : (window.noResumesMessage || 'У вас нет резюме');
             container.innerHTML = `
                 <div class="text-center py-8">
                     <p class="text-gray-500">${message}</p>
@@ -250,15 +218,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         window.location.href = url.toString();
     }
 
-    function showError(message = errorLoadingMessage) {
+    function showError(message) {
         const container = document.getElementById('chat-items-container');
         if (!container) return;
 
+        const errorMessage = message || window.errorLoadingMessage || 'Ошибка загрузки данных';
+        const retryText = window.retryMessage || 'Повторить';
+
         container.innerHTML = `
             <div class="text-center py-8">
-                <p class="text-red-500">${message}</p>
+                <p class="text-red-500">${errorMessage}</p>
                 <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="window.location.reload()">
-                    ${retryMessage}
+                    ${retryText}
                 </button>
             </div>
         `;

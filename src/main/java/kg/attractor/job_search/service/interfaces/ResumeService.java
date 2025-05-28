@@ -4,6 +4,7 @@ import kg.attractor.job_search.dto.ResumeDto;
 import kg.attractor.job_search.entity.Resume;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,9 @@ public interface ResumeService {
     ResumeDto getResumeDtoById(Long resumeId, Long userId);
 
     ResumeDto getResumeDtoById(Long resumeId);
+
+    @Transactional
+    void updateResume(Long resumeId, Long userId);
 
     Long updateResume(Long resumeId, ResumeDto resumeDto);
 

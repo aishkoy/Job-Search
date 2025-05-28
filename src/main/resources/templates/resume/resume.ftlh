@@ -16,6 +16,16 @@
                                class="bg-white text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition font-medium">
                                 <i class="fas fa-edit mr-2"></i><@spring.message "resume.edit.button"/>
                             </a>
+                            <form action="/resumes/${resume.id}/delete" method="post"
+                                  onsubmit="return confirm('<@spring.message "profile.resumes.delete.confirm"/>');"
+                                  class="inline">
+                                <@main.csrf/>
+                                <button type="submit"
+                                        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition font-medium"
+                                        title="<@spring.message "profile.resumes.delete"/>">
+                                    <i class="fas fa-trash-alt mr-2"></i><@spring.message "profile.resumes.delete"/>
+                                </button>
+                            </form>
                         </#if>
                     </div>
                 </div>
@@ -71,11 +81,13 @@
                 </div>
             </div>
 
-            <#if resume.contacts?? && resume.contacts?size gt 0>
-                <div class="p-6 border-b">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">
-                        <i class="fas fa-address-card text-blue-600 mr-2"></i><@spring.message "resume.contacts.title"/>
-                    </h3>
+
+            <div class="p-6 border-b">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-address-card text-blue-600 mr-2"></i><@spring.message "resume.contacts.title"/>
+                </h3>
+
+                <#if resume.contacts?? && resume.contacts?size gt 0>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <#list resume.contacts as contact>
                             <div class="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50 transition-colors">
@@ -122,8 +134,10 @@
                             </div>
                         </#list>
                     </div>
-                </div>
-            </#if>
+                <#else>
+                    <p class="text-gray-500 italic"><@spring.message"resume.edit.contacts.empty"/></p>
+                </#if>
+            </div>
 
             <div class="p-6 border-b">
                 <h3 class="text-lg font-bold text-gray-800 mb-4">

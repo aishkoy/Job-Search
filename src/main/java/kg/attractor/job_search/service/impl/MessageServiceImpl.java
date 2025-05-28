@@ -28,40 +28,11 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
     private final MessageMapper messageMapper;
 
-    @Override
-    public int getUnreadMessagesCount(Long userId) {
-        return messageRepository.countUnreadMessagesForUser(userId);
-    }
-
-    @Override
-    public int getUnreadMessagesCountByVacancy(Long vacancyId, Long userId) {
-        return messageRepository.countUnreadMessagesByVacancy(vacancyId, userId);
-    }
-
-    @Override
-    public int getUnreadMessagesCountByResponse(Long responseId, Long userId) {
-        return messageRepository.countUnreadMessagesInRoom(responseId, userId);
-    }
-
-    @Override
-    public int getUnreadMessagesCountByResume(Long resumeId, Long userId) {
-        return messageRepository.countUnreadMessagesByResume(resumeId, userId);
-    }
-
     public List<MessageDto> getMessagesForResponse(Long responseId) {
         return messageRepository.findAllByResponseIdOrderByTimestampAsc(responseId)
                 .stream()
                 .map(messageMapper::toDto)
                 .toList();
-    }
-
-    @Transactional
-    @Override
-    public void markMessageAsRead(Long messageId) {
-        messageRepository.findById(messageId).ifPresent(message -> {
-            message.setIsRead(true);
-            messageRepository.save(message);
-        });
     }
 
     @Override
@@ -73,7 +44,6 @@ public class MessageServiceImpl implements MessageService {
             Message message = new Message();
             message.setContent(dto.getContent());
             message.setTimestamp(dto.getTimestamp());
-            message.setIsRead(dto.getIsRead());
 
             Response response = responseService.getEntityById(dto.getResponse().getId());
             User user = userService.getEntityById(dto.getUser().getId());
@@ -87,7 +57,6 @@ public class MessageServiceImpl implements MessageService {
             result.setId(savedMessage.getId());
             result.setContent(savedMessage.getContent());
             result.setTimestamp(savedMessage.getTimestamp());
-            result.setIsRead(savedMessage.getIsRead());
             result.setResponse(ResponseDto.builder().id(response.getId()).build());
             result.setUser(UserDto.builder()
                     .id(user.getId())

@@ -34,10 +34,6 @@ public class Message {
             nullable = false)
     Response response;
 
-    @Column(name = "is_read",
-            nullable = false)
-    Boolean isRead;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id",
             nullable = false)
