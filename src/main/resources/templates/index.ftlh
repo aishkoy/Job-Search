@@ -140,11 +140,6 @@
                                     <span>${vacancy.salary} c</span>
                                 </div>
                                 <p class="text-gray-600 mb-4 line-clamp-2">${vacancy.description}</p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Java</span>
-                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Spring</span>
-                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">PostgreSQL</span>
-                                </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-gray-500">
                                         <@spring.message "index.publishedOn"/> ${vacancy.createdAt?string("dd.MM.yyyy")}
