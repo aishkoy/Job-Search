@@ -22,12 +22,8 @@ public class ApplicantController extends UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('EMPLOYER')")
-    public String getApplicants(@RequestParam(defaultValue = "1") int page,
-                                @RequestParam(defaultValue = "5") int size,
-                                Model model) {
+    public String getApplicants(Model model) {
         model.addAttribute("url", getUrl());
-        model.addAttribute("size", size);
-        model.addAttribute("users", userService.getApplicantPage(page, size));
         return "profile/users";
     }
 

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kg.attractor.job_search.dto.user.UserDto;
 import kg.attractor.job_search.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,18 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/users")
 public class UserController {
     private final UserService userService;
-
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers() {
-        return ResponseEntity.ofNullable(userService.getUsers());
-    }
 
     @PostMapping("/language")
     @Transactional
@@ -48,11 +42,11 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long userId) {
-        return  ResponseEntity.ofNullable(userService.getUserById(userId));
+        return ResponseEntity.ofNullable(userService.getUserById(userId));
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId ,@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<Long> updateUser(@PathVariable("id") Long userId, @RequestBody @Valid UserDto userDto) {
         userDto.setId(userService.getAuthId());
         return ResponseEntity.ofNullable(userService.updateUser(userId, userDto));
     }
@@ -60,21 +54,6 @@ public class UserController {
     @DeleteMapping("{id}")
     public HttpStatus deleteUser(@PathVariable("id") Long userId) {
         return userService.deleteUser(userId, userService.getAuthId());
-    }
-
-    @GetMapping("by-name")
-    public ResponseEntity<List<UserDto>> getUsersByName(@RequestParam String name) {
-        return ResponseEntity.ofNullable(userService.getUsersByName(name));
-    }
-
-    @GetMapping("by-phone")
-    public ResponseEntity<UserDto> getUserByPhone(@RequestParam String phoneNumber) {
-        return  ResponseEntity.ofNullable(userService.getUserByPhone(phoneNumber));
-    }
-
-    @GetMapping("by-email")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
-        return  ResponseEntity.ofNullable(userService.getUserByEmail(email));
     }
 
     @GetMapping("exists")
@@ -92,29 +71,27 @@ public class UserController {
         return userService.getUserAvatar(userId);
     }
 
-
     @GetMapping("employers")
-    public ResponseEntity<List<UserDto>> getEmployers() {
-        return ResponseEntity.ofNullable(userService.getEmployers());
+    public ResponseEntity<Page<UserDto>> getEmployers(@RequestParam(required = false) String query,
+                                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                                      @RequestParam(required = false, defaultValue = "5") int size) {
+        return ResponseEntity.ofNullable(userService.getEmployersPage(query, page, size));
     }
 
     @GetMapping("employers/{id}")
     public ResponseEntity<UserDto> getEmployerById(@PathVariable("id") Long id) {
-        return  ResponseEntity.ofNullable(userService.getEmployerById(id));
+        return ResponseEntity.ofNullable(userService.getEmployerById(id));
     }
 
     @GetMapping("applicants")
-    public ResponseEntity<List<UserDto>> getApplicants() {
-        return ResponseEntity.ofNullable(userService.getApplicants());
+    public ResponseEntity<Page<UserDto>> getApplicants(@RequestParam(required = false) String query,
+                                                       @RequestParam(required = false, defaultValue = "1") int page,
+                                                       @RequestParam(required = false, defaultValue = "5") int size) {
+        return ResponseEntity.ofNullable(userService.getApplicantPage(query, page, size));
     }
 
     @GetMapping("applicants/{id}")
     public ResponseEntity<UserDto> getApplicantById(@PathVariable("id") Long id) {
         return ResponseEntity.ofNullable(userService.getApplicantById(id));
-    }
-
-    @GetMapping("responded/{vacancyId}")
-    public ResponseEntity<List<UserDto>> getApplications(@PathVariable("vacancyId") Long vacancyId) {
-        return ResponseEntity.ofNullable(userService.getApplicationsByVacancyId(vacancyId));
     }
 }
