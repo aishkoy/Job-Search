@@ -10,24 +10,24 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByPhoneNumber(String phoneNumber);
     Optional<User> findByEmail(String email);
+
     Optional<User> findByResetPasswordToken(String token);
-    List<User> findAllByName(String name);
+
+    Page<User> findAllByNameStartingWithOrSurnameStartingWith(String name, String surname, Pageable pageable);
 
     @Query("select u from User u where u.role.name = 'APPLICANT'")
-    List<User> findApplicants();
+    Page<User> findApplicants(Pageable pageable);
 
     @Query("select u from User u where u.role.name = 'APPLICANT' and u.id = :userId")
     Optional<User> findApplicantById(@Param("userId") Long userId);
 
     @Query("select u from User u where u.role.name = 'EMPLOYER'")
-    List<User> findEmployers();
+    Page<User> findEmployers(Pageable pageable);
 
     @Query("select u from User u where u.role.name = 'EMPLOYER' and u.id = :userId")
     Optional<User> findEmployerById(@Param("userId") Long userId);
@@ -44,21 +44,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.avatar = :avatar where u.id = :userId")
     void updateUserAvatar(@Param("userId") Long userId, @Param("avatar") String avatar);
 
-    @Query("""
-            select u from User u
-            inner join Resume r on u.id = r.applicant.id
-            inner join Response ra on ra.resume.id = r.id
-            where ra.vacancy.id = :vacancyId""")
-    List<User> findApplicantsByVacancyId(@Param("vacancyId")  Long vacancyId);
-
     boolean existsByEmail(String email);
 
-
     @Query("select u from User u where u.role.name = 'EMPLOYER'")
-    Page<User> findAllEmployersPage(Pageable pageable);
+    Page<User> findEmployerPage(Pageable pageable);
 
+    @Query("""
+            select u from User u where u.role.name = 'EMPLOYER' AND 
+            (LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+            LOWER(u.surname) LIKE LOWER(CONCAT('%', :query, '%')))""")
+    Page<User> findEmployerPageWithQuery(@Param("query") String query, Pageable pageable);
 
     @Query("select u from User u where u.role.name = 'APPLICANT'")
-    Page<User> findAllApplicantsPage(Pageable pageable);
+    Page<User> findApplicantPage(Pageable pageable);
 
+    @Query("""
+            select u from User u where u.role.name = 'APPLICANT' AND 
+            (LOWER(u.name) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+            LOWER(u.surname) LIKE LOWER(CONCAT('%', :query, '%')))
+            """)
+    Page<User> findApplicantPageWithQuery(@Param("query") String query, Pageable pageable);
 }

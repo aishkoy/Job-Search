@@ -13,37 +13,32 @@ import java.util.Optional;
 
 @Repository
 public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
-    List<Vacancy> findAllByIsActiveTrue();
-
-    List<Vacancy> findAllByCategoryId(Long id);
-
     Optional<Vacancy> findByIdAndEmployerId(Long vacancyId, Long employerId);
 
-    List<Vacancy> findAllByEmployerId(Long employerId);
-
-    List<Vacancy> findAllByCategoryName(String categoryName);
-
-    List<Vacancy> findAllByOrderByCreatedAtDesc();
-
-    @Query("SELECT v FROM Vacancy v " +
-            "JOIN Response ra ON ra.vacancy.id = v.id " +
-            "JOIN Resume r ON ra.resume.id = r.id " +
-            "WHERE r.applicant.id = :applicantId")
-    List<Vacancy> findVacanciesAppliedByUserId(Long applicantId);
-
+    @Query(value = "SELECT * FROM VACANCIES ORDER BY created_at DESC LIMIT :limit",
+            nativeQuery = true)
+    List<Vacancy> findLastVacancies(@Param("limit") Integer limit);
 
     boolean existsByIdAndEmployerId(Long vacancyId, Long employerId);
 
-
     Page<Vacancy> findAllByIsActiveTrue(Pageable pageable);
 
-    Page<Vacancy> findAllByCategoryIdAndIsActiveTrue(Long categoryId, Pageable pageable);
+    @Query("SELECT v FROM Vacancy v WHERE v.isActive = true AND " +
+            "(LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(v.employer.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Vacancy> findAllByIsActiveTrueWithQuery(@Param("query") String query, Pageable pageable);
 
-    @Query("SELECT v FROM Vacancy v " +
-            "JOIN Response ra ON ra.vacancy.id = v.id " +
-            "JOIN Resume r ON ra.resume.id = r.id " +
-            "WHERE r.applicant.id = :applicantId")
-    Page<Vacancy> findVacanciesAppliedByUserId(@Param("applicantId") Long applicantId, Pageable pageable);
+    @Query("SELECT v FROM Vacancy v WHERE v.isActive = true AND v.category.id IN :categoryIds")
+    Page<Vacancy> findAllByCategoryIds(@Param("categoryIds") List<Long> categoryIds, Pageable pageable);
+
+    @Query("SELECT v FROM Vacancy v WHERE v.isActive = true AND v.category.id IN :categoryIds AND " +
+            "(LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(v.employer.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Vacancy> findAllByCategoryIdsAndQuery(
+            @Param("query") String query,
+            @Param("categoryIds") List<Long> categoryIds,
+            Pageable pageable);
+
 
     Page<Vacancy> findAllByEmployerId(Long employerId, Pageable pageable);
 }

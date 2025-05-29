@@ -81,47 +81,9 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getVacancies() {
-        return findAndMapVacancies(vacancyRepository::findAll, "Список вакансий пуст!");
-    }
-
-    @Override
-    public List<VacancyDto> getActiveVacancies() {
-        return findAndMapVacancies(vacancyRepository::findAllByIsActiveTrue, "Активных вакансий не найдено!");
-    }
-
-    @Override
-    public List<VacancyDto> getVacanciesByCategoryId(Long categoryId) {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByCategoryId(categoryId),
-                "Вакансии по указанной категории не найдены!");
-    }
-
-    @Override
-    public List<VacancyDto> getVacanciesByCategoryName(String categoryName) {
-        String name = categoryName.trim().toLowerCase();
-        return findAndMapVacancies(() -> vacancyRepository.findAllByCategoryName(name),
-                "Вакансии по категории '" + categoryName + "' не найдены!");
-    }
-
-    @Override
-    public List<VacancyDto> getVacanciesByEmployerId(Long employerId) {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByEmployerId(employerId),
-                "У работодателя нет опубликованных вакансий!");
-    }
-
-    @Override
-    public List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId) {
-        return findAndMapVacancies(() -> vacancyRepository.findVacanciesAppliedByUserId(applicantId),
-                "Пользователь не откликался на вакансии!");
-    }
-
-    @Override
-    public List<VacancyDto> getLastVacancies() {
-        return findAndMapVacancies(() -> vacancyRepository.findAllByOrderByCreatedAtDesc()
-                        .stream()
-                        .limit(4)
-                        .toList(),
-                "Новые вакансии не были найдены!");
+    public List<VacancyDto> getLastVacancies(Integer limit) {
+        return findAndMapVacancies(() -> vacancyRepository.findLastVacancies(limit)
+        );
     }
 
     @Override
@@ -150,14 +112,41 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Page<VacancyDto> getActiveVacanciesPage(int page, int size, Long categoryId, String sortBy, String sortDirection) {
+    public Page<VacancyDto> getActiveVacanciesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection) {
         Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
 
         return categoryId != null
-                ? getVacanciesPageByCategoryId(page, size, categoryId, sortBy, sortDirection)
-                : getVacancyDtoPage(
+                ? getVacanciesPageByCategoryId(query, categoryId, pageable)
+                : getActiveVacanciesPage(query, pageable);
+    }
+
+    public Page<VacancyDto> getActiveVacanciesPage(String query, Pageable pageable) {
+        if (query != null && !query.isBlank()) {
+            return getVacancyDtoPage(
+                    () -> vacancyRepository.findAllByIsActiveTrueWithQuery(query, pageable),
+                    "Активных вакансий не найдено!"
+            );
+        }
+
+        return getVacancyDtoPage(
                 () -> vacancyRepository.findAllByIsActiveTrue(pageable),
                 "Активных вакансий не найдено!"
+        );
+    }
+
+    public Page<VacancyDto> getVacanciesPageByCategoryId(String query, Long categoryId, Pageable pageable) {
+        List<Long> categories = categoryService.findCategoriesById(categoryId);
+
+        if (query != null && !query.isBlank()) {
+            return getVacancyDtoPage(
+                    () -> vacancyRepository.findAllByCategoryIdsAndQuery(query, categories, pageable),
+                    "Вакансии по указанной категории не найдены!"
+            );
+        }
+
+        return getVacancyDtoPage(
+                () -> vacancyRepository.findAllByCategoryIds(categories, pageable),
+                "Вакансии по указанной категории не найдены!"
         );
     }
 
@@ -172,16 +161,6 @@ public class VacancyServiceImpl implements VacancyService {
             case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
             default -> PageRequest.of(page - 1, size, direction, "updatedAt");
         };
-    }
-
-    @Override
-    public Page<VacancyDto> getVacanciesPageByCategoryId(int page, int size, Long categoryId, String sortBy, String sortDirection) {
-        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
-
-        return getVacancyDtoPage(
-                () -> vacancyRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
-                "Вакансии по указанной категории не найдены!"
-        );
     }
 
     private Page<VacancyDto> getVacancyDtoPage(Supplier<Page<Vacancy>> supplier, String notFoundMessage) {
@@ -204,14 +183,14 @@ public class VacancyServiceImpl implements VacancyService {
         }
     }
 
-    private List<VacancyDto> findAndMapVacancies(Supplier<List<Vacancy>> supplier, String errorMessage) {
+    private List<VacancyDto> findAndMapVacancies(Supplier<List<Vacancy>> supplier) {
         List<VacancyDto> vacancies = supplier.get().stream()
                 .map(this::mapAndEnrich)
                 .toList();
 
         if (vacancies.isEmpty()) {
-            log.warn(errorMessage);
-            throw new VacancyNotFoundException(errorMessage);
+            log.warn("Новые вакансии не были найдены!");
+            throw new VacancyNotFoundException("Новые вакансии не были найдены!");
         }
 
         log.info("Получено {} вакансий", vacancies.size());

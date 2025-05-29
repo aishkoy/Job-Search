@@ -1,0 +1,22 @@
+services:
+  job-search-app:
+    image: aishkoy/job-search-app:latest
+    container_name: job-search
+    ports:
+      - "8888:8888"
+    restart: unless-stopped
+    environment:
+      - JAVA_OPTS=-Xmx1g -Xms512m
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - job_search_data:/app/data
+      - job_search_logs:/app/logs
+
+volumes:
+  job_search_data:
+  job_search_logs:

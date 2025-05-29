@@ -25,7 +25,7 @@ public class CreateUserDto extends UserDto {
     @NotBlank
     @Size(min = 8, max = 20, message = "{validation.password.size}")
     @Pattern(
-            regexp = "^(?=.*[A-Za-zА-Яа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,}$",
+            regexp = "^(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,}$",
             message = "{validation.password.pattern}"
     )
     String password;

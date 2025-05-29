@@ -11,62 +11,49 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface UserService {
-    List<UserDto> getUsers();
-
     User getEntityById(Long userId);
 
     UserDto getUserById(Long userId);
 
-    UserDto getUserByPhone(String phoneNumber);
-
     UserDto getUserByEmail(String email);
-
-    List<UserDto> getUsersByName(String name);
-
-    Long registerUser(CreateUserDto userDto);
-
-    Long updateUser(Long userId, UserDto userDto);
-
-    HttpStatus deleteUser(Long userId, Long authId);
-
-    void updateUserLanguage(String email, String language);
-
-    String getUserPreferredLanguage(String email);
-
-    void save(User user);
-
-    List<UserDto> getEmployers();
 
     UserDto getEmployerById(Long id);
 
-    List<UserDto> getApplicants();
-
     UserDto getApplicantById(Long id);
 
-    MultipartFile uploadAvatar(MultipartFile file, Long authId);
-
-    MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId);
-
-    List<UserDto> getApplicationsByVacancyId(Long vacancyId);
-
-    Boolean existsUser(String email);
-
-    ResponseEntity<?> getUserAvatar(Long userId);
-
-    Page<UserDto> getApplicantPage(int page, int size);
-
-    Page<UserDto> getEmployersPage(int page, int size);
-
-    boolean isCurrentUser(Long userId);
+    UserDto getUserByResetPasswordToken(String resetPasswordToken);
 
     UserDto getAuthUser();
 
     Long getAuthId();
 
-    UserDto getUserByResetPasswordToken(String resetPasswordToken);
+    Long registerUser(CreateUserDto userDto);
+
+    Long updateUser(Long userId, UserDto userDto);
+
+    String getUserPreferredLanguage(String email);
+
+    HttpStatus deleteUser(Long userId, Long authId);
+
+    MultipartFile uploadAvatar(MultipartFile file, Long authId);
+
+    MultipartFile uploadAvatar(Long userId, MultipartFile file, Long authId);
+
+    ResponseEntity<?> getUserAvatar(Long userId);
+
+    Page<UserDto> getApplicantPage(String query, int page, int size);
+
+    Page<UserDto> getEmployersPage(String query, int page, int size);
+
+    Boolean existsUser(String email);
+
+    boolean isCurrentUser(Long userId);
+
+    void save(User user);
+
+    void updateUserLanguage(String email, String language);
 
     void updatePassword(UserDto userDto, String newPassword);
 

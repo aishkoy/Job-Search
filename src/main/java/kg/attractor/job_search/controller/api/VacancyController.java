@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/vacancies")
@@ -20,28 +18,20 @@ public class VacancyController {
     private final UserService adapter;
 
     @GetMapping
-    public ResponseEntity<List<VacancyDto>> getVacancies() {
-        return ResponseEntity.ofNullable(vacancyService.getVacancies());
+    public ResponseEntity<Page<VacancyDto>> vacancies(@RequestParam(required = false) String query,
+                                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                                      @RequestParam(required = false, defaultValue = "5") int size,
+                                                      @RequestParam(required = false) Long categoryId,
+                                                      @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
+                                                      @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+
+        return ResponseEntity.ofNullable(vacancyService.getActiveVacanciesPage(
+                query, page, size, categoryId, sortBy, sortDirection));
     }
 
     @GetMapping("{id}")
     public ResponseEntity<VacancyDto> getVacancyById(@PathVariable Long id) {
         return ResponseEntity.ofNullable(vacancyService.getVacancyDtoById(id));
-    }
-
-    @GetMapping("active")
-    public ResponseEntity<List<VacancyDto>> getActiveVacancies() {
-        return ResponseEntity.ofNullable(vacancyService.getActiveVacancies());
-    }
-
-    @GetMapping("categories/{categoryId}")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByCategory(@PathVariable("categoryId") Long categoryId) {
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryId(categoryId));
-    }
-
-    @GetMapping("categories/by-name")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByCategoryByName(@RequestParam("name") String name) {
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesByCategoryName(name));
     }
 
     @PostMapping
@@ -58,18 +48,13 @@ public class VacancyController {
 
     @GetMapping("employers/{id}")
     public ResponseEntity<Page<VacancyDto>> getVacanciesByEmployerId(@PathVariable("id") Long userId,
-                                                                   @RequestParam(required = false, defaultValue = "1") Integer page,
-                                                                   @RequestParam(required = false, defaultValue = "2") Integer size) {
+                                                                     @RequestParam(required = false, defaultValue = "1") Integer page,
+                                                                     @RequestParam(required = false, defaultValue = "2") Integer size) {
         return ResponseEntity.ofNullable(vacancyService.getVacanciesByEmployerId(userId, page, size));
     }
 
     @DeleteMapping("{id}")
     public HttpStatus deleteVacancy(@PathVariable("id") Long vacancyId) {
         return vacancyService.deleteVacancy(vacancyId, adapter.getAuthId());
-    }
-
-    @GetMapping("applied/{userId}")
-    public ResponseEntity<List<VacancyDto>> getVacanciesByApplicantId(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ofNullable(vacancyService.getVacanciesAppliedByUserId(userId));
     }
 }

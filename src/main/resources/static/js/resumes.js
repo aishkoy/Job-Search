@@ -1,4 +1,4 @@
-class VacancyManager {
+class ResumeManager {
     constructor() {
         this.currentFilters = {
             query: '',
@@ -10,6 +10,7 @@ class VacancyManager {
         };
 
         this.filtersReady = false;
+        this.abortController = null;
         this.init();
     }
 
@@ -17,14 +18,14 @@ class VacancyManager {
         this.waitForFilters().then(() => {
             this.syncWithSavedFilters();
             this.bindEvents();
-            this.loadVacancies();
+            this.loadResumes();
         });
     }
 
     async waitForFilters() {
         return new Promise((resolve) => {
             const checkFilters = () => {
-                if (window.VacancyFilters && window.VacancyFilters.isReady()) {
+                if (window.ResumeFilters && window.ResumeFilters.isReady()) {
                     resolve();
                 } else {
                     setTimeout(checkFilters, 50);
@@ -35,7 +36,7 @@ class VacancyManager {
     }
 
     syncWithSavedFilters() {
-        const savedFilters = window.VacancyFilters.getCurrent();
+        const savedFilters = window.ResumeFilters.getCurrent();
         if (savedFilters) {
             this.currentFilters = { ...this.currentFilters, ...savedFilters };
         }
@@ -133,11 +134,11 @@ class VacancyManager {
             this.currentFilters.page = 1;
         }
 
-        window.VacancyFilters.update(key, value);
+        window.ResumeFilters.update(key, value);
 
         this.updateUIFromCurrentFilters();
 
-        this.loadVacancies();
+        this.loadResumes();
     }
 
     updateUIFromCurrentFilters() {
@@ -170,22 +171,8 @@ class VacancyManager {
         }
     }
 
-    updateCategoryButtons(selectedCategoryId) {
-        const categoryLinks = document.querySelectorAll('.category-link');
-        categoryLinks.forEach(link => {
-            const categoryId = link.getAttribute('data-category-id');
-
-            if ((selectedCategoryId === null && categoryId === '') ||
-                (selectedCategoryId && categoryId === selectedCategoryId)) {
-                link.className = 'px-3 py-1 rounded-full bg-blue-600 text-white category-link';
-            } else {
-                link.className = 'px-3 py-1 rounded-full bg-gray-100 text-gray-700 category-link';
-            }
-        });
-    }
-
     clearAllFilters() {
-        window.VacancyFilters.clearAll();
+        window.ResumeFilters.clearAll();
 
         this.currentFilters = {
             query: '',
@@ -197,18 +184,14 @@ class VacancyManager {
         };
 
         document.getElementById('search-input').value = '';
+        document.getElementById('category-select').value = '';
         document.getElementById('sort-by-select').value = 'updatedAt';
         document.getElementById('sort-direction-btn').setAttribute('data-direction', 'desc');
 
         this.updateClearSearchButton();
         this.updateSortDirectionIcon('desc');
-        this.updateCategoryButtons(null);
 
-        this.loadVacancies();
-    }
-
-    goToPage(page) {
-        this.updateFilter('page', page);
+        this.loadResumes();
     }
 
     showSearchIndicator() {
@@ -231,41 +214,47 @@ class VacancyManager {
 
     showLoader() {
         document.getElementById('loading-spinner').classList.remove('hidden');
-        document.getElementById('vacancies-container').classList.add('hidden');
-        document.getElementById('no-vacancies').classList.add('hidden');
+        document.getElementById('resumes-container').classList.add('hidden');
+        document.getElementById('no-resumes').classList.add('hidden');
         document.getElementById('pagination-container').classList.add('hidden');
     }
 
     hideLoader() {
         document.getElementById('loading-spinner').classList.add('hidden');
-        document.getElementById('vacancies-container').classList.remove('hidden');
+        document.getElementById('resumes-container').classList.remove('hidden');
         document.getElementById('pagination-container').classList.remove('hidden');
     }
 
-    showNoVacancies() {
+    showNoResumes() {
         document.getElementById('loading-spinner').classList.add('hidden');
-        document.getElementById('vacancies-container').classList.add('hidden');
+        document.getElementById('resumes-container').classList.add('hidden');
         document.getElementById('pagination-container').classList.add('hidden');
 
-        const noVacanciesDiv = document.getElementById('no-vacancies');
-        const titleElement = document.getElementById('no-vacancies-title');
-        const descriptionElement = document.getElementById('no-vacancies-description');
+        const noResumesDiv = document.getElementById('no-resumes');
+        const titleElement = document.getElementById('no-resumes-title');
+        const descriptionElement = document.getElementById('no-resumes-description');
 
         const hasActiveSearch = this.currentFilters.query && this.currentFilters.query.trim() !== '';
         const hasActiveCategory = this.currentFilters.categoryId !== null;
 
         if (hasActiveSearch || hasActiveCategory) {
-            titleElement.textContent = window.i18n['vacancies.search.noResults'];
-            descriptionElement.textContent = window.i18n['vacancies.search.tryOther'];
+            titleElement.textContent = window.i18n['resumes.search.noResults'];
+            descriptionElement.textContent = window.i18n['resumes.search.tryOther'];
         } else {
-            titleElement.textContent = window.i18n['vacancies.empty.title'];
-            descriptionElement.textContent = window.i18n['vacancies.empty.description'];
+            titleElement.textContent = window.i18n['resumes.empty.title'];
+            descriptionElement.textContent = window.i18n['resumes.empty.description'];
         }
 
-        noVacanciesDiv.classList.remove('hidden');
+        noResumesDiv.classList.remove('hidden');
     }
 
-    async loadVacancies() {
+    async loadResumes() {
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+
+        this.abortController = new AbortController();
+
         this.showLoader();
         this.hideSearchIndicator();
 
@@ -279,81 +268,109 @@ class VacancyManager {
             params.append('sortBy', this.currentFilters.sortBy);
             params.append('sortDirection', this.currentFilters.sortDirection);
 
-            const response = await fetch(`/api/vacancies?${params.toString()}`);
+            const response = await fetch(`/api/resumes?${params.toString()}`, {
+                signal: this.abortController.signal
+            });
 
             if (response.status === 404 || !response.ok) {
-                this.showNoVacancies();
-                this.updateVacanciesCount(0);
+                this.showNoResumes();
+                this.updateResumesCount(0);
                 return;
             }
 
             const data = await response.json();
 
             if (!data.content || data.content.length === 0) {
-                this.showNoVacancies();
-                this.updateVacanciesCount(0);
+                this.showNoResumes();
+                this.updateResumesCount(0);
                 return;
             }
 
-            this.renderVacancies(data);
+            this.renderResumes(data);
             this.renderPagination(data);
-            this.updateVacanciesCount(data.totalElements);
+            this.updateResumesCount(data.totalElements);
             this.hideLoader();
 
         } catch (error) {
-            console.error('Ошибка загрузки вакансий:', error);
-            this.showNoVacancies();
-            this.updateVacanciesCount(0);
+            if (error.name === 'AbortError') {
+                console.log('Запрос резюме был отменен');
+                return;
+            }
+
+            console.error('Ошибка загрузки резюме:', error);
+            this.showNoResumes();
+            this.updateResumesCount(0);
+        } finally {
+            this.abortController = null;
         }
     }
 
-    updateVacanciesCount(count) {
-        document.getElementById('vacancies-count').textContent =
-            `${window.i18n['vacancies.count']}: ${count}`;
+    updateResumesCount(count) {
+        document.getElementById('resumes-count').textContent =
+            `${window.i18n['resumes.count']}: ${count}`;
     }
 
-    renderVacancies(data) {
-        const container = document.getElementById('vacancies-container');
+    renderResumes(data) {
+        const container = document.getElementById('resumes-container');
         container.innerHTML = '';
 
-        data.content.forEach(vacancy => {
-            const vacancyElement = this.createVacancyElement(vacancy);
-            container.appendChild(vacancyElement);
+        data.content.forEach(resume => {
+            const resumeElement = this.createResumeElement(resume);
+            container.appendChild(resumeElement);
         });
     }
 
-    createVacancyElement(vacancy) {
+    createResumeElement(resume) {
         const div = document.createElement('div');
         div.className = 'bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer group';
-        div.onclick = () => window.location.href = `/vacancies/${vacancy.id}`;
+        div.onclick = () => window.location.href = `/resumes/${resume.id}`;
 
-        const salary = vacancy.salary && vacancy.salary > 0
-            ? `${vacancy.salary.toLocaleString()} ₽`
-            : window.i18n['vacancies.salary.notSpecified'];
+        const salary = resume.salary && resume.salary > 0
+            ? `${resume.salary.toLocaleString()} ₽`
+            : window.i18n['resumes.salary.notSpecified'];
 
-        const experience = vacancy.expFrom && vacancy.expTo
-            ? `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                ${window.i18n['vacancy.experience']}: ${vacancy.expFrom}-${vacancy.expTo}
-               </span>`
-            : '';
+        let totalYears = 0;
+        let experienceTag = '';
 
-        const statusClass = vacancy.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600';
-        const statusText = vacancy.isActive
-            ? window.i18n['vacancies.status.active']
-            : window.i18n['vacancies.status.inactive'];
+        if (resume.workExperiences && resume.workExperiences.length > 0) {
+            resume.workExperiences.forEach(exp => {
+                totalYears += exp.years || 0;
+            });
+            experienceTag = `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                                ${window.i18n['resumes.experience.years']}: ${totalYears}
+                             </span>`;
+        } else {
+            experienceTag = `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
+                                ${window.i18n['resumes.experience.none']}
+                             </span>`;
+        }
 
-        const description = vacancy.description
-            ? this.truncateText(vacancy.description, 150)
-            : window.i18n['vacancies.description.empty'];
+        const statusClass = resume.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600';
+        const statusText = resume.isActive
+            ? window.i18n['resumes.status.active']
+            : window.i18n['resumes.status.inactive'];
+
+        let lastJobInfo = '';
+        if (resume.workExperiences && resume.workExperiences.length > 0) {
+            const lastJob = resume.workExperiences[0];
+            lastJobInfo = `<p class="text-gray-600 text-sm">
+                            <span class="font-medium">${window.i18n['resumes.lastPosition']}:</span> ${lastJob.position}
+                            ${window.i18n['resumes.lastPosition.at']} ${lastJob.companyName}
+                           </p>`;
+        } else {
+            lastJobInfo = `<p class="text-gray-600 text-sm italic">
+                            ${window.i18n['resumes.experience.notSpecified']}
+                           </p>`;
+        }
 
         div.innerHTML = `
             <div class="p-4">
                 <div class="flex items-center gap-4">
                     <div class="flex-shrink-0">
                         <div class="w-22 h-22 rounded-full overflow-hidden bg-gray-200 hover:ring-2 hover:ring-blue-500 transition-all duration-200"
-                             onclick="event.stopPropagation(); window.location.href='/employers/${vacancy.employer.id}'">
-                            <img src="/api/users/${vacancy.employer.id}/avatar"
-                                 alt="${vacancy.employer.name || ''}"
+                             onclick="event.stopPropagation(); window.location.href='/applicants/${resume.applicant.id}'">
+                            <img src="/api/users/${resume.applicant.id}/avatar?size=small"
+                                 alt="${resume.applicant.name || ''} ${resume.applicant.surname || ''}"
                                  class="w-full h-full object-cover">
                         </div>
                     </div>
@@ -362,37 +379,32 @@ class VacancyManager {
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <h3 class="font-bold text-lg text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
-                                    ${vacancy.name}
+                                    ${resume.name}
                                 </h3>
-                                <p class="text-gray-600 mb-2">${vacancy.employer.name || ''}</p>
+                                <p class="text-gray-600 mb-2">${resume.applicant.name || ''} ${resume.applicant.surname || ''}</p>
                                 <div class="text-blue-600 font-medium mb-3">
                                     ${salary}
                                 </div>
 
                                 <div class="flex flex-wrap gap-2 mb-3">
-                                    ${experience}
+                                    ${experienceTag}
                                     <span class="${statusClass} text-xs px-2 py-1 rounded">
                                         ${statusText}
                                     </span>
                                     <span class="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                                        <i class="fas fa-tags mr-1"></i>${vacancy.category.name}
+                                        <i class="fas fa-tags mr-1"></i>${resume.category.name}
                                     </span>
                                 </div>
 
-                                <p class="text-gray-600 text-sm">
-                                    ${description}
-                                </p>
+                                ${lastJobInfo}
                             </div>
 
                             <div class="flex flex-col items-end text-xs text-gray-400 ml-4">
                                 <span class="mb-1">
-                                    ${window.i18n['profile.vacancies.created']}: ${this.formatDate(vacancy.createdAt)}
+                                    ${window.i18n['resumes.created']}: ${this.formatDate(resume.createdAt)}
                                 </span>
                                 <span>
-                                    ${window.i18n['profile.vacancies.updated']}: ${this.formatDate(vacancy.updatedAt)}
-                                </span>
-                                <span class="bg-gray-100 text-gray-600 text-xs mt-6 px-2 py-1 rounded">
-                                    ${window.i18n['vacancies.responses']}: ${vacancy.responses || '0'}
+                                    ${window.i18n['resumes.updated']}: ${this.formatDate(resume.updatedAt)}
                                 </span>
                             </div>
                         </div>
@@ -472,7 +484,7 @@ class VacancyManager {
         const button = document.createElement('button');
 
         if (page) {
-            button.className = 'px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700 transition-colors';
+            button.className = 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer transition-colors';
             button.onclick = () => this.goToPage(page);
         } else {
             button.className = 'px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed';
@@ -497,9 +509,8 @@ class VacancyManager {
         return button;
     }
 
-    truncateText(text, maxLength) {
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + '...';
+    goToPage(page) {
+        this.updateFilter('page', page);
     }
 
     formatDate(dateString) {
@@ -513,5 +524,5 @@ class VacancyManager {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new VacancyManager();
+    new ResumeManager();
 });

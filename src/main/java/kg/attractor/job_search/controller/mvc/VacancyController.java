@@ -8,7 +8,6 @@ import kg.attractor.job_search.service.interfaces.CategoryService;
 import kg.attractor.job_search.service.interfaces.UserService;
 import kg.attractor.job_search.service.interfaces.VacancyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,24 +23,8 @@ public class VacancyController {
     private final UserService userService;
 
     @GetMapping
-    public String vacancies(@RequestParam(required = false ,defaultValue = "1") int page,
-                            @RequestParam(required = false,defaultValue = "5") int size,
-                            @RequestParam(required = false) Long categoryId,
-                            @RequestParam(required = false, defaultValue = "updatedAt") String sortBy,
-                            @RequestParam(required = false, defaultValue = "desc") String sortDirection,
-                            Model model) {
-
-        Page<VacancyDto> vacanciesPage = vacancyService.getActiveVacanciesPage(
-                page, size, categoryId, sortBy, sortDirection
-        );
-
-        model.addAttribute("size", size);
-        model.addAttribute("vacancies", vacanciesPage);
+    public String vacancies(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("categoryId", categoryId);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortDirection", sortDirection);
-
         return "vacancy/vacancies";
     }
 
@@ -114,7 +97,7 @@ public class VacancyController {
     @PostMapping("{vacancyId}/update")
     @PreAuthorize("hasRole('EMPLOYER') and @vacancyService.isAuthorOfVacancy(#vacancyId, authentication.principal.userId)")
     public String updateVacancyStatus(@PathVariable("vacancyId") Long vacancyId,
-                                     HttpServletRequest request) {
+                                      HttpServletRequest request) {
         vacancyService.updateVacancy(vacancyId, userService.getAuthId());
 
         String referer = request.getHeader("Referer");

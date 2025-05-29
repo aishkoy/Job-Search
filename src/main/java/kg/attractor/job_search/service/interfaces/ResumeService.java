@@ -9,14 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ResumeService {
-    List<ResumeDto> getResumes();
-
-    List<ResumeDto> getActiveResumes();
-
-    List<ResumeDto> getResumesByApplicantId(Long userId);
-
-    List<ResumeDto> getResumesByApplicantName(String name);
-
     Long createResume(ResumeDto resumeDto);
 
     Resume getResumeById(Long resumeId, Long userId);
@@ -32,21 +24,11 @@ public interface ResumeService {
 
     Long updateResume(Long resumeId, ResumeDto resumeDto);
 
-    void addExperience(ResumeDto resumeForm);
-
-    void addEducation(ResumeDto resumeForm);
-
-    void addContact(ResumeDto resumeForm);
-
     HttpStatus deleteResume(Long resumeId, Long userId);
 
-    List<ResumeDto> getResumesByCategoryId(Long categoryId);
+    List<ResumeDto> getLastResumes(Integer limit);
 
-    List<ResumeDto> getLastResumes();
-
-    Page<ResumeDto> getActiveResumesPage(int page, int size);
+    Page<ResumeDto> getActiveResumesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection);
 
     Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size);
-
-    Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId);
 }

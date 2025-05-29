@@ -17,8 +17,8 @@ public class MainController {
 
     @GetMapping
     public String getMainPage(Model model) {
-        model.addAttribute("vacancies", vacancyService.getLastVacancies());
-        model.addAttribute("resumes", resumeService.getLastResumes());
+        model.addAttribute("vacancies", vacancyService.getLastVacancies(4));
+        model.addAttribute("resumes", resumeService.getLastResumes(4));
         return "index";
     }
 

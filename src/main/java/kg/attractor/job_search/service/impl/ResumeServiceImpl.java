@@ -1,9 +1,6 @@
 package kg.attractor.job_search.service.impl;
 
-import kg.attractor.job_search.dto.ContactInfoDto;
-import kg.attractor.job_search.dto.EducationInfoDto;
 import kg.attractor.job_search.dto.ResumeDto;
-import kg.attractor.job_search.dto.WorkExperienceInfoDto;
 import kg.attractor.job_search.exception.nsee.ApplicantNotFoundException;
 import kg.attractor.job_search.exception.nsee.EmployerNotFoundException;
 import kg.attractor.job_search.exception.nsee.ResumeNotFoundException;
@@ -14,12 +11,14 @@ import kg.attractor.job_search.repository.ResumeRepository;
 import kg.attractor.job_search.service.interfaces.CategoryService;
 import kg.attractor.job_search.service.interfaces.ResumeService;
 import kg.attractor.job_search.service.interfaces.UserService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -27,19 +26,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Slf4j
 @Service("resumeService")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ResumeServiceImpl implements ResumeService {
-    private final ResumeRepository resumeRepository;
-    private final ResumeMapper resumeMapper;
-    private final UserService userService;
-    private final CategoryService categoryService;
+    ResumeRepository resumeRepository;
+    ResumeMapper resumeMapper;
+    UserService userService;
+    CategoryService categoryService;
 
     @Override
     @Transactional
@@ -96,31 +94,6 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumes() {
-        return findAndMapResumes(resumeRepository::findAll, "Резюме не найдены");
-    }
-
-    @Override
-    public List<ResumeDto> getActiveResumes() {
-        return findAndMapResumes(resumeRepository::findAllByIsActiveTrue, "Активные резюме не найдены");
-    }
-
-    @Override
-    public List<ResumeDto> getResumesByApplicantId(Long userId) {
-        userService.getApplicantById(userId);
-        return findAndMapResumes(() -> resumeRepository.findAllByApplicantId(userId),
-                "Резюме для пользователя с ID: " + userId + " не найдены");
-    }
-
-    @Override
-    public List<ResumeDto> getResumesByApplicantName(String name) {
-        String formattedName = StringUtils.capitalize(name.trim().toLowerCase());
-        userService.getUsersByName(formattedName);
-        return findAndMapResumes(() -> resumeRepository.findAllByApplicantName(formattedName),
-                "Резюме для пользователя с именем: " + formattedName + " не найдены");
-    }
-
-    @Override
     public Resume getResumeById(Long resumeId, Long userId) {
         Resume resume = getResumeById(resumeId);
         if (isUserAuthorizedForResume(userId, resumeId)) return resume;
@@ -146,26 +119,37 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
-        categoryService.getCategoryIfPresent(categoryId);
-        return findAndMapResumes(() -> resumeRepository.findAllByCategoryId(categoryId),
-                "Резюме для категории с ID: " + categoryId + " не найдены");
+    public List<ResumeDto> getLastResumes(Integer limit) {
+        return findAndMapResumes(() -> resumeRepository.findLastResumes(limit), "Новые резюме не были найдены!");
     }
 
     @Override
-    public List<ResumeDto> getLastResumes() {
-        return findAndMapResumes(() -> resumeRepository.findAllByOrderByCreatedAtDesc()
-                .stream()
-                .limit(4)
-                .toList(), "Новые резюме не были найдены!");
+    public Page<ResumeDto> getActiveResumesPage(String query, int page, int size, Long categoryId, String sortBy, String sortDirection) {
+        Pageable pageable = createPageableWithSort(page, size, sortBy, sortDirection);
+        if (categoryId != null) {
+            return getResumesPageByCategoryId(query, categoryId, pageable);
+        }
+        return getResumesPage(query, pageable);
     }
 
-    @Override
-    public Page<ResumeDto> getActiveResumesPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable),
-                "Страница с активными резюме не найдена!");
+    public Page<ResumeDto> getResumesPage(String query, Pageable pageable) {
+        if (query == null || query.isBlank()) {
+            return getResumeDtoPage(() -> resumeRepository.findAllByIsActiveTrue(pageable), "Страница с резюме не найдена!");
+        }
+        return getResumeDtoPage(() -> resumeRepository.findAllActiveWithQuery(query, pageable),
+                "Страница с резюме не найдена!");
     }
+
+    public Page<ResumeDto> getResumesPageByCategoryId(String query, Long categoryId, Pageable pageable) {
+        List<Long> categories = categoryService.findCategoriesById(categoryId);
+        if (query != null && !query.isBlank()) {
+            return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdsAndQuery(query, categories, pageable),
+                    "Страница с резюме не найдена!");
+        }
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIds(categories, pageable),
+                "Страница с резюме пользователя не была найдена!");
+    }
+
 
     @Override
     public Page<ResumeDto> getResumesByApplicantId(Long applicantId, int page, int size) {
@@ -175,27 +159,16 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
 
-    @Override
-    public Page<ResumeDto> getResumesPageByCategoryId(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
-                "Страница с резюме пользователя не была найдена!");
-    }
+    private Pageable createPageableWithSort(int page, int size, String sortBy, String sortDirection) {
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
 
-
-    @Override
-    public void addExperience(ResumeDto form) {
-        addItemToList(form.getWorkExperiences(), WorkExperienceInfoDto::new, form::setWorkExperiences);
-    }
-
-    @Override
-    public void addEducation(ResumeDto form) {
-        addItemToList(form.getEducations(), EducationInfoDto::new, form::setEducations);
-    }
-
-    @Override
-    public void addContact(ResumeDto form) {
-        addItemToList(form.getContacts(), ContactInfoDto::new, form::setContacts);
+        return switch (sortBy) {
+            case "salary" -> PageRequest.of(page - 1, size, direction, "salary");
+            case "createdAt" -> PageRequest.of(page - 1, size, direction, "createdAt");
+            default -> PageRequest.of(page - 1, size, direction, "updatedAt");
+        };
     }
 
     private Page<ResumeDto> getResumeDtoPage(Supplier<Page<Resume>> supplier, String notFoundMessage) {
@@ -203,7 +176,7 @@ public class ResumeServiceImpl implements ResumeService {
         if (resumePage.isEmpty()) {
             throw new VacancyNotFoundException(notFoundMessage);
         }
-        log.info("Получено {} вакансий на странице", resumePage.getSize());
+        log.info("Получено {} резюме на странице", resumePage.getSize());
         return resumePage.map(resumeMapper::toDto);
     }
 
@@ -231,12 +204,6 @@ public class ResumeServiceImpl implements ResumeService {
         resume.getContacts().forEach(c -> c.setResume(resume));
         resume.getEducations().forEach(e -> e.setResume(resume));
         resume.getWorkExperiences().forEach(w -> w.setResume(resume));
-    }
-
-    private <T> void addItemToList(List<T> list, Supplier<T> creator, Consumer<List<T>> setter) {
-        if (list == null) list = new ArrayList<>();
-        list.add(creator.get());
-        setter.accept(list);
     }
 
     public boolean isResumeOwnedByApplicant(Long resumeId, Long applicantId) {
