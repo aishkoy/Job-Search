@@ -9,10 +9,13 @@ import kg.attractor.job_search.exception.iae.IncorrectCategoryException;
 import kg.attractor.job_search.exception.nsee.ResponseNotFoundException;
 import kg.attractor.job_search.mapper.ResponseMapper;
 import kg.attractor.job_search.repository.ResponseRepository;
+import kg.attractor.job_search.service.interfaces.CategoryService;
 import kg.attractor.job_search.service.interfaces.ResponseService;
 import kg.attractor.job_search.service.interfaces.ResumeService;
 import kg.attractor.job_search.service.interfaces.VacancyService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,12 +30,14 @@ import java.util.function.Supplier;
 @Service("responseService")
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ResponseServiceImpl implements ResponseService {
-    private final VacancyService vacancyService;
-    private final ResumeService resumeService;
-    private final ResponseRepository responseRepository;
-    private final MessageSource messageSource;
-    private final ResponseMapper responseMapper;
+    VacancyService vacancyService;
+    ResumeService resumeService;
+    ResponseRepository responseRepository;
+    MessageSource messageSource;
+    ResponseMapper responseMapper;
+    CategoryService categoryService;
 
     @Override
     public Boolean isChatParticipant(Long responseId, Long userId) {
@@ -66,7 +71,7 @@ public class ResponseServiceImpl implements ResponseService {
             throw new AlreadyRespondedException(messageSource.getMessage("response.already.error", null, locale));
         }
 
-        if (!vacancy.getCategory().getId().equals(resume.getCategory().getId())) {
+        if (!categoryService.areCategoriesStrictlyCompatible(vacancy.getCategory().getId(), resume.getCategory().getId())) {
             throw new IncorrectCategoryException(messageSource.getMessage("response.category.error", null, locale));
         }
 
@@ -96,7 +101,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public Page<ResponseDto> getResponsesByApplicantId(Long applicantId, Integer page, Integer size, boolean isConfirmed) {
         Pageable pageable = getPageable(page, size);
-        if(isConfirmed){
+        if (isConfirmed) {
             return getResponsePage(() -> responseRepository.findAllByIsConfirmedTrueAndResume_Applicant_Id(applicantId, pageable));
         }
         return getResponsePage(() -> responseRepository.findAllByResume_Applicant_Id(applicantId, pageable));
@@ -126,7 +131,7 @@ public class ResponseServiceImpl implements ResponseService {
     @Override
     public Page<ResponseDto> getResponsesByEmployerId(Long employerId, Integer page, Integer size, boolean isConfirmed) {
         Pageable pageable = getPageable(page, size);
-        if(isConfirmed){
+        if (isConfirmed) {
             return getResponsePage(() -> responseRepository.findAllByIsConfirmedTrueAndVacancyEmployerId(employerId, pageable));
         }
         return getResponsePage(() -> responseRepository.findAllByVacancyEmployerId(employerId, pageable));
