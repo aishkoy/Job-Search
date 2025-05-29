@@ -11,9 +11,10 @@ import kg.attractor.job_search.repository.ResumeRepository;
 import kg.attractor.job_search.service.interfaces.CategoryService;
 import kg.attractor.job_search.service.interfaces.ResumeService;
 import kg.attractor.job_search.service.interfaces.UserService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +32,12 @@ import java.util.function.Supplier;
 @Slf4j
 @Service("resumeService")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ResumeServiceImpl implements ResumeService {
-    private final ResumeRepository resumeRepository;
-    private final ResumeMapper resumeMapper;
-    private final UserService userService;
-    private final CategoryService categoryService;
+    ResumeRepository resumeRepository;
+    ResumeMapper resumeMapper;
+    UserService userService;
+    CategoryService categoryService;
 
     @Override
     @Transactional
@@ -92,24 +94,6 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumes() {
-        return findAndMapResumes(resumeRepository::findAll, "Резюме не найдены");
-    }
-
-    @Override
-    public List<ResumeDto> getActiveResumes() {
-        return findAndMapResumes(resumeRepository::findAllByIsActiveTrue, "Активные резюме не найдены");
-    }
-
-    @Override
-    public List<ResumeDto> getResumesByApplicantName(String name) {
-        String formattedName = StringUtils.capitalize(name.trim().toLowerCase());
-        userService.getUsersByName(formattedName);
-        return findAndMapResumes(() -> resumeRepository.findAllByApplicantName(formattedName),
-                "Резюме для пользователя с именем: " + formattedName + " не найдены");
-    }
-
-    @Override
     public Resume getResumeById(Long resumeId, Long userId) {
         Resume resume = getResumeById(resumeId);
         if (isUserAuthorizedForResume(userId, resumeId)) return resume;
@@ -135,13 +119,6 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumesByCategoryId(Long categoryId) {
-        categoryService.getCategoryIfPresent(categoryId);
-        return findAndMapResumes(() -> resumeRepository.findAllByCategoryId(categoryId),
-                "Резюме для категории с ID: " + categoryId + " не найдены");
-    }
-
-    @Override
     public List<ResumeDto> getLastResumes(Integer limit) {
         return findAndMapResumes(() -> resumeRepository.findLastResumes(limit), "Новые резюме не были найдены!");
     }
@@ -164,11 +141,12 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     public Page<ResumeDto> getResumesPageByCategoryId(String query, Long categoryId, Pageable pageable) {
+        List<Long> categories = categoryService.findCategoriesById(categoryId);
         if (query != null && !query.isBlank()) {
-            return getResumeDtoPage(() -> resumeRepository.findAllActiveByCategoryAndQuery(query, categoryId, pageable),
+            return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdsAndQuery(query, categories, pageable),
                     "Страница с резюме не найдена!");
         }
-        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIdAndIsActiveTrue(categoryId, pageable),
+        return getResumeDtoPage(() -> resumeRepository.findAllByCategoryIds(categories, pageable),
                 "Страница с резюме пользователя не была найдена!");
     }
 

@@ -10,17 +10,11 @@ import java.util.List;
 public interface VacancyService {
     Long createVacancy(VacancyDto vacancyDto);
 
-    List<VacancyDto> getVacancies();
-
     void updateVacancy(Long vacancyId, Long userId);
 
     Long updateVacancy(Long vacancyId, VacancyDto vacancyDto);
 
     HttpStatus deleteVacancy(Long vacancyId, Long authorId);
-
-    List<VacancyDto> getActiveVacancies();
-
-    List<VacancyDto> getVacanciesByCategoryId(Long categoryId);
 
     List<VacancyDto> getLastVacancies(Integer limit);
 
@@ -29,10 +23,6 @@ public interface VacancyService {
     Vacancy getVacancyById(Long vacancyId);
 
     VacancyDto getVacancyDtoByIdAndAuthor(Long vacancyId, Long authorId);
-
-    List<VacancyDto> getVacanciesAppliedByUserId(Long applicantId);
-
-    List<VacancyDto> getVacanciesByCategoryName(String categoryName);
 
     Page<VacancyDto> getVacanciesByEmployerId(Long employer, int page, int size);
 
