@@ -50,39 +50,15 @@ public class UserServiceImpl implements UserService {
     private final MessageSource messageSource;
 
     @Override
-    public List<UserDto> getUsers() {
-        List<UserDto> users = userRepository.findAll()
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
-
-        validateUsersList(users, "Пока никто не зарегистрирован");
-        return users;
-    }
-
-    @Override
     public User getEntityById(Long userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() ->
                         new UserNotFoundException("Не существует пользователя с таким id!"));
-        log.info("Получен пользователь по id: {}", user.getId());
-        return user;
     }
-
 
     @Override
     public UserDto getUserById(Long userId) {
         return userMapper.toDto(getEntityById(userId));
-    }
-
-    @Override
-    public UserDto getUserByPhone(String phoneNumber) {
-        String phone = phoneNumber.trim().toLowerCase();
-        User user = userRepository.findByPhoneNumber(phone)
-                .orElseThrow(() ->
-                        new UserNotFoundException("Не существует пользователя с таким номером телефона!"));
-        log.info("Получен пользователь по номеру: {}", phone);
-        return userMapper.toDto(user);
     }
 
     @Override
@@ -93,19 +69,6 @@ public class UserServiceImpl implements UserService {
                         new UserNotFoundException("Не существует пользователя с таким email!"));
         log.info("Получен пользователь по email : {}", userEmail);
         return userMapper.toDto(user);
-    }
-
-    @Override
-    public List<UserDto> getUsersByName(String userName) {
-        String name = userName.trim().toLowerCase();
-        name = StringUtils.capitalize(name);
-        List<UserDto> users = userRepository.findAllByName(name)
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
-
-        validateUsersList(users, "Не существует пользователей с таким именем!");
-        return users;
     }
 
     @Override
@@ -168,7 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserLanguage(String email, String language){
+    public void updateUserLanguage(String email, String language) {
         userRepository.updateUserLanguage(email, language);
         log.info("Обновлен предпочитаемый язык пользователя: {}, язык: {}", email, language);
     }
@@ -180,19 +143,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user){
+    public void save(User user) {
         userRepository.save(user);
-    }
-
-    @Override
-    public List<UserDto> getEmployers() {
-        List<UserDto> employers = userRepository.findEmployers()
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
-
-        validateUsersList(employers, "Работодатели не найдены");
-        return employers;
     }
 
     @Override
@@ -201,17 +153,6 @@ public class UserServiceImpl implements UserService {
                 orElseThrow(() ->
                         new EmployerNotFoundException("Не существует работодателя с таким id!"));
         return userMapper.toDto(user);
-    }
-
-    @Override
-    public List<UserDto> getApplicants() {
-        List<UserDto> applicants = userRepository.findApplicants()
-                .stream()
-                .map(userMapper::toDto)
-                .toList();
-
-        validateUsersList(applicants, "Соискатели не найдены");
-        return applicants;
     }
 
     @Override
@@ -242,18 +183,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getApplicationsByVacancyId(Long vacancyId) {
-        List<UserDto> applications =
-                userRepository.findApplicantsByVacancyId(vacancyId)
-                        .stream()
-                        .map(userMapper::toDto)
-                        .toList();
-
-        validateUsersList(applications, "Нет соискателей, откликнувшихся на данную вакансию");
-        return applications;
-    }
-
-    @Override
     public Boolean existsUser(String email) {
         String userEmail = email.trim().toLowerCase();
         return userRepository.existsByEmail(userEmail);
@@ -264,7 +193,7 @@ public class UserServiceImpl implements UserService {
         UserDto userDto = getUserById(userId);
 
         if (userDto.getAvatar() == null || userDto.getAvatar().isEmpty()) {
-            return FileUtil.getStaticFile("default_avatar.jpg", "images/", MediaType.IMAGE_JPEG);
+            return FileUtil.getOutputFile("default_avatar.jpg", "defaults/", MediaType.IMAGE_JPEG);
         }
 
         String filename = userDto.getAvatar();
@@ -278,26 +207,30 @@ public class UserServiceImpl implements UserService {
         return FileUtil.saveUploadFile(file, "images/");
     }
 
-    private void validateUsersList(List<UserDto> users, String errorMessage) {
-        if (users.isEmpty()) {
-            log.warn(errorMessage);
-            throw new UserNotFoundException(errorMessage);
+    @Override
+    public Page<UserDto> getApplicantPage(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        if(query == null || query.isBlank()){
+            return getUserDtoPage(() -> userRepository.findApplicantPage(pageable),
+                    "Не было найдено соискателей!");
         }
-        log.info("Получено {} пользователей", users.size());
+
+        return getUserDtoPage(() -> userRepository.findApplicantPageWithQuery(query, pageable),
+                "Соискателей с таким именем не было найдено");
     }
 
     @Override
-    public Page<UserDto> getApplicantPage(int page, int size) {
+    public Page<UserDto> getEmployersPage(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        return getUserDtoPage(() -> userRepository.findAllApplicantsPage(pageable),
-                "Не было найдено соискателей!");
-    }
 
-    @Override
-    public Page<UserDto> getEmployersPage(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-        return getUserDtoPage(() -> userRepository.findAllEmployersPage(pageable),
-                "Не было найдено компаний!");
+        if(query == null || query.isBlank()){
+            return getUserDtoPage(() -> userRepository.findEmployerPage(pageable),
+                    "Не было найдено работодателей!");
+        }
+
+        return getUserDtoPage(() -> userRepository.findEmployerPageWithQuery(query, pageable),
+                "Работодателей с таким именем не было найдено");
     }
 
     private Page<UserDto> getUserDtoPage(Supplier<Page<User>> supplier, String notFoundMessage) {
@@ -329,13 +262,6 @@ public class UserServiceImpl implements UserService {
     public UserDto getAuthUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Auth object: {}", authentication);
-        if (authentication != null) {
-            log.info("Auth type: {}, name: {}, isAuthenticated: {}",
-                    authentication.getClass().getName(),
-                    authentication.getName(),
-                    authentication.isAuthenticated());
-            log.info("Authorities: {}", authentication.getAuthorities());
-        }
 
         if (authentication == null) {
             log.error("Authentication is null");
@@ -347,7 +273,6 @@ public class UserServiceImpl implements UserService {
         }
 
         String email = authentication.getName();
-        log.info("Looking up user by email: {}", email);
         return getUserByEmail(email);
     }
 
@@ -367,7 +292,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(UserDto userDto, String newPassword) {
-        String passwordRegex = "^(?=.*[A-Za-zА-Яа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,20}$";
+        String passwordRegex = "^(?=.*[A-ZА-Я])(?=.*[a-zа-я])(?=.*\\d)[A-Za-zА-Яа-я\\d@#$%^&+=!]{8,}$";
         Locale locale = LocaleContextHolder.getLocale();
 
         if (newPassword == null || newPassword.isBlank()) {
