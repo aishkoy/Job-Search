@@ -112,8 +112,6 @@
                                         </a>
                                         <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
                                             <i class="fas fa-comments mr-2"></i>
-                                            <span id="unread-messages-count"
-                                                  class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
                                         </a>
                                     </div>
                                     <div class="flex items-center space-x-4">
@@ -135,8 +133,6 @@
                                         </a>
                                         <a href="/chat" class="text-white hover:text-blue-200 flex items-center relative">
                                             <i class="fas fa-comments mr-2"></i>
-                                            <span id="unread-messages-count"
-                                                  class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"></span>
                                         </a>
                                     </div>
                                     <div class="flex items-center space-x-4">
@@ -228,8 +224,6 @@
                                     </a>
                                     <a href="/chat" class="text-white hover:text-blue-200 flex items-center py-2 relative">
                                         <i class="fas fa-comments mr-3 w-5"></i> Чат
-                                        <span id="mobile-unread-messages-count"
-                                              class="hidden absolute -top-1 left-4 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"></span>
                                     </a>
                                     <a href="/employers/${currentUserId}" class="text-white hover:text-blue-200 flex items-center py-2">
                                         <i class="fas fa-user mr-3 w-5"></i> Профиль
@@ -244,8 +238,6 @@
                                     </a>
                                     <a href="/chat" class="text-white hover:text-blue-200 flex items-center py-2 relative">
                                         <i class="fas fa-comments mr-3 w-5"></i> Чат
-                                        <span id="mobile-unread-messages-count"
-                                              class="hidden absolute -top-1 left-4 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"></span>
                                     </a>
                                     <a href="/applicants/${currentUserId}" class="text-white hover:text-blue-200 flex items-center py-2">
                                         <i class="fas fa-user mr-3 w-5"></i> Профиль
@@ -286,65 +278,156 @@
 
     <footer class="bg-gray-800 text-white mt-12 py-8">
         <div class="container mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.about"/></h3>
-                    <p class="text-gray-400"><@spring.message "layout.footer.about.description"/></p>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.applicants"/></h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="/vacancies"
-                               class="hover:text-white"><@spring.message "layout.footer.vacancies.search"/></a></li>
-                        <li><a href="/resumes/create"
-                               class="hover:text-white"><@spring.message "layout.footer.resume.create"/></a></li>
-                        <li><a href="#" class="hover:text-white"><@spring.message "layout.footer.tips"/></a></li>
-                        <li><a href="#" class="hover:text-white"><@spring.message "layout.footer.reviews"/></a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.employers"/></h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="/vacancies/create"
-                               class="hover:text-white"><@spring.message "layout.footer.vacancy.create"/></a></li>
-                        <li><a href="/resumes"
-                               class="hover:text-white"><@spring.message "layout.footer.resume.search"/></a></li>
-                        <li><a href="#" class="hover:text-white"><@spring.message "layout.footer.corporate"/></a></li>
-                        <li><a href="#" class="hover:text-white"><@spring.message "layout.footer.pricing"/></a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.contacts"/></h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            <span><@spring.message "layout.footer.address"/></span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-2"></i>
-                            <span><@spring.message "layout.footer.phone"/></span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-2"></i>
-                            <span><@spring.message "layout.footer.email"/></span>
-                        </li>
-                    </ul>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white">
-                            <i class="fab fa-instagram"></i>
-                        </a>
+            <#if !known>
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.about"/></h3>
+                        <p class="text-gray-400"><@spring.message "layout.footer.about.description"/></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.applicants"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="/vacancies" class="hover:text-white"><@spring.message "layout.footer.vacancies.search"/></a></li>
+                            <li><a href="/resumes/create" class="hover:text-white"><@spring.message "layout.footer.resume.create"/></a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.employers"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="/vacancies/create" class="hover:text-white"><@spring.message "layout.footer.vacancy.create"/></a></li>
+                            <li><a href="/resumes" class="hover:text-white"><@spring.message "layout.footer.resume.search"/></a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.contacts"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span><@spring.message "layout.footer.address"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-phone mr-2"></i>
+                                <span><@spring.message "layout.footer.phone"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span><@spring.message "layout.footer.email"/></span>
+                            </li>
+                        </ul>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <#elseif roles?? && roles?first.authority == 'ROLE_APPLICANT'>
+                <!-- Соискатели - показываем только информацию для соискателей -->
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.about"/></h3>
+                        <p class="text-gray-400"><@spring.message "layout.footer.about.description"/></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.applicants"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="/vacancies" class="hover:text-white"><@spring.message "layout.footer.vacancies.search"/></a></li>
+                            <li><a href="/resumes/create" class="hover:text-white"><@spring.message "layout.footer.resume.create"/></a></li>
+                            <li><a href="/employers" class="hover:text-white">Просмотр работодателей</a></li>
+                            <li><a href="/applicants/${currentUserId}" class="hover:text-white">Мой профиль</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.contacts"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span><@spring.message "layout.footer.address"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-phone mr-2"></i>
+                                <span><@spring.message "layout.footer.phone"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span><@spring.message "layout.footer.email"/></span>
+                            </li>
+                        </ul>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <#elseif roles?? && roles?first.authority == 'ROLE_EMPLOYER'>
+                <!-- Работодатели - показываем только информацию для работодателей -->
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.about"/></h3>
+                        <p class="text-gray-400"><@spring.message "layout.footer.about.description"/></p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.employers"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="/vacancies/create" class="hover:text-white"><@spring.message "layout.footer.vacancy.create"/></a></li>
+                            <li><a href="/resumes" class="hover:text-white"><@spring.message "layout.footer.resume.search"/></a></li>
+                            <li><a href="/applicants" class="hover:text-white">Просмотр соискателей</a></li>
+                            <li><a href="/employers/${currentUserId}" class="hover:text-white">Мой профиль</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4"><@spring.message "layout.footer.contacts"/></h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li class="flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span><@spring.message "layout.footer.address"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-phone mr-2"></i>
+                                <span><@spring.message "layout.footer.phone"/></span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <span><@spring.message "layout.footer.email"/></span>
+                            </li>
+                        </ul>
+                        <div class="flex space-x-4 mt-4">
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </#if>
+
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
                 <p>&copy; <@spring.message "layout.footer.copyright"/></p>
             </div>
@@ -370,14 +453,14 @@
             }
         });
 
-        const mobileLanguageButton = document.getElementById('mobile-language-menu-button');
-        const mobileLanguageDropdown = document.getElementById('mobile-language-dropdown');
+            const mobileLanguageButton = document.getElementById('mobile-language-menu-button');
+            const mobileLanguageDropdown = document.getElementById('mobile-language-dropdown');
 
-        if (mobileLanguageButton && mobileLanguageDropdown) {
-            mobileLanguageButton.addEventListener('click', function() {
-                mobileLanguageDropdown.classList.toggle('hidden');
-            });
-        }
+            if (mobileLanguageButton && mobileLanguageDropdown) {
+                mobileLanguageButton.addEventListener('click', function() {
+                    mobileLanguageDropdown.classList.toggle('hidden');
+                });
+            }
     </script>
     </body>
     </html>
