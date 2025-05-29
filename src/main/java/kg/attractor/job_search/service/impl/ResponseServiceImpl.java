@@ -4,7 +4,7 @@ import kg.attractor.job_search.dto.ResponseDto;
 import kg.attractor.job_search.entity.Response;
 import kg.attractor.job_search.entity.Resume;
 import kg.attractor.job_search.entity.Vacancy;
-import kg.attractor.job_search.exception.AlreadyRespondedException;
+import kg.attractor.job_search.exception.iae.AlreadyRespondedException;
 import kg.attractor.job_search.exception.iae.IncorrectCategoryException;
 import kg.attractor.job_search.exception.nsee.ResponseNotFoundException;
 import kg.attractor.job_search.mapper.ResponseMapper;

@@ -143,6 +143,6 @@
         };
     </script>
 
-    <script src="/static/js/vacancies-filter.js"></script>
-    <script src="/static/js/vacancies.js"></script>
+    <script src="/static/js/vacancy/vacancies-filter.js"></script>
+    <script src="/static/js/vacancy/vacancies.js"></script>
 </@main.layout>

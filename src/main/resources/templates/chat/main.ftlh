@@ -33,5 +33,5 @@
         window.retryMessage = '<@spring.message "chat.retry"/>';
     </script>
 
-    <script src="/static/js/chat-main.js"></script>
+    <script src="/static/js/chat/chat-main.js"></script>
 </@layout.layout>

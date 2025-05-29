@@ -59,5 +59,5 @@
         window.csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
     </script>
 
-    <script src="/static/js/chat-room.js"></script>
+    <script src="/static/js/chat/chat-room.js"></script>
 </@layout.layout>

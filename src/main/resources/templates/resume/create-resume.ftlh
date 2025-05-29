@@ -289,5 +289,5 @@
         <div data-key="education.degree"><@spring.message "resume.create.education.degree" /></div>
     </div>
 
-    <script src="/static/js/create-resume.js"></script>
+    <script src="/static/js/resume/create-resume.js"></script>
 </@main.layout>

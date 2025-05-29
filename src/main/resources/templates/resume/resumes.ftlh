@@ -149,6 +149,6 @@
             'resumes.search.tryOther': '<@spring.message "search.tryOther"/>'
         };
     </script>
-    <script src="/static/js/resumes-filter.js"></script>
-    <script src="/static/js/resumes.js"></script>
+    <script src="/static/js/resume/resumes-filter.js"></script>
+    <script src="/static/js/resume/resumes.js"></script>
 </@main.layout>

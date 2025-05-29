@@ -1,7 +1,7 @@
 package kg.attractor.job_search.exception.handler;
 
 import jakarta.validation.ConstraintViolationException;
-import kg.attractor.job_search.exception.AlreadyRespondedException;
+import kg.attractor.job_search.exception.iae.AlreadyRespondedException;
 import kg.attractor.job_search.exception.iae.IncorrectCategoryException;
 import kg.attractor.job_search.exception.model.ErrorResponseBody;
 import kg.attractor.job_search.service.interfaces.ErrorService;

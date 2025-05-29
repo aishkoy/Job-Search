@@ -48,5 +48,5 @@
         };
     </script>
 
-    <script src="/static/js/chat-responses.js"></script>
+    <script src="/static/js/chat/chat-responses.js"></script>
 </@layout.layout>
