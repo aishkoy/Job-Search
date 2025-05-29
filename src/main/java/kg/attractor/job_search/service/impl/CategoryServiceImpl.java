@@ -19,6 +19,28 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
+    public List<Long> findCategoriesById(Long categoryId){
+        List<Long> ids =  categoryRepository.findAllCategoryIds(categoryId);
+        if(ids.isEmpty()){
+            throw new CategoryNotFoundException();
+        }
+        return ids;
+    }
+
+    @Override
+    public boolean areCategoriesStrictlyCompatible(Long categoryId1, Long categoryId2) {
+        if (categoryId1.equals(categoryId2)) {
+            return true;
+        }
+
+        if (categoryRepository.isParentCategory(categoryId1, categoryId2)) {
+            return true;
+        }
+
+        return categoryRepository.isParentCategory(categoryId2, categoryId1);
+    }
+
+    @Override
     public CategoryDto getCategoryIfPresent(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Не существует такой категории!"));
